@@ -66,24 +66,24 @@ export default function EmailSender({ onSendSuccess }: EmailSenderProps) {
       
       <form onSubmit={handleSend} className="space-y-4">
         {/* 发送模式选择 */}
-        <div className="flex items-center space-x-4">
-          <label className="flex items-center">
+        <div className="flex items-center space-x-6">
+          <label className="flex items-center cursor-pointer">
             <input
               type="radio"
               checked={!isBulk}
               onChange={() => setIsBulk(false)}
-              className="mr-2"
+              className="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
             />
-            单发邮件
+            <span className="text-gray-700 font-medium">单发邮件</span>
           </label>
-          <label className="flex items-center">
+          <label className="flex items-center cursor-pointer">
             <input
               type="radio"
               checked={isBulk}
               onChange={() => setIsBulk(true)}
-              className="mr-2"
+              className="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
             />
-            群发邮件
+            <span className="text-gray-700 font-medium">群发邮件</span>
           </label>
         </div>
 

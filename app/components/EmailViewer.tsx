@@ -108,25 +108,25 @@ export default function EmailViewer() {
 
         <div className="flex h-96">
           {/* 邮件列表 */}
-          <div className="w-1/3 border-r overflow-y-auto">
+          <div className="w-1/3 border-r overflow-y-auto bg-white">
             {emails.map((email) => (
               <div
                 key={email.id}
                 onClick={() => setSelectedEmail(email)}
-                className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${
-                  selectedEmail?.id === email.id ? 'bg-blue-50 border-blue-200' : ''
+                className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                  selectedEmail?.id === email.id ? 'bg-blue-50 border-blue-200' : 'border-gray-200'
                 }`}
               >
-                <div className="font-semibold text-sm">
+                <div className="font-semibold text-sm text-gray-900 mb-1">
                   {getHeaderValue(email.payload.headers, 'from')}
                 </div>
-                <div className="text-sm text-gray-600 truncate">
+                <div className="text-sm text-gray-700 truncate font-medium mb-1">
                   {getHeaderValue(email.payload.headers, 'subject')}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 mb-2">
                   {formatDate(email.id)}
                 </div>
-                <div className="text-xs text-gray-400 mt-1 truncate">
+                <div className="text-xs text-gray-600 truncate leading-relaxed">
                   {email.snippet}
                 </div>
               </div>
@@ -139,29 +139,30 @@ export default function EmailViewer() {
           </div>
 
           {/* 邮件详情 */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
             {selectedEmail ? (
-              <div>
-                <div className="mb-4">
-                  <h2 className="text-xl font-bold mb-2">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold mb-3 text-gray-900">
                     {getHeaderValue(selectedEmail.payload.headers, 'subject')}
                   </h2>
-                  <div className="text-sm text-gray-600">
-                    <div>发件人: {getHeaderValue(selectedEmail.payload.headers, 'from')}</div>
-                    <div>收件人: {getHeaderValue(selectedEmail.payload.headers, 'to')}</div>
-                    <div>时间: {formatDate(selectedEmail.id)}</div>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <div><span className="font-medium">发件人:</span> {getHeaderValue(selectedEmail.payload.headers, 'from')}</div>
+                    <div><span className="font-medium">收件人:</span> {getHeaderValue(selectedEmail.payload.headers, 'to')}</div>
+                    <div><span className="font-medium">时间:</span> {formatDate(selectedEmail.id)}</div>
                   </div>
                 </div>
                 
-                <div className="border-t pt-4">
-                  <div className="whitespace-pre-wrap text-sm">
+                <div className="border-t pt-6">
+                  <div className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed">
                     {getEmailContent(selectedEmail)}
                   </div>
                 </div>
               </div>
             ) : (
               <div className="text-center text-gray-500 mt-20">
-                请选择一封邮件查看详情
+                <div className="text-lg font-medium mb-2">请选择一封邮件查看详情</div>
+                <div className="text-sm">点击左侧邮件列表中的任意邮件</div>
               </div>
             )}
           </div>
