@@ -63,18 +63,7 @@ export default function Home() {
         )}
       </main>
 
-      {/* 配置提示 */}
-      <div className="fixed bottom-4 right-4 bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-sm shadow-lg">
-        <h3 className="text-sm font-medium text-blue-800 mb-2">✅ 配置完成</h3>
-        <p className="text-xs text-blue-700">
-          Google API 凭据已正确配置：
-          <br />
-          • ✅ GOOGLE_CLIENT_ID<br />
-          • ✅ GOOGLE_CLIENT_SECRET<br />
-          • ✅ GOOGLE_REFRESH_TOKEN<br />
-          • ✅ GOOGLE_EMAIL
-        </p>
-      </div>
+
     </div>
   );
 }
