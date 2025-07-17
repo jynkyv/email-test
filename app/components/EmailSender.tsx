@@ -1,224 +1,208 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-interface EmailSenderProps {
-  onSendSuccess?: () => void;
+interface ReplyData {
+  to: string;
+  subject: string;
+  content: string;
 }
 
-export default function EmailSender({ onSendSuccess }: EmailSenderProps) {
+interface EmailSenderProps {
+  replyData?: ReplyData | null;
+  onSendComplete?: () => void;
+}
+
+export default function EmailSender({ replyData, onSendComplete }: EmailSenderProps) {
   const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
-  const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState({ current: 0, total: 0 });
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [html, setHtml] = useState('');
+  const [customLabel, setCustomLabel] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [totalEmails, setTotalEmails] = useState(0);
+  const [sentEmails, setSentEmails] = useState(0);
 
-  // 解析邮箱列表，支持中英文逗号
-  const parseEmailList = (emailString: string) => {
-    return emailString
-      .split(/[,，]/) // 支持中文逗号和英文逗号
+  // 当收到回信数据时，自动填充表单
+  useEffect(() => {
+    if (replyData) {
+      setTo(replyData.to);
+      setSubject(replyData.subject);
+      setHtml(replyData.content);
+    }
+  }, [replyData]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!to.trim() || !subject.trim() || !html.trim()) {
+      alert('请填写所有必填字段');
+      return;
+    }
+
+    setIsSending(true);
+    setProgress(0);
+    setSentEmails(0);
+
+    // 解析收件人列表
+    const recipients = to
+      .split(/[,\n]/)
       .map(email => email.trim())
       .filter(email => email && email.includes('@'));
-  };
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    setTotalEmails(recipients.length);
 
-    try {
-      // 解析邮箱列表
-      const emailList = parseEmailList(to);
-      
-      if (emailList.length === 0) {
-        return;
-      }
-
-      setProgress({ current: 0, total: emailList.length });
-
-      let successCount = 0;
-      let failCount = 0;
-
-      // 队列式发送邮件
-      for (let i = 0; i < emailList.length; i++) {
-        const email = emailList[i];
-        
-        try {
-          console.log(`正在发送邮件给: ${email} (${i + 1}/${emailList.length})`);
-
-          const response = await fetch('/api/email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-              to: [email], // 每次只发送给一个收件人
-              subject,
-              html: content,
-              isBulk: false, // 虽然是群发，但每次只发送给一个人
-            }),
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            successCount++;
-            console.log(`✅ 邮件发送成功: ${email}`);
-          } else {
-            failCount++;
-            console.error(`❌ 邮件发送失败: ${email} - ${data.error}`);
-          }
-
-          // 更新进度
-          setProgress({ current: i + 1, total: emailList.length });
-
-          // 添加延迟，避免发送过快被判定为垃圾邮件
-          if (i < emailList.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 3000)); // 3秒延迟
-          }
-
-        } catch (error) {
-          failCount++;
-          console.error(`❌ 发送邮件给 ${email} 时出错:`, error);
-        }
-      }
-
-      // 发送完成
-      if (successCount === emailList.length) {
-        setTo('');
-        setSubject('');
-        setContent('');
-        onSendSuccess?.();
-        
-        // 显示成功通知，5秒后关闭
-        setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-        }, 5000);
-      }
-
-    } catch (error) {
-      console.error('发送邮件错误:', error);
-    } finally {
-      setIsLoading(false);
-      setProgress({ current: 0, total: 0 });
+    if (recipients.length === 0) {
+      alert('请输入有效的邮箱地址');
+      setIsSending(false);
+      return;
     }
+
+    // 逐个发送邮件
+    for (let i = 0; i < recipients.length; i++) {
+      try {
+        const response = await fetch('/api/email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: recipients[i],
+            subject,
+            html,
+            customLabel,
+            isBulk: true
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          setSentEmails(prev => prev + 1);
+        }
+        
+        // 更新进度
+        setProgress(((i + 1) / recipients.length) * 100);
+        
+        // 等待3秒再发送下一封
+        if (i < recipients.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      } catch (error) {
+        console.error('发送邮件失败:', error);
+      }
+    }
+
+    setIsSending(false);
+    setProgress(0);
+    setSentEmails(0);
+    setTotalEmails(0);
+    
+    // 清空表单
+    setTo('');
+    setSubject('');
+    setHtml('');
+    setCustomLabel('');
+    
+    // 通知父组件发送完成
+    onSendComplete?.();
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-xl border border-gray-100">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800 text-center">群发邮件</h2>
+    <div className="h-full flex flex-col">
+      <h2 className="text-2xl font-bold text-gray-800 mb-3">群发邮件</h2>
       
-      {/* 进度通知 - 胶囊形状 */}
-      {isLoading && progress.total > 0 && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-white border border-gray-200 rounded-full shadow-xl px-8 py-4 flex items-center space-x-4 backdrop-blur-sm">
-            {/* 进度图标 */}
-            <div className="flex-shrink-0">
-              <div className="w-7 h-7 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-            </div>
-            
-            {/* 进度文本 */}
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-gray-900">
-                正在发送邮件...
-              </div>
-              <div className="text-xs text-gray-500">
-                {progress.current} / {progress.total}
-              </div>
-            </div>
-            
-            {/* 进度条 */}
-            <div className="flex-shrink-0 w-28">
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${(progress.current / progress.total) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 成功通知 */}
-      {showSuccess && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-green-50 border border-green-200 rounded-full shadow-xl px-8 py-4 flex items-center space-x-3 backdrop-blur-sm">
-            <div className="flex-shrink-0">
-              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <div className="text-sm font-semibold text-green-800">
-              邮件发送成功！
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <form onSubmit={handleSend} className="space-y-6">
+      <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-3">
         {/* 收件人列表 */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             收件人列表
           </label>
           <textarea
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            placeholder="email1@example.com, email2@example.com，email3@example.com"
-            rows={4}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400 resize-vertical transition-all duration-200"
+            placeholder="email1@example.com, email2@example.com, email3@example.com"
+            className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
+            rows={2}
             required
           />
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="mt-1 text-xs text-gray-500">
             支持中英文逗号分隔，每行一个邮箱，或用逗号分隔。系统将逐个发送邮件给每个收件人，间隔3秒避免被判定为垃圾邮件。
           </p>
         </div>
 
-        {/* 主题 */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            邮件主题
-          </label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="邮件主题 (支持中文、日文等)"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400 transition-all duration-200"
-            required
-            lang="ja"
-          />
+        {/* 邮件主题和标签行 */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              邮件主题
+            </label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="邮件主题 (支持中文、日文等)"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              自定义标签
+            </label>
+            <input
+              type="text"
+              value={customLabel}
+              onChange={(e) => setCustomLabel(e.target.value)}
+              placeholder="例如: Campaign-2024-01, VIP-Customers, 产品推广"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+            />
+          </div>
         </div>
 
-        {/* 内容 */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+        {/* 邮件内容 - 占据大部分空间 */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             邮件内容
           </label>
           <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={html}
+            onChange={(e) => setHtml(e.target.value)}
             placeholder="请输入邮件内容... (支持中文、日文等)"
-            rows={8}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-400 resize-vertical transition-all duration-200"
+            className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-black"
             required
-            lang="ja"
           />
         </div>
 
         {/* 发送按钮 */}
         <button
           type="submit"
-          disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold text-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none shadow-lg"
+          disabled={isSending}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? '发送中...' : '开始群发邮件'}
+          {isSending ? '发送中...' : '开始群发邮件'}
         </button>
       </form>
+
+      {/* 发送进度 */}
+      {isSending && (
+        <div className="mt-3 p-3 bg-blue-50 rounded-xl">
+          <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <span>发送进度</span>
+            <span>{sentEmails}/{totalEmails}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <p className="mt-2 text-sm text-gray-500">
+            每3秒发送一封邮件，避免被判定为垃圾邮件
+          </p>
+        </div>
+      )}
     </div>
   );
 } 
