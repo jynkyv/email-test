@@ -181,7 +181,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           disabled={isSending}
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSending ? '发送中...' : '开始群发邮件'}
+          {isSending ? '发送中...' : '发送邮件'}
         </button>
       </form>
 
