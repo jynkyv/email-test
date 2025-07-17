@@ -37,75 +37,110 @@ function encodeContent(content: string): string {
   return Buffer.from(content, 'utf-8').toString('utf-8');
 }
 
+// 发送单封邮件
+async function sendSingleEmail(to: string, subject: string, html: string) {
+  // 生成 Message-ID
+  const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${process.env.GOOGLE_EMAIL?.split('@')[1]}>`;
+
+  // 构建邮件头信息
+  const headers = [
+    `From: ${process.env.GOOGLE_EMAIL}`,
+    `To: ${to}`,
+    `Subject: ${encodeSubject(subject)}`,
+    `Message-ID: ${messageId}`,
+    `Date: ${new Date().toUTCString()}`,
+    `MIME-Version: 1.0`,
+    `X-Mailer: Email-Test-App`,
+    `Content-Type: text/html; charset=UTF-8`,
+    `Content-Transfer-Encoding: 8bit`,
+    ``,
+    encodeContent(html)
+  ];
+
+  // 使用正确的邮件头信息
+  const emailContent = headers.join('\r\n');
+
+  const message = {
+    raw: Buffer.from(emailContent, 'utf-8').toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+  };
+
+  const response = await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: message,
+  });
+
+  return response.data;
+}
+
 // 发送邮件
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { to, subject, text, html, isBulk = false } = body;
+    const { to, subject, html, isBulk = false } = body;
 
-    if (!to || !subject || (!text && !html)) {
+    if (!to || !subject || !html) {
       return NextResponse.json(
         { error: '缺少必要参数' },
         { status: 400 }
       );
     }
 
-    // 创建邮件内容
-    const mailOptions = {
-      from: process.env.GOOGLE_EMAIL,
-      to: isBulk ? to.join(',') : to,
-      subject: encodeSubject(subject), // 编码主题
-      text: text ? encodeContent(text) : undefined,
-      html: html ? encodeContent(html) : undefined,
-    };
-
-    // 生成 Message-ID
-    const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${process.env.GOOGLE_EMAIL?.split('@')[1]}>`;
-
-    // 构建邮件头信息
-    const headers = [
-      `From: ${mailOptions.from}`,
-      `To: ${mailOptions.to}`,
-      `Subject: ${mailOptions.subject}`,
-      `Message-ID: ${messageId}`,
-      `Date: ${new Date().toUTCString()}`,
-      `MIME-Version: 1.0`,
-      `X-Mailer: Email-Test-App`,
-    ];
-
-    // 根据内容类型设置Content-Type
-    if (mailOptions.html) {
-      headers.push(`Content-Type: text/html; charset=UTF-8`);
-      headers.push(`Content-Transfer-Encoding: 8bit`);
-      headers.push(``);
-      headers.push(mailOptions.html);
-    } else if (mailOptions.text) {
-      headers.push(`Content-Type: text/plain; charset=UTF-8`);
-      headers.push(`Content-Transfer-Encoding: 8bit`);
-      headers.push(``);
-      headers.push(mailOptions.text);
+    // 确保 to 是数组
+    const recipients = Array.isArray(to) ? to : [to];
+    
+    if (recipients.length === 0) {
+      return NextResponse.json(
+        { error: '没有有效的收件人' },
+        { status: 400 }
+      );
     }
 
-    // 使用正确的邮件头信息
-    const emailContent = headers.join('\r\n');
+    // 如果是群发模式，逐个发送给每个收件人
+    if (isBulk && recipients.length > 1) {
+      const results = [];
+      
+      for (const recipient of recipients) {
+        try {
+          const result = await sendSingleEmail(recipient, subject, html);
+          results.push({
+            email: recipient,
+            success: true,
+            messageId: result.id
+          });
+        } catch (error) {
+          console.error(`发送邮件给 ${recipient} 失败:`, error);
+          results.push({
+            email: recipient,
+            success: false,
+            error: error instanceof Error ? error.message : '未知错误'
+          });
+        }
+      }
 
-    const message = {
-      raw: Buffer.from(emailContent, 'utf-8').toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '')
-    };
+      const successCount = results.filter(r => r.success).length;
+      const failCount = results.length - successCount;
 
-    const response = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: message,
-    });
-
-    return NextResponse.json({
-      success: true,
-      messageId: response.data.id,
-      message: '邮件发送成功'
-    });
+      return NextResponse.json({
+        success: successCount > 0,
+        message: `发送完成。成功: ${successCount}, 失败: ${failCount}`,
+        results,
+        totalSent: successCount,
+        totalFailed: failCount
+      });
+    } else {
+      // 单发模式（实际上现在都是单发）
+      const recipient = recipients[0];
+      const result = await sendSingleEmail(recipient, subject, html);
+      
+      return NextResponse.json({
+        success: true,
+        messageId: result.id,
+        message: '邮件发送成功'
+      });
+    }
 
   } catch (error) {
     console.error('发送邮件失败:', error);
