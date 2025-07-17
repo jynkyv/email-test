@@ -17,6 +17,26 @@ oauth2Client.setCredentials({
 // 创建Gmail API实例
 const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
+// 编码邮件主题（支持中文、日文等多字节字符）
+function encodeSubject(subject: string): string {
+  // 检测是否包含非ASCII字符
+  const hasNonAscii = /[^\x00-\x7F]/.test(subject);
+  
+  if (hasNonAscii) {
+    // 对包含非ASCII字符的主题进行Base64编码
+    return `=?UTF-8?B?${Buffer.from(subject, 'utf-8').toString('base64')}?=`;
+  } else {
+    // ASCII字符直接返回
+    return subject;
+  }
+}
+
+// 编码邮件内容（支持中文、日文等多字节字符）
+function encodeContent(content: string): string {
+  // 确保内容使用UTF-8编码
+  return Buffer.from(content, 'utf-8').toString('utf-8');
+}
+
 // 发送邮件
 export async function POST(request: NextRequest) {
   try {
@@ -34,21 +54,46 @@ export async function POST(request: NextRequest) {
     const mailOptions = {
       from: process.env.GOOGLE_EMAIL,
       to: isBulk ? to.join(',') : to,
-      subject,
-      text,
-      html,
+      subject: encodeSubject(subject), // 编码主题
+      text: text ? encodeContent(text) : undefined,
+      html: html ? encodeContent(html) : undefined,
     };
 
-    // 使用Gmail API发送邮件
+    // 生成 Message-ID
+    const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${process.env.GOOGLE_EMAIL?.split('@')[1]}>`;
+
+    // 构建邮件头信息
+    const headers = [
+      `From: ${mailOptions.from}`,
+      `To: ${mailOptions.to}`,
+      `Subject: ${mailOptions.subject}`,
+      `Message-ID: ${messageId}`,
+      `Date: ${new Date().toUTCString()}`,
+      `MIME-Version: 1.0`,
+      `X-Mailer: Email-Test-App`,
+    ];
+
+    // 根据内容类型设置Content-Type
+    if (mailOptions.html) {
+      headers.push(`Content-Type: text/html; charset=UTF-8`);
+      headers.push(`Content-Transfer-Encoding: 8bit`);
+      headers.push(``);
+      headers.push(mailOptions.html);
+    } else if (mailOptions.text) {
+      headers.push(`Content-Type: text/plain; charset=UTF-8`);
+      headers.push(`Content-Transfer-Encoding: 8bit`);
+      headers.push(``);
+      headers.push(mailOptions.text);
+    }
+
+    // 使用正确的邮件头信息
+    const emailContent = headers.join('\r\n');
+
     const message = {
-      raw: Buffer.from(
-        `To: ${mailOptions.to}\r\n` +
-        `From: ${mailOptions.from}\r\n` +
-        `Subject: ${mailOptions.subject}\r\n` +
-        `Content-Type: text/html; charset=utf-8\r\n` +
-        `\r\n` +
-        `${mailOptions.html || mailOptions.text}`
-      ).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+      raw: Buffer.from(emailContent, 'utf-8').toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '')
     };
 
     const response = await gmail.users.messages.send({

@@ -29,7 +29,7 @@ export default function EmailSender({ onSendSuccess }: EmailSenderProps) {
       const response = await fetch('/api/email', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify({
           to: emailList,
@@ -105,31 +105,38 @@ export default function EmailSender({ onSendSuccess }: EmailSenderProps) {
         {/* 主题 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            主题
+            主题 (支持中文、日文等多语言)
           </label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            placeholder="邮件主题"
+            placeholder="邮件主题 (支持中文、日文等)"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
             required
+            lang="ja"
           />
         </div>
 
         {/* 内容 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            邮件内容
+            邮件内容 (支持中文、日文等多语言)
           </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="请输入邮件内容..."
+            placeholder="请输入邮件内容... (支持中文、日文等)"
             rows={8}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500 resize-vertical"
             required
+            lang="ja"
           />
+        </div>
+
+        {/* 字符编码提示 */}
+        <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
+          <p>💡 提示：系统支持中文、日文、韩文等多语言字符，邮件将使用 UTF-8 编码发送。</p>
         </div>
 
         {/* 发送按钮 */}
