@@ -5,11 +5,9 @@ import {
   Card, 
   Input, 
   Button, 
-  Select, 
   List, 
   Avatar, 
   Space, 
-  Tag, 
   Spin, 
   message,
   Divider 
@@ -17,13 +15,11 @@ import {
 import { 
   SearchOutlined, 
   ReloadOutlined, 
-  MailOutlined, 
-  UserOutlined,
+  MailOutlined,
   MessageOutlined 
 } from '@ant-design/icons';
 
 const { Search } = Input;
-const { Option } = Select;
 
 interface Email {
   id: string;
@@ -64,16 +60,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [loading, setLoading] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLabel, setSelectedLabel] = useState('');
-  const [availableLabels, setAvailableLabels] = useState<string[]>([]);
 
   const fetchEmails = async () => {
     setLoading(true);
     try {
-      let url = `/api/email?q=${searchQuery}&maxResults=20`;
-      if (selectedLabel) {
-        url += `&label=${selectedLabel}`;
-      }
+      const url = `/api/email?q=${searchQuery}&maxResults=20`;
       
       const response = await fetch(url);
       const data = await response.json();
@@ -89,26 +80,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     }
   };
 
-  const fetchLabels = async () => {
-    try {
-      const response = await fetch('/api/email/labels');
-      const data = await response.json();
-      
-      if (data.success) {
-        setAvailableLabels(data.labels || []);
-      }
-    } catch (error) {
-      console.error('获取标签失败:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLabels();
-  }, []);
-
   useEffect(() => {
     fetchEmails();
-  }, [searchQuery, selectedLabel]);
+  }, [searchQuery]);
 
   const getHeaderValue = (headers: Array<{name: string, value: string}>, name: string) => {
     const header = headers.find(h => h.name.toLowerCase() === name.toLowerCase());
@@ -185,20 +159,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             刷新
           </Button>
         </Space.Compact>
-        
-        <Select
-          placeholder="标签筛选: 全部邮件"
-          value={selectedLabel}
-          onChange={setSelectedLabel}
-          allowClear
-          className="w-full"
-        >
-          {availableLabels.map(label => (
-            <Option key={label} value={label}>
-              {label}
-            </Option>
-          ))}
-        </Select>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[600px]">

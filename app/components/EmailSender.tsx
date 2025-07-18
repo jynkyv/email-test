@@ -14,7 +14,6 @@ import {
 import { 
   SendOutlined, 
   UserOutlined, 
-  TagOutlined, 
   FileTextOutlined 
 } from '@ant-design/icons';
 
@@ -53,7 +52,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     to: string;
     subject: string;
     content: string;
-    customLabel?: string;
   }) => {
     if (!values.to.trim() || !values.subject.trim() || !values.content.trim()) {
       message.error('请填写所有必填字段');
@@ -90,7 +88,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             to: recipients[i],
             subject: values.subject,
             html: values.content,
-            customLabel: values.customLabel,
             isBulk: true
           }),
         });
@@ -148,22 +145,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             />
           </Form.Item>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item
-              name="subject"
-              label="邮件主题"
-              rules={[{ required: true, message: '请输入邮件主题!' }]}
-            >
-              <Input placeholder="邮件主题 (支持中文、日文等)" />
-            </Form.Item>
-            
-            <Form.Item
-              name="customLabel"
-              label="自定义标签"
-            >
-              <Input placeholder="例如: Campaign-2024-01, VIP-Customers" />
-            </Form.Item>
-          </div>
+          <Form.Item
+            name="subject"
+            label="邮件主题"
+            rules={[{ required: true, message: '请输入邮件主题!' }]}
+          >
+            <Input placeholder="邮件主题 (支持中文、日文等)" />
+          </Form.Item>
 
           <Form.Item
             name="content"

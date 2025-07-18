@@ -39,7 +39,7 @@ function encodeContent(content: string): string {
 }
 
 // 发送单封邮件
-async function sendSingleEmail(to: string, subject: string, html: string, customLabel?: string) {
+async function sendSingleEmail(to: string, subject: string, html: string) {
   // 生成 Message-ID
   const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${process.env.GOOGLE_EMAIL?.split('@')[1]}>`;
 
@@ -73,63 +73,14 @@ async function sendSingleEmail(to: string, subject: string, html: string, custom
     requestBody: message,
   });
 
-  // 如果提供了自定义标签，为邮件添加标签
-  if (customLabel && customLabel.trim()) {
-    try {
-      // 创建标签（如果不存在）
-      await createLabelIfNotExists(customLabel.trim());
-      
-      // 为发送的邮件添加标签
-      await gmail.users.messages.modify({
-        userId: 'me',
-        id: response.data.id!,
-        requestBody: {
-          addLabelIds: [customLabel.trim()]
-        }
-      });
-    } catch (error) {
-      console.error('添加标签失败:', error);
-      // 标签操作失败不影响邮件发送
-    }
-  }
-
   return response.data;
-}
-
-// 创建标签（如果不存在）
-async function createLabelIfNotExists(labelName: string) {
-  try {
-    // 首先检查标签是否已存在
-    const labelsResponse = await gmail.users.labels.list({
-      userId: 'me'
-    });
-    
-    const existingLabel = labelsResponse.data.labels?.find(
-      label => label.name === labelName
-    );
-    
-    if (!existingLabel) {
-      // 创建新标签
-      await gmail.users.labels.create({
-        userId: 'me',
-        requestBody: {
-          name: labelName,
-          messageListVisibility: 'show',
-          labelListVisibility: 'labelShow'
-        }
-      });
-    }
-  } catch (error) {
-    console.error('创建标签失败:', error);
-    throw error;
-  }
 }
 
 // 发送邮件
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { to, subject, html, customLabel, isBulk = false, customerIds = [] } = body;
+    const { to, subject, html, isBulk = false, customerIds = [] } = body;
 
     if (!to || !subject || !html) {
       return NextResponse.json(
@@ -171,7 +122,7 @@ export async function POST(request: NextRequest) {
       
       for (const recipient of recipients) {
         try {
-          const result = await sendSingleEmail(recipient, subject, html, customLabel);
+          const result = await sendSingleEmail(recipient, subject, html);
           results.push({
             email: recipient,
             success: true,
@@ -213,7 +164,7 @@ export async function POST(request: NextRequest) {
     } else {
       // 单发模式
       const recipient = recipients[0];
-      const result = await sendSingleEmail(recipient, subject, html, customLabel);
+      const result = await sendSingleEmail(recipient, subject, html);
       
       // 记录邮件日志
       if (customerIds.length > 0) {
@@ -261,19 +212,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
-    const labelFilter = searchParams.get('label') || '';
-    const customerFilter = searchParams.get('customer') || '';
     const maxResults = parseInt(searchParams.get('maxResults') || '10');
-
-    let searchQuery = query;
-    
-    if (labelFilter) {
-      searchQuery = searchQuery ? `${searchQuery} label:${labelFilter}` : `label:${labelFilter}`;
-    }
 
     const response = await gmail.users.messages.list({
       userId: 'me',
-      q: searchQuery,
+      q: query,
       maxResults,
     });
 
