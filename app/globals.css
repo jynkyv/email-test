@@ -134,3 +134,156 @@ button {
 .hover-lift:hover {
   transform: translateY(-2px);
 }
+
+/* Ant Design 主题覆盖 - 确保浅色主题 */
+.ant-layout-header {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+/* 覆盖 Ant Design 的默认深色主题 */
+:where(.css-dev-only-do-not-override-16dneet).ant-layout-header {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+/* 强制覆盖整个布局的背景色 */
+.ant-layout {
+  background: #ffffff !important;
+}
+
+/* 覆盖 Ant Design 的布局背景 */
+:where(.css-dev-only-do-not-override-16dneet).ant-layout {
+  background: #ffffff !important;
+}
+
+/* 确保内容区域背景 */
+.ant-layout-content {
+  background: transparent !important;
+}
+
+/* 覆盖 Ant Design 的内容区域背景 */
+:where(.css-dev-only-do-not-override-16dneet).ant-layout-content {
+  background: transparent !important;
+}
+
+/* 确保菜单项使用浅色背景 */
+.ant-menu {
+  background: transparent !important;
+}
+
+.ant-menu-horizontal {
+  background: transparent !important;
+}
+
+.ant-menu-item {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-menu-item:hover {
+  color: #1890ff !important;
+  background: rgba(24, 144, 255, 0.1) !important;
+}
+
+.ant-menu-item-selected {
+  color: #1890ff !important;
+  background: rgba(24, 144, 255, 0.1) !important;
+}
+
+/* 确保按钮在浅色背景下可见 */
+.ant-btn {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-btn-text {
+  color: #ff4d4f !important;
+}
+
+.ant-btn-text:hover {
+  color: #ff7875 !important;
+  background: rgba(255, 77, 79, 0.1) !important;
+}
+
+/* 确保主要按钮保持蓝色背景 */
+.ant-btn-primary {
+  background: #1890ff !important;
+  color: #ffffff !important;
+  border-color: #1890ff !important;
+}
+
+.ant-btn-primary:hover {
+  background: #40a9ff !important;
+  border-color: #40a9ff !important;
+}
+
+.ant-btn-primary:focus {
+  background: #1890ff !important;
+  border-color: #1890ff !important;
+}
+
+/* 确保默认按钮保持白色背景和边框 */
+.ant-btn-default {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+  border-color: #d9d9d9 !important;
+}
+
+.ant-btn-default:hover {
+  background: #ffffff !important;
+  color: #40a9ff !important;
+  border-color: #40a9ff !important;
+}
+
+/* 特别处理 Layout 组件 */
+.ant-layout,
+.ant-layout-header,
+.ant-layout-content,
+.ant-layout-sider {
+  background: transparent !important;
+}
+
+/* 确保页面背景为白色 */
+body {
+  background: #ffffff !important;
+}
+
+html {
+  background: #ffffff !important;
+}
+
+/* 确保卡片和表格使用白色背景 */
+.ant-card {
+  background: #ffffff !important;
+}
+
+.ant-table {
+  background: #ffffff !important;
+}
+
+.ant-table-thead > tr > th {
+  background: #fafafa !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-table-tbody > tr > td {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f5f5f5 !important;
+}
+
+/* 确保表单组件使用浅色背景 */
+.ant-form-item-label > label {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-input {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-input:focus {
+  background: #ffffff !important;
+}

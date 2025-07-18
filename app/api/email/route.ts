@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import nodemailer from 'nodemailer';
+import { supabase } from '@/lib/supabase';
 
 // Google OAuth2 配置
 const oauth2Client = new google.auth.OAuth2(
@@ -128,12 +129,29 @@ async function createLabelIfNotExists(labelName: string) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { to, subject, html, customLabel, isBulk = false } = body;
+    const { to, subject, html, customLabel, isBulk = false, customerIds = [] } = body;
 
     if (!to || !subject || !html) {
       return NextResponse.json(
         { error: '缺少必要参数' },
         { status: 400 }
+      );
+    }
+
+    // 验证用户权限
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: '未授权访问' },
+        { status: 401 }
+      );
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: '未授权访问' },
+        { status: 401 }
       );
     }
 
@@ -172,6 +190,19 @@ export async function POST(request: NextRequest) {
       const successCount = results.filter(r => r.success).length;
       const failCount = results.length - successCount;
 
+      // 记录邮件日志
+      if (customerIds.length > 0) {
+        await supabase
+          .from('email_logs')
+          .insert({
+            to: recipients.join(', '),
+            subject,
+            content: html,
+            sent_by: user.id,
+            customer_ids: customerIds,
+          });
+      }
+
       return NextResponse.json({
         success: successCount > 0,
         message: `发送完成。成功: ${successCount}, 失败: ${failCount}`,
@@ -180,9 +211,22 @@ export async function POST(request: NextRequest) {
         totalFailed: failCount
       });
     } else {
-      // 单发模式（实际上现在都是单发）
+      // 单发模式
       const recipient = recipients[0];
       const result = await sendSingleEmail(recipient, subject, html, customLabel);
+      
+      // 记录邮件日志
+      if (customerIds.length > 0) {
+        await supabase
+          .from('email_logs')
+          .insert({
+            to: recipient,
+            subject,
+            content: html,
+            sent_by: user.id,
+            customer_ids: customerIds,
+          });
+      }
       
       return NextResponse.json({
         success: true,
@@ -194,7 +238,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('发送邮件失败:', error);
     
-    // 更详细的错误信息
     let errorMessage = '发送邮件失败';
     const errorObj = error as any;
     
@@ -219,11 +262,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
     const labelFilter = searchParams.get('label') || '';
+    const customerFilter = searchParams.get('customer') || '';
     const maxResults = parseInt(searchParams.get('maxResults') || '10');
 
     let searchQuery = query;
     
-    // 如果指定了标签筛选，添加到搜索条件
     if (labelFilter) {
       searchQuery = searchQuery ? `${searchQuery} label:${labelFilter}` : `label:${labelFilter}`;
     }
@@ -236,7 +279,6 @@ export async function GET(request: NextRequest) {
 
     const messages = response.data.messages || [];
     
-    // 获取邮件详情
     const detailedMessages = await Promise.all(
       messages.map(async (message) => {
         const detail = await gmail.users.messages.get({
