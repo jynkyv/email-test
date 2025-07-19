@@ -77,48 +77,48 @@ export default function LoginPage() {
             <p className="text-gray-600">{t('auth.signIn')}</p>
           </div>
 
-          <Form
+        <Form
             form={form}
-            onFinish={handleSubmit}
-            layout="vertical"
+          onFinish={handleSubmit}
+          layout="vertical"
             size="large"
-          >
-            <Form.Item
-              name="username"
+        >
+          <Form.Item
+            name="username"
               rules={[{ required: true, message: t('auth.usernameRequired') }]}
-            >
-              <Input
-                prefix={<UserOutlined />}
+          >
+            <Input
+              prefix={<UserOutlined />}
                 placeholder={t('auth.username')}
                 autoComplete="username"
-              />
-            </Form.Item>
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="password"
+          <Form.Item
+            name="password"
               rules={[{ required: true, message: t('auth.passwordRequired') }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
                 placeholder={t('auth.password')}
                 autoComplete="current-password"
-              />
-            </Form.Item>
+            />
+          </Form.Item>
 
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
                 block
-                size="large"
-              >
+              size="large"
+            >
                 {t('auth.signIn')}
-              </Button>
-            </Form.Item>
-          </Form>
+            </Button>
+          </Form.Item>
+        </Form>
         </Card>
-      </div>
+        </div>
     </div>
   );
 }

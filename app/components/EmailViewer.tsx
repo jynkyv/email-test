@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import { 
   ReloadOutlined, 
-  MailOutlined,
+  MailOutlined, 
   MessageOutlined,
   UserOutlined,
   TeamOutlined
@@ -317,8 +317,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             )}
           </div>
+          </div>
         </div>
-      </div>
 
       {/* 邮件详情弹窗 */}
       {selectedEmail && (
@@ -333,7 +333,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               >
                 {t('email.reply')}
               </Button>
-            </div>
+          </div>
             
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-4">
@@ -372,7 +372,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <Button onClick={() => setSelectedEmail(null)}>
                 {t('common.close')}
               </Button>
-            </div>
+              </div>
           </div>
         </div>
       )}

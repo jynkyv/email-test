@@ -158,7 +158,9 @@
     "fetchUsersFailed": "ユーザーリストの取得に失敗しました",
     "noUsers": "ユーザーがありません",
     "insufficientPermissions": "権限が不足しています",
-    "onlyAdminCanManageUsers": "管理者のみがユーザーを管理できます"
+    "onlyAdminCanManageUsers": "管理者のみがユーザーを管理できます",
+    "emailSendCount": "送信回数",
+    "emailRecipientCount": "宛先数"
   },
   "validation": {
     "required": "この項目は必須です",

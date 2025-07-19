@@ -23,7 +23,7 @@ export default function RootLayout({
         <I18nProvider>
           <AuthProvider>
             <DynamicConfigProvider>
-              {children}
+            {children}
             </DynamicConfigProvider>
           </AuthProvider>
         </I18nProvider>

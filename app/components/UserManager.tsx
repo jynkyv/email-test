@@ -15,7 +15,7 @@ import {
   Tag,
   Spin 
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -24,6 +24,8 @@ interface User {
   username: string;
   role: string;
   created_at: string;
+  email_send_count?: number;
+  email_recipient_count?: number;
 }
 
 export default function UserManager() {
@@ -35,7 +37,7 @@ export default function UserManager() {
 
   useEffect(() => {
     if (userRole === 'admin') {
-      fetchUsers();
+    fetchUsers();
     }
   }, [userRole]);
 
@@ -104,6 +106,28 @@ export default function UserManager() {
         <Tag color={role === 'admin' ? 'red' : 'blue'}>
           {role === 'admin' ? t('auth.admin') : t('auth.employee')}
         </Tag>
+      ),
+    },
+    {
+      title: t('user.emailSendCount'),
+      dataIndex: 'email_send_count',
+      key: 'email_send_count',
+      render: (count: number) => (
+        <Space>
+          <SendOutlined style={{ color: '#1890ff' }} />
+          <span className="font-medium">{count || 0}</span>
+        </Space>
+      ),
+    },
+    {
+      title: t('user.emailRecipientCount'),
+      dataIndex: 'email_recipient_count',
+      key: 'email_recipient_count',
+      render: (count: number) => (
+        <Space>
+          <MailOutlined style={{ color: '#52c41a' }} />
+          <span className="font-medium">{count || 0}</span>
+        </Space>
       ),
     },
     {

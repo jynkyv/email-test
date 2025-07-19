@@ -158,7 +158,9 @@
     "fetchUsersFailed": "获取用户列表失败",
     "noUsers": "暂无用户",
     "insufficientPermissions": "权限不足",
-    "onlyAdminCanManageUsers": "只有管理员可以管理用户"
+    "onlyAdminCanManageUsers": "只有管理员可以管理用户",
+    "emailSendCount": "发送次数",
+    "emailRecipientCount": "收件人数"
   },
   "validation": {
     "required": "此字段为必填项",

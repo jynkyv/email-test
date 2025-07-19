@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 检查本地存储的会话
     const checkSession = async () => {
       try {
-        const session = localStorage.getItem('user_session');
-        if (session) {
+      const session = localStorage.getItem('user_session');
+      if (session) {
           const userData = JSON.parse(session);
           setUser(userData);
           setUserRole(userData.role);
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // 保存用户信息到本地存储
       if (typeof window !== 'undefined') {
-        localStorage.setItem('user_session', JSON.stringify(userData));
+      localStorage.setItem('user_session', JSON.stringify(userData));
       }
       setUser(userData);
       setUserRole(userData.role);
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user_session');
+    localStorage.removeItem('user_session');
     }
     setUser(null);
     setUserRole(null);
