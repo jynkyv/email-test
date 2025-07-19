@@ -3,23 +3,22 @@
 import { useState, useEffect } from 'react';
 import { 
   Card, 
-  Input, 
-  Button, 
   List, 
   Avatar, 
   Space, 
   Spin, 
   message,
-  Divider 
+  Divider,
+  Button,
+  Tag
 } from 'antd';
 import { 
-  SearchOutlined, 
   ReloadOutlined, 
   MailOutlined,
-  MessageOutlined 
+  MessageOutlined,
+  UserOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
-
-const { Search } = Input;
 
 interface Email {
   id: string;
@@ -51,26 +50,51 @@ interface Email {
   };
 }
 
+interface Customer {
+  id: string;
+  company_name: string;
+  email: string;
+  created_at: string;
+}
+
 interface EmailViewerProps {
   onReply?: (emailData: { to: string; subject: string; content: string }) => void;
 }
 
 export default function EmailViewer({ onReply }: EmailViewerProps) {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchEmails = async () => {
+  // 获取客户列表
+  const fetchCustomers = async () => {
+    setLoadingCustomers(true);
+    try {
+      const response = await fetch('/api/customers');
+      const data = await response.json();
+      if (data.success) {
+        setCustomers(data.customers || []);
+      }
+    } catch (error) {
+      console.error('获取客户列表失败:', error);
+      message.error('获取客户列表失败');
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
+
+  // 获取指定客户的邮件
+  const fetchCustomerEmails = async (customerEmail: string) => {
     setLoading(true);
     try {
-      const url = `/api/email?q=${searchQuery}&maxResults=20`;
-      
-      const response = await fetch(url);
+      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=50`);
       const data = await response.json();
       
       if (data.success) {
-        setEmails(data.messages);
+        setEmails(data.messages || []);
       }
     } catch (error) {
       console.error('获取邮件失败:', error);
@@ -80,9 +104,16 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     }
   };
 
+  // 选择客户
+  const handleSelectCustomer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setSelectedEmail(null);
+    fetchCustomerEmails(customer.email);
+  };
+
   useEffect(() => {
-    fetchEmails();
-  }, [searchQuery]);
+    fetchCustomers();
+  }, []);
 
   const getHeaderValue = (headers: Array<{name: string, value: string}>, name: string) => {
     const header = headers.find(h => h.name.toLowerCase() === name.toLowerCase());
@@ -143,37 +174,94 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   return (
     <Card title="邮件管理" className="h-full">
       <div className="space-y-4 mb-4">
-        <Space.Compact className="w-full">
-          <Search
-            placeholder="搜索邮件..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onSearch={fetchEmails}
-            enterButton
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TeamOutlined />
+            <span className="font-medium">我的客户</span>
+          </div>
           <Button
             icon={<ReloadOutlined />}
-            onClick={fetchEmails}
-            loading={loading}
+            onClick={fetchCustomers}
+            loading={loadingCustomers}
           >
-            刷新
+            刷新客户
           </Button>
-        </Space.Compact>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[600px]">
+        {/* 客户列表 */}
+        <div className="border rounded-lg overflow-hidden">
+          <div className="bg-gray-50 px-4 py-2 border-b">
+            <span className="text-sm font-medium">客户列表</span>
+          </div>
+          <div className="h-full overflow-y-auto">
+            {loadingCustomers ? (
+              <div className="text-center py-8">
+                <Spin />
+              </div>
+            ) : customers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">暂无客户</div>
+            ) : (
+              <List
+                dataSource={customers}
+                renderItem={(customer) => (
+                  <List.Item
+                    className={`cursor-pointer hover:bg-gray-50 px-4 py-3 ${
+                      selectedCustomer?.id === customer.id ? 'bg-blue-50' : ''
+                    }`}
+                    onClick={() => handleSelectCustomer(customer)}
+                  >
+                    <List.Item.Meta
+                      avatar={<Avatar icon={<UserOutlined />} />}
+                      title={
+                        <div className="flex justify-between items-start">
+                          <span className="font-medium truncate">
+                            {customer.company_name}
+                          </span>
+                          <Tag color="blue">
+                            {emails.length} 封邮件
+                          </Tag>
+                        </div>
+                      }
+                      description={
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-600">
+                            {customer.email}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            创建时间: {new Date(customer.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            )}
+          </div>
+        </div>
+
         {/* 邮件列表 */}
         <div className="border rounded-lg overflow-hidden">
           <div className="bg-gray-50 px-4 py-2 border-b">
-            <span className="text-sm font-medium">邮件列表</span>
+            <span className="text-sm font-medium">
+              {selectedCustomer ? `${selectedCustomer.company_name} 的邮件` : '邮件列表'}
+            </span>
           </div>
           <div className="h-full overflow-y-auto">
-            {loading ? (
+            {!selectedCustomer ? (
+              <div className="text-center py-8 text-gray-500">
+                请选择一个客户查看邮件
+              </div>
+            ) : loading ? (
               <div className="text-center py-8">
                 <Spin />
               </div>
             ) : emails.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">暂无邮件</div>
+              <div className="text-center py-8 text-gray-500">
+                该客户暂无邮件记录
+              </div>
             ) : (
               <List
                 dataSource={emails}
@@ -222,52 +310,62 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             )}
           </div>
         </div>
+      </div>
 
-        {/* 邮件详情 */}
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b">
-            <span className="text-sm font-medium">邮件详情</span>
-          </div>
-          <div className="h-full overflow-y-auto p-4">
-            {selectedEmail ? (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-lg mb-2">
-                    {getHeaderValue(selectedEmail.payload.headers, 'Subject') || '无主题'}
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="text-gray-500">发件人:</span>
-                      <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'From')}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">收件人:</span>
-                      <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'To')}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">时间:</span>
-                      <span className="ml-2">{formatDate(selectedEmail.internalDate || '')}</span>
-                    </div>
+      {/* 邮件详情弹窗 */}
+      {selectedEmail && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">邮件详情</h3>
+              <Button
+                type="text"
+                icon={<MessageOutlined />}
+                onClick={() => handleReply(selectedEmail)}
+              >
+                回复
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-lg mb-2">
+                  {getHeaderValue(selectedEmail.payload.headers, 'Subject') || '无主题'}
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-500">发件人:</span>
+                    <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'From')}</span>
                   </div>
-                </div>
-                
-                <Divider />
-                
-                <div>
-                  <h4 className="font-medium mb-2">邮件内容</h4>
-                  <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
-                    {getEmailContent(selectedEmail)}
+                  <div>
+                    <span className="text-gray-500">收件人:</span>
+                    <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'To')}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">时间:</span>
+                    <span className="ml-2">{formatDate(selectedEmail.internalDate || '')}</span>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                请选择一封邮件查看详情
+              
+              <Divider />
+              
+              <div>
+                <h4 className="font-medium mb-2">邮件内容</h4>
+                <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
+                  {getEmailContent(selectedEmail)}
+                </div>
               </div>
-            )}
+            </div>
+            
+            <div className="mt-6 text-center">
+              <Button onClick={() => setSelectedEmail(null)}>
+                关闭
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Card>
   );
 } 

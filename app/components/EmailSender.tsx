@@ -9,12 +9,18 @@ import {
   Progress, 
   message, 
   Space,
-  Divider 
+  Divider,
+  Modal,
+  List,
+  Checkbox,
+  Avatar
 } from 'antd';
 import { 
   SendOutlined, 
   UserOutlined, 
-  FileTextOutlined 
+  FileTextOutlined,
+  TeamOutlined,
+  CloseOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -23,6 +29,13 @@ interface ReplyData {
   to: string;
   subject: string;
   content: string;
+}
+
+interface Customer {
+  id: string;
+  company_name: string;
+  email: string;
+  created_at: string;
 }
 
 interface EmailSenderProps {
@@ -36,6 +49,29 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [progress, setProgress] = useState(0);
   const [totalEmails, setTotalEmails] = useState(0);
   const [sentEmails, setSentEmails] = useState(0);
+  
+  // 客户选择相关状态
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+
+  // 获取客户列表
+  const fetchCustomers = async () => {
+    setLoadingCustomers(true);
+    try {
+      const response = await fetch('/api/customers');
+      const data = await response.json();
+      if (data.success) {
+        setCustomers(data.customers || []);
+      }
+    } catch (error) {
+      console.error('获取客户列表失败:', error);
+      message.error('获取客户列表失败');
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
 
   // 当收到回信数据时，自动填充表单
   useEffect(() => {
@@ -47,6 +83,48 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       });
     }
   }, [replyData, form]);
+
+  // 打开客户选择弹窗
+  const handleOpenCustomerModal = () => {
+    setShowCustomerModal(true);
+    fetchCustomers();
+  };
+
+  // 确认选择客户
+  const handleConfirmCustomers = () => {
+    const emails = selectedCustomers.map(customer => customer.email).join(', ');
+    form.setFieldsValue({ to: emails });
+    setShowCustomerModal(false);
+    message.success(`已选择 ${selectedCustomers.length} 个客户`);
+  };
+
+  // 取消选择客户
+  const handleCancelCustomers = () => {
+    setSelectedCustomers([]);
+    setShowCustomerModal(false);
+  };
+
+  // 切换客户选择状态
+  const handleCustomerToggle = (customer: Customer, checked: boolean) => {
+    if (checked) {
+      setSelectedCustomers(prev => [...prev, customer]);
+    } else {
+      setSelectedCustomers(prev => prev.filter(c => c.id !== customer.id));
+    }
+  };
+
+  // 移除单个收件人
+  const handleRemoveRecipient = (email: string) => {
+    const currentTo = form.getFieldValue('to') || '';
+    const emails = currentTo.split(/[,\n]/).map((e: string) => e.trim()).filter((e: string) => e !== email);
+    form.setFieldsValue({ to: emails.join(', ') });
+  };
+
+  // 清空所有收件人
+  const handleClearAllRecipients = () => {
+    form.setFieldsValue({ to: '' });
+    setSelectedCustomers([]);
+  };
 
   const handleSubmit = async (values: {
     to: string;
@@ -117,10 +195,52 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     
     // 清空表单
     form.resetFields();
+    setSelectedCustomers([]);
     
     // 通知父组件发送完成
     onSendComplete?.();
     message.success('邮件发送完成');
+  };
+
+  // 渲染收件人标签
+  const renderRecipientTags = () => {
+    const toValue = form.getFieldValue('to') || '';
+    if (!toValue.trim()) return null;
+
+    const emails = toValue.split(/[,\n]/).map((email: string) => email.trim()).filter((email: string) => email);
+    
+    return (
+      <div className="mt-2">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-gray-600">已选择的收件人:</span>
+          <Button 
+            type="text" 
+            size="small" 
+            icon={<CloseOutlined />}
+            onClick={handleClearAllRecipients}
+          >
+            清空全部
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {emails.map((email: string, index: number) => (
+            <div
+              key={index}
+              className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm"
+            >
+              <span>{email}</span>
+              <Button
+                type="text"
+                size="small"
+                icon={<CloseOutlined />}
+                onClick={() => handleRemoveRecipient(email)}
+                className="text-blue-700 hover:text-blue-900"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -137,12 +257,26 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             label="收件人列表"
             rules={[{ required: true, message: '请输入收件人!' }]}
           >
-            <TextArea
-              rows={3}
-              placeholder="email1@example.com, email2@example.com, email3@example.com"
-              showCount
-              maxLength={1000}
-            />
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <TextArea
+                  rows={3}
+                  placeholder="请点击下方按钮选择客户，或手动输入邮箱地址"
+                  showCount
+                  maxLength={1000}
+                  className="flex-1"
+                />
+                <Button
+                  type="primary"
+                  icon={<TeamOutlined />}
+                  onClick={handleOpenCustomerModal}
+                  className="flex-shrink-0"
+                >
+                  选择客户
+                </Button>
+              </div>
+              {renderRecipientTags()}
+            </div>
           </Form.Item>
 
           <Form.Item
@@ -196,6 +330,69 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           </Space>
         </Card>
       )}
+
+      {/* 客户选择弹窗 */}
+      <Modal
+        title="选择客户"
+        open={showCustomerModal}
+        onCancel={handleCancelCustomers}
+        footer={[
+          <Button key="cancel" onClick={handleCancelCustomers}>
+            取消
+          </Button>,
+          <Button 
+            key="confirm" 
+            type="primary" 
+            onClick={handleConfirmCustomers}
+            disabled={selectedCustomers.length === 0}
+          >
+            确认选择 ({selectedCustomers.length})
+          </Button>,
+        ]}
+        width={600}
+      >
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-600">
+              已选择 {selectedCustomers.length} 个客户
+            </span>
+            {selectedCustomers.length > 0 && (
+              <Button 
+                type="text" 
+                size="small" 
+                onClick={() => setSelectedCustomers([])}
+              >
+                清空选择
+              </Button>
+            )}
+          </div>
+          
+          <List
+            loading={loadingCustomers}
+            dataSource={customers}
+            renderItem={(customer) => (
+              <List.Item>
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3">
+                    <Avatar icon={<UserOutlined />} />
+                    <div>
+                      <div className="font-medium">{customer.company_name}</div>
+                      <div className="text-sm text-gray-500">{customer.email}</div>
+                    </div>
+                  </div>
+                  <Checkbox
+                    checked={selectedCustomers.some(c => c.id === customer.id)}
+                    onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
+                  />
+                </div>
+              </List.Item>
+            )}
+            locale={{
+              emptyText: '暂无客户数据'
+            }}
+          />
+        </div>
+      </Modal>
     </Card>
   );
 } 
