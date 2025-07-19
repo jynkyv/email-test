@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Form, 
   Input, 
@@ -44,6 +45,7 @@ interface EmailSenderProps {
 }
 
 export default function EmailSender({ replyData, onSendComplete }: EmailSenderProps) {
+  const { user } = useAuth();
   const [form] = Form.useForm();
   const [isSending, setIsSending] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -60,7 +62,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const fetchCustomers = async () => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch('/api/customers');
+      const response = await fetch('/api/customers', {
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
@@ -126,8 +132,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     subject: string;
     content: string;
   }) => {
-    if (!values.to.trim() || !values.subject.trim() || !values.content.trim()) {
-      message.error('请填写所有必填字段');
+    if (!values.subject.trim() || !values.content.trim()) {
+      message.error('请填写邮件主题和内容');
       return;
     }
 
@@ -158,6 +164,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user?.id}`,
           },
           body: JSON.stringify({
             to: recipients[i],
@@ -252,8 +259,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           >
             <div className="space-y-2">
               <div className="flex gap-2">
-                <div className="flex-1 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-gray-500">
-                  请点击下方按钮选择客户
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-gray-500 cursor-not-allowed">
+                  {selectedCustomers.length > 0 
+                    ? `已选择 ${selectedCustomers.length} 个客户` 
+                    : "请点击下方按钮选择客户（不支持手动输入）"
+                  }
                 </div>
                 <Button
                   type="primary"

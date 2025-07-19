@@ -67,9 +67,14 @@ export async function GET(request: NextRequest) {
 // 创建新客户
 export async function POST(request: NextRequest) {
   try {
-    const { company_name, email } = await request.json();
+    console.log('开始创建客户...');
+    const body = await request.json();
+    console.log('请求体:', body);
+    
+    const { company_name, email } = body;
 
     if (!company_name || !email) {
+      console.log('参数验证失败:', { company_name, email });
       return NextResponse.json(
         { error: '企业名称和邮箱不能为空' },
         { status: 400 }
@@ -77,7 +82,10 @@ export async function POST(request: NextRequest) {
     }
 
     const authHeader = request.headers.get('authorization');
+    console.log('认证头:', authHeader);
+    
     if (!authHeader) {
+      console.log('缺少认证头');
       return NextResponse.json(
         { error: '未授权访问' },
         { status: 401 }
@@ -86,15 +94,20 @@ export async function POST(request: NextRequest) {
 
     // 从 authorization header 中获取用户 ID
     const userId = authHeader.replace('Bearer ', '');
+    console.log('用户ID:', userId);
     
     // 获取用户信息
+    console.log('查询用户信息...');
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
 
+    console.log('用户查询结果:', { userData, userError });
+
     if (userError || !userData) {
+      console.log('用户不存在或查询失败:', userError);
       return NextResponse.json(
         { error: '用户不存在' },
         { status: 401 }
@@ -102,13 +115,16 @@ export async function POST(request: NextRequest) {
     }
 
     // 检查邮箱是否已存在
-    const { data: existingCustomer } = await supabase
+    console.log('检查邮箱是否已存在:', email);
+    const { data: existingCustomer, error: existingError } = await supabase
       .from('customers')
       .select('*')
-      .eq('email', email)
-      .single();
+      .eq('email', email);
 
-    if (existingCustomer) {
+    console.log('邮箱检查结果:', { existingCustomer, existingError });
+
+    if (existingCustomer && existingCustomer.length > 0) {
+      console.log('邮箱已存在');
       return NextResponse.json(
         { error: '该邮箱已存在' },
         { status: 400 }
@@ -116,6 +132,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 创建新客户
+    console.log('开始插入客户数据:', {
+      company_name,
+      email,
+      created_by: userId,
+    });
+    
     const { data, error } = await supabase
       .from('customers')
       .insert({
@@ -126,13 +148,17 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
+    console.log('插入结果:', { data, error });
+
     if (error) {
+      console.error('创建客户失败:', error);
       return NextResponse.json(
-        { error: '创建客户失败' },
+        { error: '创建客户失败', details: error.message },
         { status: 500 }
       );
     }
 
+    console.log('客户创建成功:', data);
     return NextResponse.json({
       success: true,
       message: '客户创建成功',
@@ -140,9 +166,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('创建客户失败:', error);
+    console.error('创建客户时发生异常:', error);
     return NextResponse.json(
-      { error: '创建客户失败' },
+      { error: '创建客户失败', details: error instanceof Error ? error.message : '未知错误' },
       { status: 500 }
     );
   }

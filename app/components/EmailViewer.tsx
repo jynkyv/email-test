@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Card, 
   List, 
@@ -62,6 +63,7 @@ interface EmailViewerProps {
 }
 
 export default function EmailViewer({ onReply }: EmailViewerProps) {
+  const { user } = useAuth();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [emails, setEmails] = useState<Email[]>([]);
@@ -73,10 +75,19 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const fetchCustomers = async () => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch('/api/customers');
+      console.log('EmailViewer - 用户信息:', user);
+      console.log('EmailViewer - 发送认证头:', `Bearer ${user?.id}`);
+      
+      const response = await fetch('/api/customers', {
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
+      } else {
+        console.error('获取客户列表失败:', data);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -90,7 +101,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const fetchCustomerEmails = async (customerEmail: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=50`);
+      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=50`, {
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -112,8 +127,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   };
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (user) {
+      console.log('EmailViewer - 用户已加载，开始获取客户列表');
+      fetchCustomers();
+    }
+  }, [user]);
 
   const getHeaderValue = (headers: Array<{name: string, value: string}>, name: string) => {
     const header = headers.find(h => h.name.toLowerCase() === name.toLowerCase());
@@ -219,9 +237,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                           <span className="font-medium truncate">
                             {customer.company_name}
                           </span>
-                          <Tag color="blue">
-                            {emails.length} 封邮件
-                          </Tag>
                         </div>
                       }
                       description={
