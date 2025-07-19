@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { ConfigProvider } from 'antd';
-import zhCN from 'antd/locale/zh_CN';
+import { I18nProvider } from '@/contexts/I18nContext';
+import DynamicConfigProvider from './components/DynamicConfigProvider';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: '邮件管理系统',
-  description: '基于Gmail API的邮件管理系统',
+  description: '邮件管理系统',
 };
 
 export default function RootLayout({
@@ -15,13 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
-      <body>
-        <ConfigProvider locale={zhCN}>
+    <html lang="zh">
+      <body className={inter.className}>
+        <I18nProvider>
           <AuthProvider>
-            {children}
+            <DynamicConfigProvider>
+              {children}
+            </DynamicConfigProvider>
           </AuthProvider>
-        </ConfigProvider>
+        </I18nProvider>
       </body>
     </html>
   );

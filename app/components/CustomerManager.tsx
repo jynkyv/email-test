@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   Form, 
   Input, 
@@ -27,6 +28,7 @@ export default function CustomerManager() {
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
   const { user } = useAuth();
+  const { t } = useI18n();
 
   useEffect(() => {
     fetchCustomers();
@@ -46,7 +48,7 @@ export default function CustomerManager() {
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
-      message.error('获取客户列表失败');
+      message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoading(false);
     }
@@ -66,20 +68,20 @@ export default function CustomerManager() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('客户创建成功');
+        message.success(t('customer.customerCreated'));
         form.resetFields();
         fetchCustomers();
       } else {
         message.error(data.error);
       }
     } catch (error) {
-      message.error('创建客户失败');
+      message.error(t('customer.customerCreateFailed'));
     }
   };
 
   const columns = [
     {
-      title: '企业名称',
+      title: t('customer.companyName'),
       dataIndex: 'company_name',
       key: 'company_name',
       render: (text: string) => (
@@ -90,7 +92,7 @@ export default function CustomerManager() {
       ),
     },
     {
-      title: '邮箱',
+      title: t('customer.customerEmail'),
       dataIndex: 'email',
       key: 'email',
       render: (text: string) => (
@@ -101,7 +103,7 @@ export default function CustomerManager() {
       ),
     },
     {
-      title: '创建时间',
+      title: t('customer.creationTime'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -118,7 +120,7 @@ export default function CustomerManager() {
 
   return (
     <div className="space-y-6">
-      <Card title="创建新客户" className="shadow-lg">
+      <Card title={t('customer.createCustomer')} className="shadow-lg">
         <Form
           form={form}
           onFinish={handleSubmit}
@@ -127,33 +129,33 @@ export default function CustomerManager() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Form.Item
               name="company_name"
-              label="企业名称"
-              rules={[{ required: true, message: '请输入企业名称!' }]}
+              label={t('customer.companyName')}
+              rules={[{ required: true, message: t('customer.companyNameRequired') }]}
             >
-              <Input placeholder="请输入企业名称" />
+              <Input placeholder={t('customer.customerNamePlaceholder')} />
             </Form.Item>
             
             <Form.Item
               name="email"
-              label="邮箱"
+              label={t('customer.customerEmail')}
               rules={[
-                { required: true, message: '请输入邮箱!' },
-                { type: 'email', message: '请输入有效的邮箱地址!' }
+                { required: true, message: t('customer.emailRequired') },
+                { type: 'email', message: t('customer.invalidEmail') }
               ]}
             >
-              <Input placeholder="请输入邮箱地址" />
+              <Input placeholder={t('customer.emailPlaceholder')} />
             </Form.Item>
           </div>
           
           <Form.Item>
             <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              创建客户
+              {t('customer.createCustomer')}
             </Button>
           </Form.Item>
         </Form>
       </Card>
 
-      <Card title="客户列表" className="shadow-lg">
+      <Card title={t('customer.customerList')} className="shadow-lg">
         <Table
           dataSource={customers}
           columns={columns}
@@ -162,10 +164,10 @@ export default function CustomerManager() {
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
+            showTotal: (total) => t('common.totalRecords', { total }),
           }}
           locale={{
-            emptyText: '暂无客户',
+            emptyText: t('customer.noCustomers'),
           }}
         />
       </Card>

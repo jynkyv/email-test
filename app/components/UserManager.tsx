@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   Form, 
   Input, 
@@ -10,19 +11,18 @@ import {
   Table, 
   message, 
   Space,
-  Tag,
   Select,
+  Tag,
   Spin 
 } from 'antd';
-import { PlusOutlined, UserOutlined, CrownOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
 interface User {
   id: string;
   username: string;
-  email?: string;
-  role: 'admin' | 'employee';
+  role: string;
   created_at: string;
 }
 
@@ -30,11 +30,14 @@ export default function UserManager() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
+  const { t } = useI18n();
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (userRole === 'admin') {
+      fetchUsers();
+    }
+  }, [userRole]);
 
   const fetchUsers = async () => {
     try {
@@ -50,13 +53,13 @@ export default function UserManager() {
       }
     } catch (error) {
       console.error('获取用户列表失败:', error);
-      message.error('获取用户列表失败');
+      message.error(t('user.fetchUsersFailed'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (values: { username: string; password: string; role: 'admin' | 'employee' }) => {
+  const handleSubmit = async (values: { username: string; password: string; role: string }) => {
     try {
       const response = await fetch('/api/users', {
         method: 'POST',
@@ -70,20 +73,20 @@ export default function UserManager() {
       const data = await response.json();
       
       if (data.success) {
-        message.success('用户创建成功');
+        message.success(t('user.userCreated'));
         form.resetFields();
         fetchUsers();
       } else {
         message.error(data.error);
       }
     } catch (error) {
-      message.error('创建用户失败');
+      message.error(t('user.userCreateFailed'));
     }
   };
 
   const columns = [
     {
-      title: '用户名',
+      title: t('user.username'),
       dataIndex: 'username',
       key: 'username',
       render: (text: string) => (
@@ -94,22 +97,35 @@ export default function UserManager() {
       ),
     },
     {
-      title: '角色',
+      title: t('user.role'),
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => (
-        <Tag color={role === 'admin' ? 'red' : 'blue'} icon={role === 'admin' ? <CrownOutlined /> : <UserOutlined />}>
-          {role === 'admin' ? '管理员' : '员工'}
+        <Tag color={role === 'admin' ? 'red' : 'blue'}>
+          {role === 'admin' ? t('auth.admin') : t('auth.employee')}
         </Tag>
       ),
     },
     {
-      title: '创建时间',
+      title: t('customer.creationTime'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
   ];
+
+  // 如果不是管理员，显示权限不足信息
+  if (userRole !== 'admin') {
+    return (
+      <div className="text-center py-8">
+        <div className="text-gray-500">
+          <TeamOutlined className="text-4xl mb-4" />
+          <p className="text-lg">{t('user.insufficientPermissions')}</p>
+          <p className="text-sm mt-2">{t('user.onlyAdminCanManageUsers')}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -121,7 +137,7 @@ export default function UserManager() {
 
   return (
     <div className="space-y-6">
-      <Card title="创建新用户" className="shadow-lg">
+      <Card title={t('user.createUser')} className="shadow-lg">
         <Form
           form={form}
           onFinish={handleSubmit}
@@ -130,41 +146,41 @@ export default function UserManager() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Form.Item
               name="username"
-              label="用户名"
-              rules={[{ required: true, message: '请输入用户名!' }]}
+              label={t('user.username')}
+              rules={[{ required: true, message: t('user.usernameRequired') }]}
             >
-              <Input placeholder="请输入用户名" />
+              <Input placeholder={t('user.username')} />
             </Form.Item>
             
             <Form.Item
               name="password"
-              label="密码"
-              rules={[{ required: true, message: '请输入密码!' }]}
+              label={t('user.password')}
+              rules={[{ required: true, message: t('user.passwordRequired') }]}
             >
-              <Input.Password placeholder="请输入密码" />
+              <Input.Password placeholder={t('user.password')} />
             </Form.Item>
             
             <Form.Item
               name="role"
-              label="角色"
-              rules={[{ required: true, message: '请选择角色!' }]}
+              label={t('user.role')}
+              rules={[{ required: true, message: t('user.roleRequired') }]}
             >
-              <Select placeholder="请选择角色">
-                <Option value="employee">员工</Option>
-                <Option value="admin">管理员</Option>
+              <Select placeholder={t('user.role')}>
+                <Option value="employee">{t('auth.employee')}</Option>
+                <Option value="admin">{t('auth.admin')}</Option>
               </Select>
             </Form.Item>
           </div>
           
           <Form.Item>
             <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              创建用户
+              {t('user.createUser')}
             </Button>
           </Form.Item>
         </Form>
       </Card>
 
-      <Card title="用户列表" className="shadow-lg">
+      <Card title={t('user.userList')} className="shadow-lg">
         <Table
           dataSource={users}
           columns={columns}
@@ -173,10 +189,10 @@ export default function UserManager() {
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
+            showTotal: (total) => t('common.totalRecords', { total }),
           }}
           locale={{
-            emptyText: '暂无用户',
+            emptyText: t('user.noUsers'),
           }}
         />
       </Card>

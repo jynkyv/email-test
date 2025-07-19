@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   Form, 
   Input, 
@@ -47,6 +48,7 @@ interface EmailSenderProps {
 
 export default function EmailSender({ replyData, onSendComplete }: EmailSenderProps) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [form] = Form.useForm();
   const [isSending, setIsSending] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -74,7 +76,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
-      message.error('获取客户列表失败');
+      message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoadingCustomers(false);
     }
@@ -100,7 +102,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 确认选择客户
   const handleConfirmCustomers = () => {
     setShowCustomerModal(false);
-    message.success(`已选择 ${selectedCustomers.length} 个客户`);
+    message.success(t('customer.customersSelected', { count: selectedCustomers.length }));
   };
 
   // 取消选择客户
@@ -134,13 +136,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     content: string;
   }) => {
     if (!values.subject.trim() || !values.content.trim()) {
-      message.error('请填写邮件主题和内容');
+      message.error(t('email.subjectRequired') + ' 和 ' + t('email.contentRequired'));
       return;
     }
 
     // 检查是否选择了客户
     if (!selectedCustomers.length) {
-      message.error('请至少选择一个客户');
+      message.error(t('email.recipientsRequired'));
       return;
     }
 
@@ -153,7 +155,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setTotalEmails(recipients.length);
 
     if (recipients.length === 0) {
-      message.error('请选择至少一个客户');
+      message.error(t('email.noRecipients'));
       setIsSending(false);
       return;
     }
@@ -204,7 +206,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     
     // 通知父组件发送完成
     onSendComplete?.();
-    message.success('邮件发送完成');
+    message.success(t('email.sendComplete'));
   };
 
   // 渲染收件人标签
@@ -214,14 +216,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     return (
       <div className="mt-2">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">已选择的客户:</span>
+          <span className="text-sm text-gray-600">{t('email.selectedCustomers')}:</span>
           <Button 
             type="text" 
             size="small" 
             icon={<CloseOutlined />}
             onClick={handleClearAllRecipients}
           >
-            清空全部
+            {t('common.clearAll')}
           </Button>
         </div>
         <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-2">
@@ -248,7 +250,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   };
 
   return (
-    <Card title="群发邮件" className="h-full">
+    <Card title={t('email.bulkEmail')} className="h-full">
       <Form
         form={form}
         onFinish={handleSubmit}
@@ -258,7 +260,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         <div className="flex-1 space-y-4">
           <Form.Item
             name="to"
-            label="收件人列表"
+            label={t('email.recipientList')}
           >
             <div className="space-y-2">
               <div className="flex gap-2">
@@ -268,11 +270,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   onClick={handleOpenCustomerModal}
                   className="flex-shrink-0"
                 >
-                  选择客户
+                  {t('email.selectCustomers')}
                 </Button>
                 {selectedCustomers.length > 0 && (
                   <span className="text-sm text-gray-600 self-center">
-                    已选择 {selectedCustomers.length} 个客户
+                    {t('customer.customersSelected', { count: selectedCustomers.length })}
                   </span>
                 )}
               </div>
@@ -282,21 +284,21 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
           <Form.Item
             name="subject"
-            label="邮件主题"
-            rules={[{ required: true, message: '请输入邮件主题!' }]}
+            label={t('email.emailSubject')}
+            rules={[{ required: true, message: t('email.subjectRequired') }]}
           >
-            <Input placeholder="邮件主题 (支持中文、日文等)" />
+            <Input placeholder={t('email.subjectPlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="content"
-            label="邮件内容"
-            rules={[{ required: true, message: '请输入邮件内容!' }]}
+            label={t('email.emailContent')}
+            rules={[{ required: true, message: t('email.contentRequired') }]}
             className="flex-1"
           >
             <TextArea
               rows={12}
-              placeholder="请输入邮件内容... (支持中文、日文等)"
+              placeholder={t('email.contentPlaceholder')}
               showCount
               maxLength={5000}
             />
@@ -314,7 +316,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             size="large"
             block
           >
-            {isSending ? '发送中...' : '发送邮件'}
+            {isSending ? t('email.sending') : t('email.sendEmail')}
           </Button>
         </Form.Item>
       </Form>
@@ -328,7 +330,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-gray-900">发送邮件中...</span>
+                <span className="text-sm font-medium text-gray-900">{t('email.sendInProgress')}</span>
                 <span className="text-xs text-gray-500">{sentEmails}/{totalEmails}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -344,67 +346,77 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
       {/* 客户选择模态框 */}
       <Modal
-        title="选择客户"
+        title={t('customer.selectCustomer')}
         open={showCustomerModal}
         onOk={handleConfirmCustomers}
         onCancel={handleCancelCustomers}
         width={600}
-        okText="确认选择"
-        cancelText="取消"
+        okText={t('common.confirm')}
+        cancelText={t('common.cancel')}
         okButtonProps={{
           disabled: selectedCustomers.length === 0
         }}
       >
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
-            已选择 {selectedCustomers.length} 个客户
+            {t('customer.customersSelected', { count: selectedCustomers.length })}
           </div>
           
-          <div className="max-h-96 overflow-y-auto border rounded-lg">
-            {loadingCustomers ? (
-              <div className="text-center py-8">
-                <Spin />
-              </div>
-            ) : customers.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                暂无客户数据
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {customers.map((customer) => (
-                  <div
-                    key={customer.id}
-                    className="px-6 py-4 hover:bg-gray-50"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <Avatar icon={<UserOutlined />} size="large" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
-                              {customer.company_name}
-                            </h4>
-                            <div className="mt-1 space-y-1">
-                              <p className="text-sm text-gray-600">
-                                {customer.email}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                创建时间: {new Date(customer.created_at).toLocaleDateString()}
-                              </p>
+          {loadingCustomers ? (
+            <div className="text-center py-8">
+              <Spin />
+            </div>
+          ) : customers.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              {t('customer.noCustomerData')}
+            </div>
+          ) : (
+            <div className="max-h-96 overflow-y-auto border rounded-lg">
+              {loadingCustomers ? (
+                <div className="text-center py-8">
+                  <Spin />
+                </div>
+              ) : customers.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  {t('customer.noCustomerData')}
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {customers.map((customer) => (
+                    <div
+                      key={customer.id}
+                      className="px-6 py-4 hover:bg-gray-50"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar icon={<UserOutlined />} size="large" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-900 truncate">
+                                {customer.company_name}
+                              </h4>
+                              <div className="mt-1 space-y-1">
+                                <p className="text-sm text-gray-600">
+                                  {customer.email}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
                             </div>
+                            <Checkbox
+                              checked={selectedCustomers.some(c => c.id === customer.id)}
+                              onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
+                            />
                           </div>
-                          <Checkbox
-                            checked={selectedCustomers.some(c => c.id === customer.id)}
-                            onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
-                          />
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Modal>
     </Card>

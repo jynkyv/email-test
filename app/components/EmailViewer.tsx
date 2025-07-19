@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   Card, 
   List, 
@@ -64,6 +65,7 @@ interface EmailViewerProps {
 
 export default function EmailViewer({ onReply }: EmailViewerProps) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [emails, setEmails] = useState<Email[]>([]);
@@ -75,9 +77,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const fetchCustomers = async () => {
     setLoadingCustomers(true);
     try {
-      console.log('EmailViewer - 用户信息:', user);
-      console.log('EmailViewer - 发送认证头:', `Bearer ${user?.id}`);
-      
       const response = await fetch('/api/customers', {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
@@ -86,12 +85,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
-      } else {
-        console.error('获取客户列表失败:', data);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
-      message.error('获取客户列表失败');
+      message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoadingCustomers(false);
     }
@@ -113,7 +110,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       }
     } catch (error) {
       console.error('获取邮件失败:', error);
-      message.error('获取邮件失败');
+      message.error(t('common.networkError'));
     } finally {
       setLoading(false);
     }
@@ -164,7 +161,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       }
     }
     
-    return email.snippet || '无内容';
+    return email.snippet || t('email.noContent');
   };
 
   const handleReply = (email: Email) => {
@@ -178,7 +175,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     
     // 构建回复内容
     const replySubject = subject.startsWith('回复:') ? subject : `回复: ${subject}`;
-    const replyContent = `\n\n--- 原始邮件 ---\n${content}`;
+    const replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${content}`;
     
     if (onReply) {
       onReply({
@@ -190,19 +187,19 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   };
 
   return (
-    <Card title="邮件管理" className="h-full">
+    <Card title={t('navigation.emailManagement')} className="h-full">
       <div className="space-y-4 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TeamOutlined />
-            <span className="font-medium">我的客户</span>
+            <span className="font-medium">{t('email.myCustomers')}</span>
           </div>
           <Button
             icon={<ReloadOutlined />}
             onClick={fetchCustomers}
             loading={loadingCustomers}
           >
-            刷新客户
+            {t('email.refreshCustomers')}
           </Button>
         </div>
       </div>
@@ -211,7 +208,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         {/* 客户列表 */}
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
-            <span className="text-sm font-medium">客户列表</span>
+            <span className="text-sm font-medium">{t('customer.customerList')}</span>
           </div>
           <div className="flex-1 overflow-y-auto">
             {loadingCustomers ? (
@@ -219,7 +216,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 <Spin />
               </div>
             ) : customers.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">暂无客户</div>
+              <div className="text-center py-8 text-gray-500">{t('customer.noCustomers')}</div>
             ) : (
               <div className="divide-y divide-gray-100">
                 {customers.map((customer) => (
@@ -243,7 +240,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             {customer.email}
                           </p>
                           <p className="text-xs text-gray-500">
-                            创建时间: {new Date(customer.created_at).toLocaleDateString()}
+                            {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -259,13 +256,13 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
             <span className="text-sm font-medium">
-              {selectedCustomer ? `${selectedCustomer.company_name} 的邮件` : '邮件列表'}
+              {selectedCustomer ? t('email.customerEmails', { customerName: selectedCustomer.company_name }) : t('email.emailList')}
             </span>
           </div>
           <div className="flex-1 overflow-y-auto">
             {!selectedCustomer ? (
               <div className="text-center py-8 text-gray-500">
-                请选择一个客户查看邮件
+                {t('email.selectCustomerToViewEmails')}
               </div>
             ) : loading ? (
               <div className="text-center py-8">
@@ -273,7 +270,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             ) : emails.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                该客户暂无邮件记录
+                {t('email.noEmailsForCustomer')}
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
@@ -290,7 +287,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <h4 className="text-sm font-medium text-gray-900 truncate">
-                            {getHeaderValue(email.payload.headers, 'Subject') || '无主题'}
+                            {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
                           </h4>
                           <Button
                             type="text"
@@ -328,13 +325,13 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
-              <h3 className="text-lg font-medium">邮件详情</h3>
+              <h3 className="text-lg font-medium">{t('email.emailDetails')}</h3>
               <Button
                 type="text"
                 icon={<MessageOutlined />}
                 onClick={() => handleReply(selectedEmail)}
               >
-                回复
+                {t('email.reply')}
               </Button>
             </div>
             
@@ -342,19 +339,19 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-lg mb-2">
-                    {getHeaderValue(selectedEmail.payload.headers, 'Subject') || '无主题'}
+                    {getHeaderValue(selectedEmail.payload.headers, 'Subject') || t('email.noSubject')}
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div>
-                      <span className="text-gray-500">发件人:</span>
+                      <span className="text-gray-500">{t('email.from')}:</span>
                       <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'From')}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">收件人:</span>
+                      <span className="text-gray-500">{t('email.to')}:</span>
                       <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'To')}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">时间:</span>
+                      <span className="text-gray-500">{t('email.date')}:</span>
                       <span className="ml-2">{formatDate(selectedEmail.internalDate || '')}</span>
                     </div>
                   </div>
@@ -363,7 +360,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 <Divider />
                 
                 <div>
-                  <h4 className="font-medium mb-2">邮件内容</h4>
+                  <h4 className="font-medium mb-2">{t('email.emailContent')}</h4>
                   <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap max-h-96 overflow-y-auto">
                     {getEmailContent(selectedEmail)}
                   </div>
@@ -373,7 +370,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             
             <div className="p-6 border-t flex-shrink-0 text-center">
               <Button onClick={() => setSelectedEmail(null)}>
-                关闭
+                {t('common.close')}
               </Button>
             </div>
           </div>

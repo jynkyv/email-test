@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { useRouter } from 'next/navigation';
 import { Layout, Menu, Button, Spin, message } from 'antd';
 import { 
@@ -14,6 +15,7 @@ import EmailSender from './components/EmailSender';
 import EmailViewer from './components/EmailViewer';
 import CustomerManager from './components/CustomerManager';
 import UserManager from './components/UserManager';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 const { Header, Content } = Layout;
 
@@ -27,6 +29,7 @@ export default function Home() {
   const [replyData, setReplyData] = useState<ReplyData | null>(null);
   const [activeTab, setActiveTab] = useState('email');
   const { user, userRole, loading, signOut } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -51,7 +54,7 @@ export default function Home() {
 
   const handleSignOut = () => {
     signOut();
-    message.success('已退出登录');
+    message.success(t('auth.logoutSuccess'));
     router.push('/login');
   };
 
@@ -61,7 +64,7 @@ export default function Home() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <Spin size="large" />
-          <p className="text-gray-600 mt-4">正在检查认证状态...</p>
+          <p className="text-gray-600 mt-4">{t('auth.checkingAuth')}</p>
         </div>
       </div>
     );
@@ -73,7 +76,7 @@ export default function Home() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <Spin />
-          <p className="text-gray-600 mt-4">正在跳转到登录页面...</p>
+          <p className="text-gray-600 mt-4">{t('auth.redirectingToLogin')}</p>
         </div>
       </div>
     );
@@ -83,17 +86,17 @@ export default function Home() {
     {
       key: 'email',
       icon: <MailOutlined />,
-      label: '邮件管理',
+      label: t('navigation.emailManagement'),
     },
     {
       key: 'customers',
       icon: <UserOutlined />,
-      label: '客户管理',
+      label: t('navigation.customerManagement'),
     },
     ...(userRole === 'admin' ? [{
       key: 'users',
       icon: <TeamOutlined />,
-      label: '用户管理',
+      label: t('navigation.userManagement'),
     }] : []),
   ];
 
@@ -135,7 +138,7 @@ export default function Home() {
     <Layout className="min-h-screen bg-white">
       <Header className="bg-white shadow-sm border-b flex items-center justify-between px-6">
         <div className="flex items-center">
-          <h1 className="text-xl font-bold text-gray-800 mr-8">邮件管理系统</h1>
+          <h1 className="text-xl font-bold text-gray-800 mr-8">{t('navigation.emailSystem')}</h1>
           <Menu
             mode="horizontal"
             selectedKeys={[activeTab]}
@@ -146,15 +149,16 @@ export default function Home() {
         </div>
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-600">
-            {user.username} ({userRole === 'admin' ? '管理员' : '员工'})
+            {user.username} ({userRole === 'admin' ? t('auth.admin') : t('auth.employee')})
           </span>
+          <LanguageSwitcher />
           <Button
             type="text"
             icon={<LogoutOutlined />}
             onClick={handleSignOut}
             className="text-red-600 hover:text-red-800"
           >
-            退出登录
+            {t('auth.logout')}
           </Button>
         </div>
       </Header>
