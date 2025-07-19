@@ -98,10 +98,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    // 从 authorization header 中获取用户 ID
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: '未授权访问' },
+        { error: '用户不存在' },
         { status: 401 }
       );
     }
@@ -149,7 +158,7 @@ export async function POST(request: NextRequest) {
             to: recipients.join(', '),
             subject,
             content: html,
-            sent_by: user.id,
+            sent_by: userData.id,
             customer_ids: customerIds,
           });
       }
@@ -174,7 +183,7 @@ export async function POST(request: NextRequest) {
             to: recipient,
             subject,
             content: html,
-            sent_by: user.id,
+            sent_by: userData.id,
             customer_ids: customerIds,
           });
       }

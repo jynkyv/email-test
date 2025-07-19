@@ -14,19 +14,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    // 从 authorization header 中获取用户 ID
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: '未授权访问' },
+        { error: '用户不存在' },
         { status: 401 }
       );
     }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
 
     let query = supabase
       .from('customers')
@@ -34,8 +37,8 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false });
 
     // 如果不是管理员，只能查看自己创建的客户
-    if (userData?.role !== 'admin') {
-      query = query.eq('created_by', user.id);
+    if (userData.role !== 'admin') {
+      query = query.eq('created_by', userId);
     }
 
     const { data: customers, error } = await query;
@@ -81,10 +84,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    // 从 authorization header 中获取用户 ID
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: '未授权访问' },
+        { error: '用户不存在' },
         { status: 401 }
       );
     }
@@ -109,7 +121,7 @@ export async function POST(request: NextRequest) {
       .insert({
         company_name,
         email,
-        created_by: user.id,
+        created_by: userId,
       })
       .select()
       .single();

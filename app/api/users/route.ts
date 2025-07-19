@@ -12,22 +12,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 验证用户权限
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    // 从 authorization header 中获取用户 ID
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: '未授权访问' },
+        { error: '用户不存在' },
         { status: 401 }
       );
     }
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (userData?.role !== 'admin') {
+    if (userData.role !== 'admin') {
       return NextResponse.json(
         { error: '权限不足' },
         { status: 403 }
@@ -82,21 +84,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    // 从 authorization header 中获取用户 ID
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
       return NextResponse.json(
-        { error: '未授权访问' },
+        { error: '用户不存在' },
         { status: 401 }
       );
     }
 
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (userData?.role !== 'admin') {
+    if (userData.role !== 'admin') {
       return NextResponse.json(
         { error: '权限不足' },
         { status: 403 }
@@ -118,13 +123,13 @@ export async function POST(request: NextRequest) {
     }
 
     // 生成用户ID
-    const userId = crypto.randomUUID();
+    const newUserId = crypto.randomUUID();
 
     // 在users表中添加用户信息
     const { error: insertError } = await supabase
       .from('users')
       .insert({
-        id: userId,
+        id: newUserId,
         username,
         role,
       });
@@ -140,7 +145,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: '用户创建成功',
       user: {
-        id: userId,
+        id: newUserId,
         username,
         role,
       },
