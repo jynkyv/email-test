@@ -92,8 +92,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 确认选择客户
   const handleConfirmCustomers = () => {
-    const emails = selectedCustomers.map(customer => customer.email).join(', ');
-    form.setFieldsValue({ to: emails });
     setShowCustomerModal(false);
     message.success(`已选择 ${selectedCustomers.length} 个客户`);
   };
@@ -115,14 +113,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 移除单个收件人
   const handleRemoveRecipient = (email: string) => {
-    const currentTo = form.getFieldValue('to') || '';
-    const emails = currentTo.split(/[,\n]/).map((e: string) => e.trim()).filter((e: string) => e !== email);
-    form.setFieldsValue({ to: emails.join(', ') });
+    setSelectedCustomers(prev => prev.filter(customer => customer.email !== email));
   };
 
   // 清空所有收件人
   const handleClearAllRecipients = () => {
-    form.setFieldsValue({ to: '' });
     setSelectedCustomers([]);
   };
 
@@ -136,20 +131,22 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
+    // 检查是否选择了客户
+    if (!selectedCustomers.length) {
+      message.error('请至少选择一个客户');
+      return;
+    }
+
     setIsSending(true);
     setProgress(0);
     setSentEmails(0);
 
-    // 解析收件人列表
-    const recipients = values.to
-      .split(/[,\n]/)
-      .map(email => email.trim())
-      .filter(email => email && email.includes('@'));
-
+    // 使用选中的客户邮箱
+    const recipients = selectedCustomers.map(customer => customer.email);
     setTotalEmails(recipients.length);
 
     if (recipients.length === 0) {
-      message.error('请输入有效的邮箱地址');
+      message.error('请选择至少一个客户');
       setIsSending(false);
       return;
     }
@@ -204,15 +201,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 渲染收件人标签
   const renderRecipientTags = () => {
-    const toValue = form.getFieldValue('to') || '';
-    if (!toValue.trim()) return null;
-
-    const emails = toValue.split(/[,\n]/).map((email: string) => email.trim()).filter((email: string) => email);
+    if (selectedCustomers.length === 0) return null;
     
     return (
       <div className="mt-2">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">已选择的收件人:</span>
+          <span className="text-sm text-gray-600">已选择的客户:</span>
           <Button 
             type="text" 
             size="small" 
@@ -223,17 +217,17 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {emails.map((email: string, index: number) => (
+          {selectedCustomers.map((customer, index) => (
             <div
-              key={index}
+              key={customer.id}
               className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm"
             >
-              <span>{email}</span>
+              <span>{customer.company_name} ({customer.email})</span>
               <Button
                 type="text"
                 size="small"
                 icon={<CloseOutlined />}
-                onClick={() => handleRemoveRecipient(email)}
+                onClick={() => handleRemoveRecipient(customer.email)}
                 className="text-blue-700 hover:text-blue-900"
               />
             </div>
@@ -255,17 +249,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           <Form.Item
             name="to"
             label="收件人列表"
-            rules={[{ required: true, message: '请输入收件人!' }]}
           >
             <div className="space-y-2">
               <div className="flex gap-2">
-                <TextArea
-                  rows={3}
-                  placeholder="请点击下方按钮选择客户，或手动输入邮箱地址"
-                  showCount
-                  maxLength={1000}
-                  className="flex-1"
-                />
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-gray-500">
+                  请点击下方按钮选择客户
+                </div>
                 <Button
                   type="primary"
                   icon={<TeamOutlined />}
