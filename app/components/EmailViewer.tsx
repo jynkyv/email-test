@@ -209,11 +209,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[600px]">
         {/* 客户列表 */}
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b">
+        <div className="border rounded-lg overflow-hidden flex flex-col">
+          <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
             <span className="text-sm font-medium">客户列表</span>
           </div>
-          <div className="h-full overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             {loadingCustomers ? (
               <div className="text-center py-8">
                 <Spin />
@@ -221,50 +221,48 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             ) : customers.length === 0 ? (
               <div className="text-center py-8 text-gray-500">暂无客户</div>
             ) : (
-              <List
-                dataSource={customers}
-                renderItem={(customer) => (
-                  <List.Item
-                    className={`cursor-pointer hover:bg-gray-50 px-4 py-3 ${
-                      selectedCustomer?.id === customer.id ? 'bg-blue-50' : ''
+              <div className="divide-y divide-gray-100">
+                {customers.map((customer) => (
+                  <div
+                    key={customer.id}
+                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 ${
+                      selectedCustomer?.id === customer.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                     }`}
                     onClick={() => handleSelectCustomer(customer)}
                   >
-                    <List.Item.Meta
-                      avatar={<Avatar icon={<UserOutlined />} />}
-                      title={
+                    <div className="flex items-start space-x-3">
+                      <Avatar icon={<UserOutlined />} size="large" />
+                      <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <span className="font-medium truncate">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
                             {customer.company_name}
-                          </span>
+                          </h4>
                         </div>
-                      }
-                      description={
-                        <div className="space-y-1">
-                          <div className="text-sm text-gray-600">
+                        <div className="mt-1 space-y-1">
+                          <p className="text-sm text-gray-600">
                             {customer.email}
-                          </div>
-                          <div className="text-xs text-gray-500">
+                          </p>
+                          <p className="text-xs text-gray-500">
                             创建时间: {new Date(customer.created_at).toLocaleDateString()}
-                          </div>
+                          </p>
                         </div>
-                      }
-                    />
-                  </List.Item>
-                )}
-              />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
 
         {/* 邮件列表 */}
-        <div className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2 border-b">
+        <div className="border rounded-lg overflow-hidden flex flex-col">
+          <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
             <span className="text-sm font-medium">
               {selectedCustomer ? `${selectedCustomer.company_name} 的邮件` : '邮件列表'}
             </span>
           </div>
-          <div className="h-full overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             {!selectedCustomer ? (
               <div className="text-center py-8 text-gray-500">
                 请选择一个客户查看邮件
@@ -278,22 +276,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 该客户暂无邮件记录
               </div>
             ) : (
-              <List
-                dataSource={emails}
-                renderItem={(email) => (
-                  <List.Item
-                    className={`cursor-pointer hover:bg-gray-50 px-4 py-3 ${
-                      selectedEmail?.id === email.id ? 'bg-blue-50' : ''
+              <div className="divide-y divide-gray-100">
+                {emails.map((email) => (
+                  <div
+                    key={email.id}
+                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 ${
+                      selectedEmail?.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                     }`}
                     onClick={() => setSelectedEmail(email)}
                   >
-                    <List.Item.Meta
-                      avatar={<Avatar icon={<MailOutlined />} />}
-                      title={
+                    <div className="flex items-start space-x-3">
+                      <Avatar icon={<MailOutlined />} size="large" />
+                      <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <span className="font-medium truncate">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
                             {getHeaderValue(email.payload.headers, 'Subject') || '无主题'}
-                          </span>
+                          </h4>
                           <Button
                             type="text"
                             size="small"
@@ -304,24 +302,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             }}
                           />
                         </div>
-                      }
-                      description={
-                        <div className="space-y-1">
-                          <div className="text-sm text-gray-600">
+                        <div className="mt-1 space-y-1">
+                          <p className="text-sm text-gray-600">
                             {getHeaderValue(email.payload.headers, 'From')}
-                          </div>
-                          <div className="text-xs text-gray-500">
+                          </p>
+                          <p className="text-xs text-gray-500">
                             {formatDate(email.internalDate || '')}
-                          </div>
-                          <div className="text-xs text-gray-400 truncate">
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">
                             {email.snippet}
-                          </div>
+                          </p>
                         </div>
-                      }
-                    />
-                  </List.Item>
-                )}
-              />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -329,9 +325,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
       {/* 邮件详情弹窗 */}
       {selectedEmail && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
               <h3 className="text-lg font-medium">邮件详情</h3>
               <Button
                 type="text"
@@ -342,38 +338,40 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </Button>
             </div>
             
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-lg mb-2">
-                  {getHeaderValue(selectedEmail.payload.headers, 'Subject') || '无主题'}
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="text-gray-500">发件人:</span>
-                    <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'From')}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">收件人:</span>
-                    <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'To')}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">时间:</span>
-                    <span className="ml-2">{formatDate(selectedEmail.internalDate || '')}</span>
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-lg mb-2">
+                    {getHeaderValue(selectedEmail.payload.headers, 'Subject') || '无主题'}
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="text-gray-500">发件人:</span>
+                      <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'From')}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">收件人:</span>
+                      <span className="ml-2">{getHeaderValue(selectedEmail.payload.headers, 'To')}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">时间:</span>
+                      <span className="ml-2">{formatDate(selectedEmail.internalDate || '')}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <Divider />
-              
-              <div>
-                <h4 className="font-medium mb-2">邮件内容</h4>
-                <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
-                  {getEmailContent(selectedEmail)}
+                
+                <Divider />
+                
+                <div>
+                  <h4 className="font-medium mb-2">邮件内容</h4>
+                  <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap max-h-96 overflow-y-auto">
+                    {getEmailContent(selectedEmail)}
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="mt-6 text-center">
+            <div className="p-6 border-t flex-shrink-0 text-center">
               <Button onClick={() => setSelectedEmail(null)}>
                 关闭
               </Button>

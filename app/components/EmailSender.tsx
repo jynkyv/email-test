@@ -14,7 +14,8 @@ import {
   Modal,
   List,
   Checkbox,
-  Avatar
+  Avatar,
+  Spin
 } from 'antd';
 import { 
   SendOutlined, 
@@ -223,22 +224,24 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             清空全部
           </Button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {selectedCustomers.map((customer, index) => (
-            <div
-              key={customer.id}
-              className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm"
-            >
-              <span>{customer.company_name} ({customer.email})</span>
-              <Button
-                type="text"
-                size="small"
-                icon={<CloseOutlined />}
-                onClick={() => handleRemoveRecipient(customer.email)}
-                className="text-blue-700 hover:text-blue-900"
-              />
-            </div>
-          ))}
+        <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-2">
+          <div className="flex flex-wrap gap-2">
+            {selectedCustomers.map((customer, index) => (
+              <div
+                key={customer.id}
+                className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm flex-shrink-0"
+              >
+                <span>{customer.company_name} ({customer.email})</span>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={() => handleRemoveRecipient(customer.email)}
+                  className="text-blue-700 hover:text-blue-900"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -259,12 +262,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           >
             <div className="space-y-2">
               <div className="flex gap-2">
-                <div className="flex-1 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-gray-500 cursor-not-allowed">
-                  {selectedCustomers.length > 0 
-                    ? `已选择 ${selectedCustomers.length} 个客户` 
-                    : "请点击下方按钮选择客户（不支持手动输入）"
-                  }
-                </div>
                 <Button
                   type="primary"
                   icon={<TeamOutlined />}
@@ -273,6 +270,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 >
                   选择客户
                 </Button>
+                {selectedCustomers.length > 0 && (
+                  <span className="text-sm text-gray-600 self-center">
+                    已选择 {selectedCustomers.length} 个客户
+                  </span>
+                )}
               </div>
               {renderRecipientTags()}
             </div>
@@ -317,79 +319,92 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         </Form.Item>
       </Form>
 
-      {/* 发送进度 */}
+      {/* 发送进度通知 */}
       {isSending && (
-        <Card size="small" className="mt-4">
-          <Space direction="vertical" className="w-full">
-            <div className="flex justify-between text-sm">
-              <span>发送进度</span>
-              <span>{sentEmails}/{totalEmails}</span>
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-full shadow-lg px-6 py-3 flex items-center space-x-3 min-w-80">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
             </div>
-            <Progress percent={progress} status="active" />
-          </Space>
-        </Card>
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-900">发送邮件中...</span>
+                <span className="text-xs text-gray-500">{sentEmails}/{totalEmails}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* 客户选择弹窗 */}
+      {/* 客户选择模态框 */}
       <Modal
         title="选择客户"
         open={showCustomerModal}
+        onOk={handleConfirmCustomers}
         onCancel={handleCancelCustomers}
-        footer={[
-          <Button key="cancel" onClick={handleCancelCustomers}>
-            取消
-          </Button>,
-          <Button 
-            key="confirm" 
-            type="primary" 
-            onClick={handleConfirmCustomers}
-            disabled={selectedCustomers.length === 0}
-          >
-            确认选择 ({selectedCustomers.length})
-          </Button>,
-        ]}
         width={600}
+        okText="确认选择"
+        cancelText="取消"
+        okButtonProps={{
+          disabled: selectedCustomers.length === 0
+        }}
       >
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">
-              已选择 {selectedCustomers.length} 个客户
-            </span>
-            {selectedCustomers.length > 0 && (
-              <Button 
-                type="text" 
-                size="small" 
-                onClick={() => setSelectedCustomers([])}
-              >
-                清空选择
-              </Button>
-            )}
+          <div className="text-sm text-gray-600">
+            已选择 {selectedCustomers.length} 个客户
           </div>
           
-          <List
-            loading={loadingCustomers}
-            dataSource={customers}
-            renderItem={(customer) => (
-              <List.Item>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <Avatar icon={<UserOutlined />} />
-                    <div>
-                      <div className="font-medium">{customer.company_name}</div>
-                      <div className="text-sm text-gray-500">{customer.email}</div>
+          <div className="max-h-96 overflow-y-auto border rounded-lg">
+            {loadingCustomers ? (
+              <div className="text-center py-8">
+                <Spin />
+              </div>
+            ) : customers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                暂无客户数据
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {customers.map((customer) => (
+                  <div
+                    key={customer.id}
+                    className="px-6 py-4 hover:bg-gray-50"
+                  >
+                    <div className="flex items-start space-x-3">
+                      <Avatar icon={<UserOutlined />} size="large" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                              {customer.company_name}
+                            </h4>
+                            <div className="mt-1 space-y-1">
+                              <p className="text-sm text-gray-600">
+                                {customer.email}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                创建时间: {new Date(customer.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <Checkbox
+                            checked={selectedCustomers.some(c => c.id === customer.id)}
+                            onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <Checkbox
-                    checked={selectedCustomers.some(c => c.id === customer.id)}
-                    onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
-                  />
-                </div>
-              </List.Item>
+                ))}
+              </div>
             )}
-            locale={{
-              emptyText: '暂无客户数据'
-            }}
-          />
+          </div>
         </div>
       </Modal>
     </Card>
