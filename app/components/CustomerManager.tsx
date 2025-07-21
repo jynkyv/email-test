@@ -11,10 +11,10 @@ import {
   Table, 
   message, 
   Space,
-  Tag,
-  Spin 
+  Modal,
+  Spin
 } from 'antd';
-import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 
 interface Customer {
   id: string;
@@ -27,14 +27,19 @@ export default function CustomerManager() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const { t } = useI18n();
+  
+  // Modal 相关状态
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
   const fetchCustomers = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/customers', {
         headers: {
@@ -55,6 +60,7 @@ export default function CustomerManager() {
   };
 
   const handleSubmit = async (values: { company_name: string; email: string }) => {
+    setModalLoading(true);
     try {
       const response = await fetch('/api/customers', {
         method: 'POST',
@@ -70,18 +76,31 @@ export default function CustomerManager() {
       if (data.success) {
         message.success(t('customer.customerCreated'));
         form.resetFields();
+        setIsModalVisible(false);
         fetchCustomers();
       } else {
         message.error(data.error);
       }
     } catch (error) {
       message.error(t('customer.customerCreateFailed'));
+    } finally {
+      setModalLoading(false);
     }
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+    form.resetFields();
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
   const columns = [
     {
-      title: t('customer.companyName'),
+      title: t('customer.customerName'),
       dataIndex: 'company_name',
       key: 'company_name',
       render: (text: string) => (
@@ -95,12 +114,6 @@ export default function CustomerManager() {
       title: t('customer.customerEmail'),
       dataIndex: 'email',
       key: 'email',
-      render: (text: string) => (
-        <Space>
-          <MailOutlined />
-          {text}
-        </Space>
-      ),
     },
     {
       title: t('customer.creationTime'),
@@ -120,42 +133,22 @@ export default function CustomerManager() {
 
   return (
     <div className="space-y-6">
-      <Card title={t('customer.createCustomer')} className="shadow-lg">
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          layout="vertical"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item
-              name="company_name"
-              label={t('customer.companyName')}
-              rules={[{ required: true, message: t('customer.companyNameRequired') }]}
-            >
-              <Input placeholder={t('customer.customerNamePlaceholder')} />
-            </Form.Item>
-            
-            <Form.Item
-              name="email"
-              label={t('customer.customerEmail')}
-              rules={[
-                { required: true, message: t('customer.emailRequired') },
-                { type: 'email', message: t('customer.invalidEmail') }
-              ]}
-            >
-              <Input placeholder={t('customer.emailPlaceholder')} />
-            </Form.Item>
+      <Card title={t('navigation.customerManagement')} className="shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <TeamOutlined className="text-xl" />
+            <span className="text-lg font-medium">{t('customer.customerList')}</span>
           </div>
-          
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              {t('customer.createCustomer')}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={showModal}
+            size="large"
+          >
+            {t('customer.createCustomer')}
+          </Button>
+        </div>
 
-      <Card title={t('customer.customerList')} className="shadow-lg">
         <Table
           dataSource={customers}
           columns={columns}
@@ -171,6 +164,66 @@ export default function CustomerManager() {
           }}
         />
       </Card>
+
+      {/* 创建客户 Modal */}
+      <Modal
+        title={t('customer.createCustomer')}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={500}
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+          className="mt-4"
+        >
+          <Form.Item
+            name="company_name"
+            label={t('customer.companyName')}
+            rules={[
+              { required: true, message: t('customer.companyNameRequired') }
+            ]}
+          >
+            <Input 
+              placeholder={t('customer.customerNamePlaceholder')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="email"
+            label={t('customer.customerEmail')}
+            rules={[
+              { required: true, message: t('customer.emailRequired') },
+              { type: 'email', message: t('customer.invalidEmail') }
+            ]}
+          >
+            <Input 
+              placeholder={t('customer.emailPlaceholder')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item className="mb-0">
+            <div className="flex justify-end gap-3">
+              <Button onClick={handleCancel} size="large">
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={modalLoading}
+                size="large"
+              >
+                {t('customer.createCustomer')}
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 } 

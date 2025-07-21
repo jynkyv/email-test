@@ -13,9 +13,10 @@ import {
   Space,
   Select,
   Tag,
-  Spin 
+  Spin,
+  Modal
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, SendOutlined, MailOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -34,10 +35,14 @@ export default function UserManager() {
   const [form] = Form.useForm();
   const { user, userRole } = useAuth();
   const { t } = useI18n();
+  
+  // Modal 相关状态
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
     if (userRole === 'admin') {
-    fetchUsers();
+      fetchUsers();
     }
   }, [userRole]);
 
@@ -54,7 +59,7 @@ export default function UserManager() {
         setUsers(data.users);
       }
     } catch (error) {
-      console.error('获取用户列表失败:', error);
+      console.error('获取员工列表失败:', error);
       message.error(t('user.fetchUsersFailed'));
     } finally {
       setLoading(false);
@@ -62,6 +67,7 @@ export default function UserManager() {
   };
 
   const handleSubmit = async (values: { username: string; password: string; role: string }) => {
+    setModalLoading(true);
     try {
       const response = await fetch('/api/users', {
         method: 'POST',
@@ -77,13 +83,26 @@ export default function UserManager() {
       if (data.success) {
         message.success(t('user.userCreated'));
         form.resetFields();
+        setIsModalVisible(false);
         fetchUsers();
       } else {
         message.error(data.error);
       }
     } catch (error) {
       message.error(t('user.userCreateFailed'));
+    } finally {
+      setModalLoading(false);
     }
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+    form.resetFields();
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
   const columns = [
@@ -161,50 +180,22 @@ export default function UserManager() {
 
   return (
     <div className="space-y-6">
-      <Card title={t('user.createUser')} className="shadow-lg">
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          layout="vertical"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item
-              name="username"
-              label={t('user.username')}
-              rules={[{ required: true, message: t('user.usernameRequired') }]}
-            >
-              <Input placeholder={t('user.username')} />
-            </Form.Item>
-            
-            <Form.Item
-              name="password"
-              label={t('user.password')}
-              rules={[{ required: true, message: t('user.passwordRequired') }]}
-            >
-              <Input.Password placeholder={t('user.password')} />
-            </Form.Item>
-            
-            <Form.Item
-              name="role"
-              label={t('user.role')}
-              rules={[{ required: true, message: t('user.roleRequired') }]}
-            >
-              <Select placeholder={t('user.role')}>
-                <Option value="employee">{t('auth.employee')}</Option>
-                <Option value="admin">{t('auth.admin')}</Option>
-              </Select>
-            </Form.Item>
+      <Card title={t('navigation.userManagement')} className="shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <TeamOutlined className="text-xl" />
+            <span className="text-lg font-medium">{t('user.userList')}</span>
           </div>
-          
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              {t('user.createUser')}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={showModal}
+            size="large"
+          >
+            {t('user.createUser')}
+          </Button>
+        </div>
 
-      <Card title={t('user.userList')} className="shadow-lg">
         <Table
           dataSource={users}
           columns={columns}
@@ -220,6 +211,75 @@ export default function UserManager() {
           }}
         />
       </Card>
+
+      {/* 创建员工 Modal */}
+      <Modal
+        title={t('user.createUser')}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={500}
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+          className="mt-4"
+        >
+          <Form.Item
+            name="username"
+            label={t('user.username')}
+            rules={[{ required: true, message: t('user.usernameRequired') }]}
+          >
+            <Input 
+              placeholder={t('user.username')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="password"
+            label={t('user.password')}
+            rules={[{ required: true, message: t('user.passwordRequired') }]}
+          >
+            <Input.Password 
+              placeholder={t('user.password')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="role"
+            label={t('user.role')}
+            rules={[{ required: true, message: t('user.roleRequired') }]}
+          >
+            <Select 
+              placeholder={t('user.role')}
+              size="large"
+            >
+              <Option value="employee">{t('auth.employee')}</Option>
+              <Option value="admin">{t('auth.admin')}</Option>
+            </Select>
+          </Form.Item>
+          
+          <Form.Item className="mb-0">
+            <div className="flex justify-end gap-3">
+              <Button onClick={handleCancel} size="large">
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={modalLoading}
+                size="large"
+              >
+                {t('user.createUser')}
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
