@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { I18nProvider } from '@/contexts/I18nContext';
 import DynamicConfigProvider from './components/DynamicConfigProvider';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: '邮件管理系统',
@@ -19,11 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh">
-      <body className={inter.className}>
+      <body className="font-sans">
         <I18nProvider>
           <AuthProvider>
             <DynamicConfigProvider>
-            {children}
+              {children}
             </DynamicConfigProvider>
           </AuthProvider>
         </I18nProvider>

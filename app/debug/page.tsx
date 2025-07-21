@@ -3,8 +3,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
+interface User {
+  id: string;
+  username: string;
+  role: string;
+  created_at: string;
+}
+
 export default function DebugPage() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -76,7 +83,7 @@ export default function DebugPage() {
             <p className="text-gray-500">暂无用户</p>
           ) : (
             <div className="space-y-2">
-              {users.map((user: any) => (
+              {users.map((user: User) => (
                 <div key={user.id} className="border p-3 rounded">
                   <p><strong>ID:</strong> {user.id}</p>
                   <p><strong>用户名:</strong> {user.username}</p>
