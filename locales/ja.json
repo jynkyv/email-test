@@ -36,7 +36,8 @@
     "forbidden": "アクセス権限がありません",
     "notFound": "ページが見つかりません",
     "internalError": "内部エラー",
-    "totalRecords": "合計 {total} 件"
+    "totalRecords": "合計 {total} 件",
+    "actions": "操作"
   },
   "auth": {
     "login": "ログイン",
@@ -133,7 +134,9 @@
     "customersSelected": "{count}人の顧客を選択済み",
     "noCustomerData": "顧客データがありません",
     "customerNamePlaceholder": "企業名を入力してください",
-    "emailPlaceholder": "メールアドレスを入力してください"
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "deleteConfirmTitle": "顧客削除の確認",
+    "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。"
   },
   "user": {
     "user": "従業員",
@@ -162,7 +165,10 @@
     "insufficientPermissions": "権限が不足しています",
     "onlyAdminCanManageUsers": "管理者のみが従業員を管理できます",
     "emailSendCount": "送信回数",
-    "emailRecipientCount": "宛先数"
+    "emailRecipientCount": "宛先数",
+    "deleteConfirmTitle": "従業員削除の確認",
+    "deleteConfirmDescription": "従業員「{name}」を削除してもよろしいですか？この操作は取り消せません。",
+    "cannotDeleteSelf": "自分のアカウントは削除できません"
   },
   "validation": {
     "required": "この項目は必須です",

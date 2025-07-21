@@ -12,9 +12,11 @@ import {
   message, 
   Space,
   Modal,
-  Spin
+  Spin,
+  Popconfirm,
+  Tooltip
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined } from '@ant-design/icons';
 
 interface Customer {
   id: string;
@@ -88,6 +90,29 @@ export default function CustomerManager() {
     }
   };
 
+  const handleDeleteCustomer = async (customerId: string, companyName: string) => {
+    try {
+      const response = await fetch(`/api/customers/${customerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        message.success(t('customer.customerDeleted'));
+        fetchCustomers();
+      } else {
+        message.error(data.error || t('customer.customerDeleteFailed'));
+      }
+    } catch (error) {
+      console.error('删除客户失败:', error);
+      message.error(t('customer.customerDeleteFailed'));
+    }
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
     form.resetFields();
@@ -120,6 +145,33 @@ export default function CustomerManager() {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: t('common.actions'),
+      key: 'actions',
+      render: (_: any, record: Customer) => (
+        <Space>
+          {userRole === 'admin' && (
+            <Tooltip title={t('customer.deleteCustomer')}>
+              <Popconfirm
+                title={t('customer.deleteConfirmTitle')}
+                description={t('customer.deleteConfirmDescription', { name: record.company_name })}
+                onConfirm={() => handleDeleteCustomer(record.id, record.company_name)}
+                okText={t('common.confirm')}
+                cancelText={t('common.cancel')}
+                okType="danger"
+              >
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Popconfirm>
+            </Tooltip>
+          )}
+        </Space>
+      ),
     },
   ];
 

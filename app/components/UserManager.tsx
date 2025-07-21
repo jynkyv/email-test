@@ -14,9 +14,11 @@ import {
   Select,
   Tag,
   Spin,
-  Modal
+  Modal,
+  Popconfirm,
+  Tooltip
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined, SendOutlined, MailOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, SendOutlined, MailOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -95,6 +97,35 @@ export default function UserManager() {
     }
   };
 
+  const handleDeleteUser = async (userId: string, username: string) => {
+    // 防止删除自己
+    if (userId === user?.id) {
+      message.error(t('user.cannotDeleteSelf'));
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        message.success(t('user.userDeleted'));
+        fetchUsers();
+      } else {
+        message.error(data.error || t('user.userDeleteFailed'));
+      }
+    } catch (error) {
+      console.error('删除员工失败:', error);
+      message.error(t('user.userDeleteFailed'));
+    }
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
     form.resetFields();
@@ -154,6 +185,33 @@ export default function UserManager() {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: t('common.actions'),
+      key: 'actions',
+      render: (_: any, record: User) => (
+        <Space>
+          {userRole === 'admin' && record.id !== user?.id && (
+            <Tooltip title={t('user.deleteUser')}>
+              <Popconfirm
+                title={t('user.deleteConfirmTitle')}
+                description={t('user.deleteConfirmDescription', { name: record.username })}
+                onConfirm={() => handleDeleteUser(record.id, record.username)}
+                okText={t('common.confirm')}
+                cancelText={t('common.cancel')}
+                okType="danger"
+              >
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  size="small"
+                />
+              </Popconfirm>
+            </Tooltip>
+          )}
+        </Space>
+      ),
     },
   ];
 

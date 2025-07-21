@@ -36,7 +36,8 @@
     "forbidden": "权限不足",
     "notFound": "页面不存在",
     "internalError": "内部错误",
-    "totalRecords": "共 {total} 条记录"
+    "totalRecords": "共 {total} 条记录",
+    "actions": "操作"
   },
   "auth": {
     "login": "登录",
@@ -133,7 +134,9 @@
     "customersSelected": "已选择 {count} 个客户",
     "noCustomerData": "暂无客户数据",
     "customerNamePlaceholder": "请输入企业名称",
-    "emailPlaceholder": "请输入邮箱地址"
+    "emailPlaceholder": "请输入邮箱地址",
+    "deleteConfirmTitle": "确认删除客户",
+    "deleteConfirmDescription": "确定要删除客户 \"{name}\" 吗？此操作不可撤销。"
   },
   "user": {
     "user": "员工",
@@ -162,7 +165,10 @@
     "insufficientPermissions": "权限不足",
     "onlyAdminCanManageUsers": "只有管理员可以管理员工",
     "emailSendCount": "发送次数",
-    "emailRecipientCount": "收件人数"
+    "emailRecipientCount": "收件人数",
+    "deleteConfirmTitle": "确认删除员工",
+    "deleteConfirmDescription": "确定要删除员工 \"{name}\" 吗？此操作不可撤销。",
+    "cannotDeleteSelf": "不能删除自己的账户"
   },
   "validation": {
     "required": "此字段为必填项",
