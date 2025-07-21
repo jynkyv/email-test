@@ -12,14 +12,19 @@ import {
   message,
   Divider,
   Button,
-  Tag
+  Tag,
+  Modal,
+  Form,
+  InputNumber,
+  Tooltip
 } from 'antd';
 import { 
   ReloadOutlined, 
   MailOutlined, 
   MessageOutlined,
   UserOutlined,
-  TeamOutlined
+  TeamOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 
 interface Email {
@@ -72,6 +77,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [loading, setLoading] = useState(false);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [maxResults, setMaxResults] = useState(50); // 默认50
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
+  const [settingsForm] = Form.useForm();
 
   // 获取客户列表
   const fetchCustomers = async () => {
@@ -82,6 +90,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
           'Authorization': `Bearer ${user?.id}`,
         },
       });
+      
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
@@ -98,11 +107,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const fetchCustomerEmails = async (customerEmail: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=50`, {
+      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=${maxResults}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
       });
+      
       const data = await response.json();
       
       if (data.success) {
@@ -121,6 +131,18 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSelectedCustomer(customer);
     setSelectedEmail(null);
     fetchCustomerEmails(customer.email);
+  };
+
+  // 保存设置
+  const handleSettingsSave = (values: { maxResults: number }) => {
+    setMaxResults(values.maxResults);
+    setSettingsModalVisible(false);
+    message.success(t('settings.settingsSaved'));
+    
+    // 如果当前有选中的客户，重新获取邮件
+    if (selectedCustomer) {
+      fetchCustomerEmails(selectedCustomer.email);
+    }
   };
 
   useEffect(() => {
@@ -194,13 +216,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             <TeamOutlined />
             <span className="font-medium">{t('email.myCustomers')}</span>
           </div>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={fetchCustomers}
-            loading={loadingCustomers}
-          >
-            {t('email.refreshCustomers')}
-          </Button>
+          <Space>
+            <Tooltip title={t('settings.emailSettings')}>
+              <Button
+                icon={<SettingOutlined />}
+                onClick={() => setSettingsModalVisible(true)}
+                size="small"
+              />
+            </Tooltip>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={fetchCustomers}
+              loading={loadingCustomers}
+            >
+              {t('email.refreshCustomers')}
+            </Button>
+          </Space>
         </div>
       </div>
 
@@ -255,9 +286,16 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         {/* 邮件列表 */}
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
-            <span className="text-sm font-medium">
-              {selectedCustomer ? t('email.customerEmails', { customerName: selectedCustomer.company_name }) : t('email.emailList')}
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">
+                {selectedCustomer ? t('email.customerEmails', { customerName: selectedCustomer.company_name }) : t('email.emailList')}
+              </span>
+              {selectedCustomer && (
+                <Tag color="blue">
+                  {t('settings.maxResults')}: {maxResults}
+                </Tag>
+              )}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {!selectedCustomer ? (
@@ -317,8 +355,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             )}
           </div>
-          </div>
         </div>
+      </div>
 
       {/* 邮件详情弹窗 */}
       {selectedEmail && (
@@ -333,8 +371,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               >
                 {t('email.reply')}
               </Button>
-          </div>
-            
+            </div>
+              
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-4">
                 <div>
@@ -372,10 +410,60 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <Button onClick={() => setSelectedEmail(null)}>
                 {t('common.close')}
               </Button>
-              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* 设置 Modal */}
+      <Modal
+        title={t('settings.emailSettings')}
+        open={settingsModalVisible}
+        onCancel={() => setSettingsModalVisible(false)}
+        footer={null}
+        width={400}
+        destroyOnClose
+      >
+        <Form
+          form={settingsForm}
+          initialValues={{ maxResults }}
+          onFinish={handleSettingsSave}
+          layout="vertical"
+          className="mt-4"
+        >
+          <Form.Item
+            name="maxResults"
+            label={t('settings.maxResults')}
+            rules={[
+              { required: true, message: t('settings.maxResultsRequired') },
+              { type: 'number', min: 1, max: 500, message: t('settings.maxResultsRange') }
+            ]}
+          >
+            <InputNumber
+              min={1}
+              max={500}
+              style={{ width: '100%' }}
+              addonAfter={t('settings.emails')}
+              placeholder={t('settings.maxResultsPlaceholder')}
+            />
+          </Form.Item>
+          
+          <div className="text-xs text-gray-500 mb-4">
+            {t('settings.maxResultsDescription')}
+          </div>
+          
+          <Form.Item className="mb-0">
+            <div className="flex justify-end gap-3">
+              <Button onClick={() => setSettingsModalVisible(false)}>
+                {t('common.cancel')}
+              </Button>
+              <Button type="primary" htmlType="submit">
+                {t('settings.saveSettings')}
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
     </Card>
   );
 } 

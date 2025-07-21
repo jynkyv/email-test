@@ -196,5 +196,16 @@
     "ok": "确定",
     "yes": "是",
     "no": "否"
+  },
+  "settings": {
+    "emailSettings": "邮件设置",
+    "maxResults": "邮件获取数量",
+    "saveSettings": "保存设置",
+    "settingsSaved": "设置已保存",
+    "maxResultsRequired": "请输入邮件获取数量",
+    "maxResultsRange": "邮件获取数量必须在1-500之间",
+    "maxResultsPlaceholder": "请输入1-500之间的数字",
+    "maxResultsDescription": "设置每次获取的邮件数量，范围1-500。数值越大，加载时间越长。",
+    "emails": "封邮件"
   }
 } 

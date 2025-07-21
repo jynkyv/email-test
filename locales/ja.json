@@ -196,5 +196,16 @@
     "ok": "OK",
     "yes": "はい",
     "no": "いいえ"
+  },
+  "settings": {
+    "emailSettings": "メール設定",
+    "maxResults": "メール取得数",
+    "saveSettings": "設定を保存",
+    "settingsSaved": "設定が保存されました",
+    "maxResultsRequired": "メール取得数を入力してください",
+    "maxResultsRange": "メール取得数は1-500の間である必要があります",
+    "maxResultsPlaceholder": "1-500の間の数字を入力してください",
+    "maxResultsDescription": "一度に取得するメール数を設定します。範囲は1-500です。数値が大きいほど、読み込み時間が長くなります。",
+    "emails": "通のメール"
   }
 } 
