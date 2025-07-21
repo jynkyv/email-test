@@ -82,16 +82,41 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     }
   };
 
-  // 当收到回信数据时，自动填充表单
+  // 当收到回信数据时，重置选择并设置回信人
   useEffect(() => {
     if (replyData) {
+      // 重置表单和选择
+      form.resetFields();
+      setSelectedCustomers([]);
+      
+      // 设置回信内容
       form.setFieldsValue({
         to: replyData.to,
         subject: replyData.subject,
         content: replyData.content,
       });
+
+      // 检查回信人是否在客户列表中
+      const existingCustomer = customers.find(customer => customer.email === replyData.to);
+      
+      if (existingCustomer) {
+        // 如果回信人已存在，添加到选择列表
+        setSelectedCustomers([existingCustomer]);
+        message.success(`${t('email.replyTo')}: ${existingCustomer.company_name} (${replyData.to})`);
+      } else {
+        // 如果回信人不在客户列表中，创建临时客户对象
+        const tempCustomer: Customer = {
+          id: `temp_${Date.now()}`,
+          company_name: replyData.to.split('@')[0], // 使用邮箱前缀作为公司名
+          email: replyData.to,
+          created_at: new Date().toISOString()
+        };
+        
+        setSelectedCustomers([tempCustomer]);
+        message.success(`${t('email.replyTo')}: ${replyData.to} ${t('email.addedToRecipients')}`);
+      }
     }
-  }, [replyData, form]);
+  }, [replyData, form, customers]);
 
   // 打开客户选择弹窗
   const handleOpenCustomerModal = () => {

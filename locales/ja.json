@@ -103,7 +103,8 @@
     "emailCount": "{count}通のメール",
     "myCustomers": "私の顧客",
     "refreshCustomers": "顧客を更新",
-    "customerEmails": "{customerName}のメール"
+    "customerEmails": "{customerName}のメール",
+    "addedToRecipients": "宛先リストに追加されました"
   },
   "customer": {
     "customer": "顧客",

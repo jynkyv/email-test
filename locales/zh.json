@@ -103,7 +103,8 @@
     "emailCount": "{count} 封邮件",
     "myCustomers": "我的客户",
     "refreshCustomers": "刷新客户",
-    "customerEmails": "{customerName} 的邮件"
+    "customerEmails": "{customerName} 的邮件",
+    "addedToRecipients": "已添加到收件人列表"
   },
   "customer": {
     "customer": "客户",
