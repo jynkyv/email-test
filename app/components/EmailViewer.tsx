@@ -128,6 +128,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
   // 选择客户
   const handleSelectCustomer = (customer: Customer) => {
+    // 如果正在加载，不允许切换客户
+    if (loading) {
+      return;
+    }
+    
     setSelectedCustomer(customer);
     setSelectedEmail(null);
     fetchCustomerEmails(customer.email);
@@ -253,9 +258,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 {customers.map((customer) => (
                   <div
                     key={customer.id}
-                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 ${
-                      selectedCustomer?.id === customer.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                    }`}
+                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
+                      selectedCustomer && selectedCustomer.id === customer.id 
+                        ? 'customer-selected' 
+                        : ''
+                    } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
                     onClick={() => handleSelectCustomer(customer)}
                   >
                     <div className="flex items-start space-x-3">
@@ -304,7 +311,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             ) : loading ? (
               <div className="text-center py-8">
-                <Spin />
+                <Spin size="large" />
+                <div className="mt-2 text-sm text-gray-500">
+                  {t('email.loadingEmails')}
+                </div>
               </div>
             ) : emails.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
@@ -315,8 +325,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 {emails.map((email) => (
                   <div
                     key={email.id}
-                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 ${
-                      selectedEmail?.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
+                      selectedEmail && selectedEmail.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                     }`}
                     onClick={() => setSelectedEmail(email)}
                   >
@@ -327,15 +337,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                           <h4 className="text-sm font-medium text-gray-900 truncate">
                             {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
                           </h4>
-                          <Button
-                            type="text"
-                            size="small"
-                            icon={<MessageOutlined />}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleReply(email);
-                            }}
-                          />
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">

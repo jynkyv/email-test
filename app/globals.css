@@ -31,3 +31,10 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+/* 客户选中状态样式 */
+.customer-selected {
+  background-color: #eff6ff !important;
+  border-left: 4px solid #3b82f6 !important;
+  border-left-style: solid !important;
+}

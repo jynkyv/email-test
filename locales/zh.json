@@ -98,6 +98,7 @@
     "date": "时间",
     "noSubject": "无主题",
     "noContent": "无内容",
+    "loadingEmails": "正在加载邮件...",
     "emailList": "邮件列表",
     "selectCustomerToViewEmails": "请选择一个客户查看邮件",
     "noEmailsForCustomer": "该客户暂无邮件记录",
