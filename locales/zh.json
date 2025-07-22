@@ -106,7 +106,9 @@
     "myCustomers": "我的客户",
     "refreshCustomers": "刷新客户",
     "customerEmails": "{customerName} 的邮件",
-    "addedToRecipients": "已添加到收件人列表"
+    "addedToRecipients": "已添加到收件人列表",
+    "sent": "已发送",
+    "received": "已收到"
   },
   "customer": {
     "customer": "客户",

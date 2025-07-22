@@ -162,6 +162,17 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     return header?.value || '';
   };
 
+  // 判断邮件是发出的还是收到的
+  const isOutgoingEmail = (email: Email, customerEmail: string) => {
+    const from = getHeaderValue(email.payload.headers, 'From');
+    const to = getHeaderValue(email.payload.headers, 'To');
+    
+    // 如果发件人包含当前用户的邮箱，则认为是发出的邮件
+    const userEmail = user?.email || '';
+    return from.toLowerCase().includes(userEmail.toLowerCase()) || 
+           !to.toLowerCase().includes(customerEmail.toLowerCase());
+  };
+
   const decodeEmailContent = (data: string) => {
     try {
       return Buffer.from(data, 'base64').toString('utf-8');
@@ -334,13 +345,25 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                       <Avatar icon={<MailOutlined />} size="large" />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
-                            {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
-                          </h4>
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                              {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
+                            </h4>
+                            {selectedCustomer && (
+                              <Tag 
+                                color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                              >
+                                {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                              </Tag>
+                            )}
+                          </div>
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">
-                            {getHeaderValue(email.payload.headers, 'From')}
+                            {isOutgoingEmail(email, selectedCustomer?.email || '') ? 
+                              `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}` :
+                              `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
+                            }
                           </p>
                           <p className="text-xs text-gray-500">
                             {formatDate(email.internalDate || '')}
