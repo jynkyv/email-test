@@ -89,6 +89,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     }
   };
 
+  // 组件初始化时获取客户数据
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
   // 当收到回信数据时，重置选择并设置回信人
   useEffect(() => {
     if (replyData) {
@@ -128,7 +133,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 打开客户选择弹窗
   const handleOpenCustomerModal = () => {
     setShowCustomerModal(true);
-    fetchCustomers();
   };
 
   // 确认选择客户
@@ -535,6 +539,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         width={600}
         okText={t('common.confirm')}
         cancelText={t('common.cancel')}
+        destroyOnClose={false}
         okButtonProps={{
           disabled: selectedCustomers.length === 0
         }}
