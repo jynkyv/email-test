@@ -108,7 +108,13 @@
     "customerEmails": "{customerName} 的邮件",
     "addedToRecipients": "已添加到收件人列表",
     "sent": "已发送",
-    "received": "已收到"
+    "received": "已收到",
+    "read": "已读",
+    "unread": "未读",
+    "markedAsRead": "邮件已标记为已读",
+    "markedAsUnread": "邮件已标记为未读",
+    "updateStatusFailed": "更新邮件状态失败",
+    "autoMarkedAsRead": "邮件已自动标记为已读"
   },
   "customer": {
     "customer": "客户",

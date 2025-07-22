@@ -80,6 +80,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [maxResults, setMaxResults] = useState(50); // 默认50
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
+  const [selectedEmailIds, setSelectedEmailIds] = useState<string[]>([]);
 
   // 获取客户列表
   const fetchCustomers = async () => {
@@ -157,6 +158,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     }
   }, [user]);
 
+
+
   const getHeaderValue = (headers: Array<{name: string, value: string}>, name: string) => {
     const header = headers.find(h => h.name.toLowerCase() === name.toLowerCase());
     return header?.value || '';
@@ -172,6 +175,58 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     return from.toLowerCase().includes(userEmail.toLowerCase()) || 
            !to.toLowerCase().includes(customerEmail.toLowerCase());
   };
+
+  // 判断邮件是否已读
+  const isEmailRead = (email: Email) => {
+    return !email.labelIds.includes('UNREAD');
+  };
+
+  // 更新邮件已读/未读状态
+  const updateEmailStatus = async (emailId: string, action: 'read' | 'unread', showMessage = true) => {
+    try {
+      const response = await fetch(`/api/email/${emailId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // 更新本地邮件状态
+        setEmails(prevEmails => 
+          prevEmails.map(email => 
+            email.id === emailId 
+              ? {
+                  ...email,
+                  labelIds: action === 'read' 
+                    ? email.labelIds.filter(id => id !== 'UNREAD')
+                    : [...email.labelIds, 'UNREAD']
+                }
+              : email
+          )
+        );
+        
+        if (showMessage) {
+          message.success(action === 'read' ? t('email.markedAsRead') : t('email.markedAsUnread'));
+        }
+      } else {
+        if (showMessage) {
+          message.error(t('email.updateStatusFailed'));
+        }
+      }
+    } catch (error) {
+      console.error('更新邮件状态失败:', error);
+      if (showMessage) {
+        message.error(t('email.updateStatusFailed'));
+      }
+    }
+  };
+
+
 
   const decodeEmailContent = (data: string) => {
     try {
@@ -308,11 +363,13 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <span className="text-sm font-medium">
                 {selectedCustomer ? t('email.customerEmails', { customerName: selectedCustomer.company_name }) : t('email.emailList')}
               </span>
-              {selectedCustomer && (
-                <Tag color="blue">
-                  {t('settings.maxResults')}: {maxResults}
-                </Tag>
-              )}
+              <div className="flex items-center gap-2">
+                {selectedCustomer && (
+                  <Tag color="blue">
+                    {t('settings.maxResults')}: {maxResults}
+                  </Tag>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -338,24 +395,44 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                     key={email.id}
                     className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
                       selectedEmail && selectedEmail.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                    }`}
-                    onClick={() => setSelectedEmail(email)}
+                    } ${!isEmailRead(email) ? 'bg-yellow-50 border-l-4 border-l-yellow-500' : ''}`}
+                    onClick={() => {
+                      setSelectedEmail(email);
+                      // 如果邮件未读，立即标记为已读
+                      if (!isEmailRead(email)) {
+                        updateEmailStatus(email.id, 'read', false);
+                      }
+                    }}
                   >
                     <div className="flex items-start space-x-3">
                       <Avatar icon={<MailOutlined />} size="large" />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                            <h4 className={`text-sm truncate ${
+                              isEmailRead(email) ? 'font-medium text-gray-900' : 'font-bold text-gray-900'
+                            }`}>
                               {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
                             </h4>
-                            {selectedCustomer && (
+                            <div className="flex items-center gap-1">
+                              {selectedCustomer && (
+                                <Tag 
+                                  color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                                >
+                                  {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                                </Tag>
+                              )}
                               <Tag 
-                                color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                                color={isEmailRead(email) ? 'default' : 'orange'}
+                                className="cursor-pointer hover:opacity-80"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateEmailStatus(email.id, isEmailRead(email) ? 'unread' : 'read');
+                                }}
                               >
-                                {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                                {isEmailRead(email) ? t('email.read') : t('email.unread')}
                               </Tag>
-                            )}
+                            </div>
                           </div>
                         </div>
                         <div className="mt-1 space-y-1">

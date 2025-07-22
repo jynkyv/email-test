@@ -108,7 +108,13 @@
     "customerEmails": "{customerName}のメール",
     "addedToRecipients": "宛先リストに追加されました",
     "sent": "送信済み",
-    "received": "受信済み"
+    "received": "受信済み",
+    "read": "既読",
+    "unread": "未読",
+    "markedAsRead": "メールを既読としてマークしました",
+    "markedAsUnread": "メールを未読としてマークしました",
+    "updateStatusFailed": "メールステータスの更新に失敗しました",
+    "autoMarkedAsRead": "メールを自動的に既読としてマークしました"
   },
   "customer": {
     "customer": "顧客",
