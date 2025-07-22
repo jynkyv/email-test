@@ -16,7 +16,8 @@ import {
   List,
   Checkbox,
   Avatar,
-  Spin
+  Spin,
+  Tabs
 } from 'antd';
 import { 
   SendOutlined, 
@@ -54,6 +55,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [progress, setProgress] = useState(0);
   const [totalEmails, setTotalEmails] = useState(0);
   const [sentEmails, setSentEmails] = useState(0);
+  
+  // 邮件内容模式
+  const [contentMode, setContentMode] = useState<'text' | 'template'>('text');
+  
+  // 模板预览相关状态
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
   
   // 客户选择相关状态
   const [showCustomerModal, setShowCustomerModal] = useState(false);
@@ -160,8 +167,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     subject: string;
     content: string;
   }) => {
-    if (!values.subject.trim() || !values.content.trim()) {
-      message.error(t('email.subjectRequired') + ' 和 ' + t('email.contentRequired'));
+    if (!values.subject.trim()) {
+      message.error(t('email.subjectRequired'));
       return;
     }
 
@@ -185,6 +192,58 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
+    // 根据模式准备邮件内容
+    let emailContent = '';
+    if (contentMode === 'text') {
+      emailContent = values.content;
+    } else {
+      // 模板模式使用固定的HTML模板
+      emailContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>邮件模板</title>
+        </head>
+        <body>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+              <h1 style="margin: 0; font-size: 28px;">邮件标题</h1>
+              <p style="margin: 10px 0 0 0; opacity: 0.9;">副标题或描述</p>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #333; margin-bottom: 20px;">主要内容</h2>
+              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                这里是邮件的主要内容。您可以在这里添加文字、图片、链接等。
+              </p>
+              
+              <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #495057; margin-bottom: 15px;">重要信息</h3>
+                <ul style="color: #666; line-height: 1.6;">
+                  <li>第一项重要信息</li>
+                  <li>第二项重要信息</li>
+                  <li>第三项重要信息</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="#" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                  点击按钮
+                </a>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+              <p>© 2024 公司名称. 保留所有权利.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+    }
+
     // 逐个发送邮件
     for (let i = 0; i < recipients.length; i++) {
       try {
@@ -197,7 +256,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           body: JSON.stringify({
             to: recipients[i],
             subject: values.subject,
-            html: values.content,
+            html: emailContent,
             isBulk: true
           }),
         });
@@ -318,14 +377,48 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           <Form.Item
             name="content"
             label={t('email.emailContent')}
-            rules={[{ required: true, message: t('email.contentRequired') }]}
+            rules={contentMode === 'text' ? [{ required: true, message: t('email.contentRequired') }] : []}
             className="flex-1"
           >
-            <TextArea
-              rows={12}
-              placeholder={t('email.contentPlaceholder')}
-              showCount
-              maxLength={5000}
+            <Tabs
+              activeKey={contentMode}
+              onChange={(key) => setContentMode(key as 'text' | 'template')}
+              items={[
+                {
+                  key: 'text',
+                  label: t('email.textMode'),
+                  children: (
+                    <TextArea
+                      rows={12}
+                      placeholder={t('email.contentPlaceholder')}
+                      showCount
+                      maxLength={5000}
+                    />
+                  ),
+                },
+                {
+                  key: 'template',
+                  label: t('email.templateMode'),
+                  children: (
+                    <div className="space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h4 className="font-medium text-gray-800 mb-2">{t('email.templatePreview')}</h4>
+                        <p className="text-sm text-gray-600 mb-3">{t('email.templateDescription')}</p>
+                        <div className="bg-white border rounded-lg p-4">
+                          <div className="text-center">
+                            <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow" 
+                                 onClick={() => setShowTemplatePreview(true)}
+                                 style={{ maxWidth: '300px' }}>
+                              <h3 className="text-lg font-semibold mb-2">邮件模板</h3>
+                              <p className="text-sm opacity-90">点击预览完整效果</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                },
+              ]}
             />
           </Form.Item>
         </div>
@@ -368,6 +461,71 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           </div>
         </div>
       )}
+
+      {/* 模板预览模态框 */}
+      <Modal
+        title={t('email.templatePreview')}
+        open={showTemplatePreview}
+        onCancel={() => setShowTemplatePreview(false)}
+        footer={[
+          <Button key="close" onClick={() => setShowTemplatePreview(false)}>
+            {t('common.close')}
+          </Button>
+        ]}
+        width={800}
+        destroyOnClose
+      >
+        <div className="bg-white border rounded-lg overflow-hidden">
+          <iframe
+            srcDoc={`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>邮件模板预览</title>
+              </head>
+              <body style="margin: 0; padding: 0;">
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <h1 style="margin: 0; font-size: 28px;">邮件标题</h1>
+                    <p style="margin: 10px 0 0 0; opacity: 0.9;">副标题或描述</p>
+                  </div>
+                  
+                  <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #333; margin-bottom: 20px;">主要内容</h2>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                      这里是邮件的主要内容。您可以在这里添加文字、图片、链接等。
+                    </p>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                      <h3 style="color: #495057; margin-bottom: 15px;">重要信息</h3>
+                      <ul style="color: #666; line-height: 1.6;">
+                        <li>第一项重要信息</li>
+                        <li>第二项重要信息</li>
+                        <li>第三项重要信息</li>
+                      </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                      <a href="#" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                        点击按钮
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+                    <p>© 2024 公司名称. 保留所有权利.</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `}
+            style={{ width: '100%', height: '600px', border: 'none' }}
+            title="邮件模板预览"
+          />
+        </div>
+      </Modal>
 
       {/* 客户选择模态框 */}
       <Modal
