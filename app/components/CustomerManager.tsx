@@ -447,6 +447,7 @@ export default function CustomerManager() {
               <li>• {t('customer.excelColumn1')}</li>
               <li>• {t('customer.excelColumn2')}</li>
               <li>• {t('customer.excelColumn3')}</li>
+              <li>• {t('customer.excelColumn4')}</li>
             </ul>
             <div className="mt-3">
               <Button 

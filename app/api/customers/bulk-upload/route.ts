@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
     // 处理数据行
     const customers = [];
     const errors = [];
+    let hasInvalidEmail = false;
     
     for (let i = 1; i < jsonData.length; i++) {
       const row = jsonData[i] as any[];
@@ -115,25 +116,36 @@ export async function POST(request: NextRequest) {
       const companyName = row[companyNameIndex]?.toString().trim();
       let email = row[emailIndex]?.toString().trim();
 
-      // 验证数据
+      // 验证公司名称
       if (!companyName) {
         errors.push(`第${i + 1}行: 公司名称不能为空`);
         continue;
       }
 
+      // 如果没有邮箱，跳过这一行
       if (!email) {
-        errors.push(`第${i + 1}行: 邮箱不能为空`);
-        continue;
+        continue; // 忽略没有邮箱的行
       }
 
-      // 提取邮箱地址 - 移除前面的文本（如"Eメール"）
+      // 检查是否包含邮箱地址
       const emailMatch = email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (emailMatch) {
-        email = emailMatch[0];
-      } else {
-        errors.push(`第${i + 1}行: 无法从文本中提取有效的邮箱地址`);
-        continue;
+      
+      if (!emailMatch) {
+        // 如果没有找到邮箱地址，检查是否包含非邮箱内容
+        const nonEmailContent = email.replace(/\s+/g, '').toLowerCase();
+        if (nonEmailContent.includes('email') || nonEmailContent.includes('メール') || nonEmailContent.includes('mail')) {
+          // 包含邮箱相关词汇但没有有效邮箱地址，终止操作
+          hasInvalidEmail = true;
+          errors.push(`第${i + 1}行: 包含邮箱相关词汇但格式不正确，请检查数据`);
+          break;
+        } else {
+          // 不包含邮箱相关词汇，跳过这一行
+          continue;
+        }
       }
+
+      // 提取邮箱地址
+      email = emailMatch[0];
 
       // 验证邮箱格式
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -147,6 +159,14 @@ export async function POST(request: NextRequest) {
         email: email.toLowerCase(),
         created_by: userId // 添加创建者ID
       });
+    }
+
+    // 如果发现无效邮箱格式，终止操作
+    if (hasInvalidEmail) {
+      return NextResponse.json({ 
+        success: false, 
+        error: `数据验证失败，请检查以下错误:\n${errors.join('\n')}` 
+      }, { status: 400 });
     }
 
     if (errors.length > 0) {

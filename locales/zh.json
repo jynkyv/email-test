@@ -159,8 +159,9 @@
     "excelFormat": "Excel文件格式要求",
     "excelRequirements": "请确保Excel文件包含以下列：",
     "excelColumn1": "公司名称/会社名/法人名 - 客户的企业名称",
-    "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持包含前缀的格式，如'Eメール xxx@xxx.com'）",
+    "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持多种格式：纯邮箱、带前缀如'Eメール xxx@xxx.com'、无邮箱则跳过该行）",
     "excelColumn3": "第一行必须是标题行",
+    "excelColumn4": "如果邮箱格式不正确或包含无效内容，将终止上传并提示检查",
     "downloadTemplate": "下载Excel模板",
     "selectAllCurrentPage": "全选当前页面"
   },
