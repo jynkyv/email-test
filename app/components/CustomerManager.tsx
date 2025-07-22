@@ -40,6 +40,11 @@ export default function CustomerManager() {
   const { user, userRole } = useAuth();
   const { t } = useI18n();
   
+  // 分页相关状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [total, setTotal] = useState(0);
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -54,10 +59,10 @@ export default function CustomerManager() {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = currentPage, size = pageSize) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/customers', {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -66,6 +71,9 @@ export default function CustomerManager() {
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers);
+        setTotal(data.total);
+        setCurrentPage(page);
+        setPageSize(size);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -327,11 +335,20 @@ export default function CustomerManager() {
           dataSource={customers}
           columns={columns}
           rowKey="id"
+          loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: total,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total) => t('common.totalRecords', { total }),
+            onChange: (page, size) => {
+              fetchCustomers(page, size);
+            },
+            onShowSizeChange: (current, size) => {
+              fetchCustomers(1, size);
+            },
           }}
           locale={{
             emptyText: t('customer.noCustomers'),

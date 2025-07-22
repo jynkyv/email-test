@@ -14,8 +14,8 @@
     "save": "保存",
     "submit": "送信",
     "back": "戻る",
-    "next": "次へ",
-    "previous": "前へ",
+    "next": "次ページ",
+    "previous": "前ページ",
     "search": "検索",
     "filter": "フィルター",
     "sort": "並び替え",
@@ -37,7 +37,8 @@
     "notFound": "ページが見つかりません",
     "internalError": "内部エラー",
     "totalRecords": "合計 {total} 件",
-    "actions": "操作"
+    "actions": "操作",
+    "pageInfo": "{current}ページ / {total}ページ"
   },
   "auth": {
     "login": "ログイン",
@@ -160,7 +161,8 @@
     "excelColumn1": "会社名/法人名 - 顧客の企業名",
     "excelColumn2": "E-Mail/メールアドレス - 顧客のメールアドレス（'Eメール xxx@xxx.com'のような形式も対応）",
     "excelColumn3": "最初の行はヘッダー行である必要があります",
-    "downloadTemplate": "Excelテンプレートをダウンロード"
+    "downloadTemplate": "Excelテンプレートをダウンロード",
+    "selectAllCurrentPage": "現在のページをすべて選択"
   },
   "user": {
     "user": "従業員",

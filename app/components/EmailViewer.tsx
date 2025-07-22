@@ -81,12 +81,17 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
   const [selectedEmailIds, setSelectedEmailIds] = useState<string[]>([]);
+  
+  // 客户列表分页相关状态
+  const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
+  const [customerPageSize, setCustomerPageSize] = useState(50);
+  const [customerTotal, setCustomerTotal] = useState(0);
 
   // 获取客户列表
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = 1, size = 50) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch('/api/customers', {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -95,6 +100,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
+        setCustomerTotal(data.total || 0);
+        setCustomerCurrentPage(page);
+        setCustomerPageSize(size);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -297,7 +305,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             </Tooltip>
             <Button
               icon={<ReloadOutlined />}
-              onClick={fetchCustomers}
+              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize)}
               loading={loadingCustomers}
             >
               {t('email.refreshCustomers')}
@@ -310,7 +318,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         {/* 客户列表 */}
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
-            <span className="text-sm font-medium">{t('customer.customerList')}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">{t('customer.customerList')}</span>
+              <span className="text-xs text-gray-500">
+                {t('common.totalRecords', { total: customerTotal })}
+              </span>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {loadingCustomers ? (
@@ -354,6 +367,33 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             )}
           </div>
+          
+          {/* 客户列表分页 */}
+          {!loadingCustomers && customers.length > 0 && (
+            <div className="px-4 py-3 border-t bg-gray-50 flex-shrink-0">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">
+                  {t('common.pageInfo', { current: customerCurrentPage, total: Math.ceil(customerTotal / customerPageSize) })}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="small"
+                    disabled={customerCurrentPage === 1}
+                    onClick={() => fetchCustomers(customerCurrentPage - 1, customerPageSize)}
+                  >
+                    {t('common.previous')}
+                  </Button>
+                  <Button
+                    size="small"
+                    disabled={customerCurrentPage >= Math.ceil(customerTotal / customerPageSize)}
+                    onClick={() => fetchCustomers(customerCurrentPage + 1, customerPageSize)}
+                  >
+                    {t('common.next')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 邮件列表 */}

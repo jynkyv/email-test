@@ -14,8 +14,8 @@
     "save": "保存",
     "submit": "提交",
     "back": "返回",
-    "next": "下一步",
-    "previous": "上一步",
+    "next": "下一页",
+    "previous": "上一页",
     "search": "搜索",
     "filter": "筛选",
     "sort": "排序",
@@ -37,7 +37,8 @@
     "notFound": "页面不存在",
     "internalError": "内部错误",
     "totalRecords": "共 {total} 条记录",
-    "actions": "操作"
+    "actions": "操作",
+    "pageInfo": "第 {current} 页，共 {total} 页"
   },
   "auth": {
     "login": "登录",
@@ -160,7 +161,8 @@
     "excelColumn1": "公司名称/会社名/法人名 - 客户的企业名称",
     "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持包含前缀的格式，如'Eメール xxx@xxx.com'）",
     "excelColumn3": "第一行必须是标题行",
-    "downloadTemplate": "下载Excel模板"
+    "downloadTemplate": "下载Excel模板",
+    "selectAllCurrentPage": "全选当前页面"
   },
   "user": {
     "user": "员工",
