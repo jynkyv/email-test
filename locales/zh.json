@@ -137,7 +137,22 @@
     "customerNamePlaceholder": "请输入企业名称",
     "emailPlaceholder": "请输入邮箱地址",
     "deleteConfirmTitle": "确认删除客户",
-    "deleteConfirmDescription": "确定要删除客户 \"{name}\" 吗？此操作不可撤销。"
+    "deleteConfirmDescription": "确定要删除客户 \"{name}\" 吗？此操作不可撤销。",
+    "bulkUpload": "批量上传",
+    "uploadExcel": "上传Excel",
+    "selectExcelFile": "选择Excel文件",
+    "onlyExcelAllowed": "只支持Excel文件格式(.xlsx, .xls)",
+    "fileTooLarge": "文件大小不能超过5MB",
+    "pleaseSelectFile": "请选择要上传的文件",
+    "uploading": "正在上传...",
+    "bulkUploadSuccess": "成功导入 {count} 个客户",
+    "bulkUploadFailed": "批量上传失败",
+    "excelFormat": "Excel文件格式要求",
+    "excelRequirements": "请确保Excel文件包含以下列：",
+    "excelColumn1": "公司名称/会社名/法人名 - 客户的企业名称",
+    "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持包含前缀的格式，如'Eメール xxx@xxx.com'）",
+    "excelColumn3": "第一行必须是标题行",
+    "downloadTemplate": "下载Excel模板"
   },
   "user": {
     "user": "员工",

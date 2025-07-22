@@ -137,7 +137,22 @@
     "customerNamePlaceholder": "企業名を入力してください",
     "emailPlaceholder": "メールアドレスを入力してください",
     "deleteConfirmTitle": "顧客削除の確認",
-    "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。"
+    "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。",
+    "bulkUpload": "一括アップロード",
+    "uploadExcel": "Excelアップロード",
+    "selectExcelFile": "Excelファイルを選択",
+    "onlyExcelAllowed": "Excelファイル形式(.xlsx, .xls)のみ対応しています",
+    "fileTooLarge": "ファイルサイズは5MB以下にしてください",
+    "pleaseSelectFile": "アップロードするファイルを選択してください",
+    "uploading": "アップロード中...",
+    "bulkUploadSuccess": "{count}人の顧客を正常にインポートしました",
+    "bulkUploadFailed": "一括アップロードに失敗しました",
+    "excelFormat": "Excelファイル形式の要件",
+    "excelRequirements": "Excelファイルに以下の列が含まれていることを確認してください：",
+    "excelColumn1": "会社名/法人名 - 顧客の企業名",
+    "excelColumn2": "E-Mail/メールアドレス - 顧客のメールアドレス（'Eメール xxx@xxx.com'のような形式も対応）",
+    "excelColumn3": "最初の行はヘッダー行である必要があります",
+    "downloadTemplate": "Excelテンプレートをダウンロード"
   },
   "user": {
     "user": "従業員",
