@@ -178,10 +178,21 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     const from = getHeaderValue(email.payload.headers, 'From');
     const to = getHeaderValue(email.payload.headers, 'To');
     
-    // 如果发件人包含当前用户的邮箱，则认为是发出的邮件
-    const userEmail = user?.email || '';
-    return from.toLowerCase().includes(userEmail.toLowerCase()) || 
-           !to.toLowerCase().includes(customerEmail.toLowerCase());
+    // 提取邮箱地址的函数
+    const extractEmail = (emailString: string) => {
+      const emailMatch = emailString.match(/<(.+?)>/) || emailString.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      return emailMatch ? emailMatch[1] || emailMatch[2] : emailString.toLowerCase();
+    };
+    
+    const fromEmail = extractEmail(from);
+    const toEmails = to.split(',').map(email => extractEmail(email.trim()));
+    
+    // 如果发件人等于当前选择的客户邮箱，则认为是收到的邮件（已接收）
+    // 如果收件人包含当前选择的客户邮箱，则认为是发出的邮件（已发送）
+    const isFromCustomer = fromEmail.includes(customerEmail.toLowerCase());
+    const isToCustomer = toEmails.some(email => email.includes(customerEmail.toLowerCase()));
+    
+    return !isFromCustomer && isToCustomer;
   };
 
   // 判断邮件是否已读
