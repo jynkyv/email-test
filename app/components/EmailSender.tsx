@@ -402,15 +402,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   children: (
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-medium text-gray-800 mb-2">{t('email.templatePreview')}</h4>
-                        <p className="text-sm text-gray-600 mb-3">{t('email.templateDescription')}</p>
                         <div className="bg-white border rounded-lg p-4">
-                          <div className="text-center">
-                            <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow" 
-                                 onClick={() => setShowTemplatePreview(true)}
-                                 style={{ maxWidth: '300px' }}>
-                              <h3 className="text-lg font-semibold mb-2">邮件模板</h3>
-                              <p className="text-sm opacity-90">点击预览完整效果</p>
+                          <div className="flex items-start min-h-[200px]">
+                            <div
+                              className="bg-white border border-gray-200 rounded-lg shadow p-4 text-left w-full max-w-[400px] min-h-[120px] flex flex-col justify-center cursor-pointer hover:shadow-md transition-shadow"
+                              onClick={() => setShowTemplatePreview(true)}
+                            >
+                              <h3 className="text-base font-semibold mb-2 text-gray-800">邮件模板</h3>
+                              <p className="text-sm text-gray-500">点击预览完整效果</p>
                             </div>
                           </div>
                         </div>

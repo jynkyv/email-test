@@ -89,8 +89,6 @@
     "contentRequired": "メール内容を入力してください",
     "textMode": "テキスト",
     "templateMode": "HTMLテンプレート",
-    "templatePreview": "HTMLテンプレートプレビュー",
-    "templateDescription": "プリセットHTMLテンプレートを使用して美しいメールを送信します。下のカードをクリックして完全な効果をプレビューしてください。",
     "recipientsRequired": "少なくとも1人の顧客を選択してください",
     "noRecipients": "少なくとも1人の顧客を選択してください",
     "reply": "返信",
