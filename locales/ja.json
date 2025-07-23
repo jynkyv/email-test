@@ -37,6 +37,7 @@
     "notFound": "ページが見つかりません",
     "internalError": "内部エラー",
     "totalRecords": "合計 {total} 件",
+    "pageInfo": "ページ {current} / {total} 件",
     "actions": "操作"
   },
   "auth": {
