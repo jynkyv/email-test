@@ -114,7 +114,22 @@
     "emailTemplate": "邮件模板",
     "templateDescription": "点击预览完整效果",
     "previewTemplate": "预览模板",
-    "selectTemplate": "选择模板"
+    "selectTemplate": "选择模板",
+    "templateSubtitle": "副标题或描述",
+    "templateMainContent": "主要内容",
+    "templateContentDescription": "这里是邮件的主要内容。您可以在这里添加文字、图片、链接等。",
+    "templateImportantInfo": "重要信息",
+    "templateInfoItem1": "第一项重要信息",
+    "templateInfoItem2": "第二项重要信息",
+    "templateInfoItem3": "第三项重要信息",
+    "templateButtonText": "点击按钮",
+    "templateFooter": "© 2024 公司名称. 保留所有权利.",
+    "templateFeature1": "产品特色",
+    "templateFeature1Desc": "我们的产品具有独特的功能和优势",
+    "templateFeature2": "客户服务",
+    "templateFeature2Desc": "24/7专业客户服务支持",
+    "templateQRDesc": "扫描二维码获取更多信息",
+    "templateFooterNote": "感谢您的关注与支持"
   },
   "customer": {
     "customer": "客户",

@@ -114,7 +114,22 @@
     "emailTemplate": "メールテンプレート",
     "templateDescription": "クリックして完全な効果をプレビュー",
     "previewTemplate": "テンプレートをプレビュー",
-    "selectTemplate": "テンプレートを選択"
+    "selectTemplate": "テンプレートを選択",
+    "templateSubtitle": "サブタイトルまたは説明",
+    "templateMainContent": "メインコンテンツ",
+    "templateContentDescription": "ここにメールのメインコンテンツを追加できます。テキスト、画像、リンクなどを追加できます。",
+    "templateImportantInfo": "重要な情報",
+    "templateInfoItem1": "重要な情報項目1",
+    "templateInfoItem2": "重要な情報項目2",
+    "templateInfoItem3": "重要な情報項目3",
+    "templateButtonText": "ボタンをクリック",
+    "templateFooter": "© 2024 会社名. 全著作権所有.",
+    "templateFeature1": "製品特色",
+    "templateFeature1Desc": "私たちの製品は独特な機能と利点があります",
+    "templateFeature2": "カスタマーサービス",
+    "templateFeature2Desc": "24/7専門カスタマーサービスサポート",
+    "templateQRDesc": "QRコードをスキャンして詳細情報を取得",
+    "templateFooterNote": "ご関心とご支援に感謝いたします"
   },
   "customer": {
     "customer": "顧客",
