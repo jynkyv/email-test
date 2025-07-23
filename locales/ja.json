@@ -108,7 +108,12 @@
     "myCustomers": "私の顧客",
     "refreshCustomers": "顧客を更新",
     "customerEmails": "{customerName}のメール",
-    "addedToRecipients": "宛先リストに追加されました"
+    "addedToRecipients": "宛先リストに追加されました",
+    "templatePreview": "テンプレートプレビュー",
+    "emailTemplate": "メールテンプレート",
+    "templateDescription": "クリックして完全な効果をプレビュー",
+    "previewTemplate": "テンプレートをプレビュー",
+    "selectTemplate": "テンプレートを選択"
   },
   "customer": {
     "customer": "顧客",

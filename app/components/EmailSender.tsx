@@ -62,6 +62,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 模板预览相关状态
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
   
+  // 模板选择状态
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  
   // 客户选择相关状态
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -201,51 +204,56 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     if (contentMode === 'text') {
       emailContent = values.content;
     } else {
-      // 模板模式使用固定的HTML模板
-      emailContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>邮件模板</title>
-        </head>
-        <body>
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-              <h1 style="margin: 0; font-size: 28px;">邮件标题</h1>
-              <p style="margin: 10px 0 0 0; opacity: 0.9;">副标题或描述</p>
-            </div>
-            
-            <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-              <h2 style="color: #333; margin-bottom: 20px;">主要内容</h2>
-              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-                这里是邮件的主要内容。您可以在这里添加文字、图片、链接等。
-              </p>
-              
-              <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #495057; margin-bottom: 15px;">重要信息</h3>
-                <ul style="color: #666; line-height: 1.6;">
-                  <li>第一项重要信息</li>
-                  <li>第二项重要信息</li>
-                  <li>第三项重要信息</li>
-                </ul>
+      // 模板模式使用选中的模板或默认模板
+      if (selectedTemplate) {
+        emailContent = selectedTemplate;
+      } else {
+        // 默认HTML模板
+        emailContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${t('email.emailTemplate')}</title>
+          </head>
+          <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="margin: 0; font-size: 28px;">${t('email.emailTemplate')}</h1>
+                <p style="margin: 10px 0 0 0; opacity: 0.9;">副标题或描述</p>
               </div>
               
-              <div style="text-align: center; margin-top: 30px;">
-                <a href="#" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                  点击按钮
-                </a>
+              <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">主要内容</h2>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                  这里是邮件的主要内容。您可以在这里添加文字、图片、链接等。
+                </p>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #495057; margin-bottom: 15px;">重要信息</h3>
+                  <ul style="color: #666; line-height: 1.6;">
+                    <li>第一项重要信息</li>
+                    <li>第二项重要信息</li>
+                    <li>第三项重要信息</li>
+                  </ul>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                  <a href="#" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                    点击按钮
+                  </a>
+                </div>
+              </div>
+              
+              <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+                <p>© 2024 公司名称. 保留所有权利.</p>
               </div>
             </div>
-            
-            <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-              <p>© 2024 公司名称. 保留所有权利.</p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `;
+          </body>
+          </html>
+        `;
+      }
     }
 
     // 逐个发送邮件
@@ -404,18 +412,30 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   key: 'template',
                   label: t('email.templateMode'),
                   children: (
-                    <div className="space-y-4">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="bg-white border rounded-lg p-4">
-                          <div className="flex items-start min-h-[200px]">
-                            <div
-                              className="bg-white border border-gray-200 rounded-lg shadow p-4 text-left w-full max-w-[400px] min-h-[120px] flex flex-col justify-center cursor-pointer hover:shadow-md transition-shadow"
-                              onClick={() => setShowTemplatePreview(true)}
-                            >
-                              <h3 className="text-base font-semibold mb-2 text-gray-800">邮件模板</h3>
-                              <p className="text-sm text-gray-500">点击预览完整效果</p>
-                            </div>
-                          </div>
+                    <div className="space-y-4 min-h-[272px]">
+                      <div
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all w-64 h-32 flex flex-col ${
+                          selectedTemplate 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setSelectedTemplate(selectedTemplate ? null : 'default')}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-sm font-semibold text-gray-800">{t('email.emailTemplate')}</h3>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-2 flex-1">{t('email.templateDescription')}</p>
+                        <div className="mt-auto">
+                          <Button
+                            type="primary"
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowTemplatePreview(true);
+                            }}
+                          >
+                            {t('email.previewTemplate')}
+                          </Button>
                         </div>
                       </div>
                     </div>

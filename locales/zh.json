@@ -108,7 +108,12 @@
     "myCustomers": "我的客户",
     "refreshCustomers": "刷新客户",
     "customerEmails": "{customerName} 的邮件",
-    "addedToRecipients": "已添加到收件人列表"
+    "addedToRecipients": "已添加到收件人列表",
+    "templatePreview": "模板预览",
+    "emailTemplate": "邮件模板",
+    "templateDescription": "点击预览完整效果",
+    "previewTemplate": "预览模板",
+    "selectTemplate": "选择模板"
   },
   "customer": {
     "customer": "客户",
