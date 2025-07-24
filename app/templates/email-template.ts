@@ -19,30 +19,18 @@ export function getDefaultEmailTemplate(config: EmailTemplateConfig): string {
     <body style="margin: 0; padding: 0;">
       <div style="max-width: 750px; margin: 0 auto;">
         <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-          <img src="${baseUrl}/header.png" alt="Header" style="width: 100%; display: block;">
+          <img src="${baseUrl}/header.png" style="width: 100%; display: block;">
         </a>
-        <img src="${baseUrl}/hero.png" alt="Hero" style="width: 100%; display: block;">
+        <img src="${baseUrl}/hero.png" style="width: 100%; display: block;">
         <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-          <img src="${baseUrl}/web-button.png" alt="Web Button" style="width: 100%; display: block;">
+          <img src="${baseUrl}/web-button.png" style="width: 100%; display: block;">
         </a>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0 20px 0;">
-          <img src="${baseUrl}/flag.png" alt="Flag" style="width:60%; height: auto;">
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-            <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-              <img src="${baseUrl}/qrcode-1.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-              <img src="${baseUrl}/app-store.png" alt="App Store" style="width: 100%; height: auto;">
-            </a>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; width: 10%; margin-right: 5%">
-            <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-              <img src="${baseUrl}/qrcode-2.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-              <img src="${baseUrl}/google-play.png" alt="Google Play" style="width: 100%; height: auto;">
-            </a>
-          </div>
-        </div>
-        <img src="${baseUrl}/detail.png" alt="Detail" style="width: 100%; display: block;">
         <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-          <img src="${baseUrl}/telephone.png" alt="Telephone" style="width: 100%; display: block;">
+          <img src="${baseUrl}/qr-code.png" style="width: 100%; display: block;">
+        </a>
+        <img src="${baseUrl}/detail.png" style="width: 100%; display: block;">
+        <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
+          <img src="${baseUrl}/telephone.png" style="width: 100%; display: block;">
         </a>
       </div>
     </body>
