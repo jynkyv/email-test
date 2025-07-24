@@ -1,80 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
 import { supabase } from '@/lib/supabase';
-
-// Google OAuth2 配置
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-// 设置刷新token
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
-
-// 创建Gmail API实例
-const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-
-// 编码邮件主题（支持中文、日文等多字节字符）
-function encodeSubject(subject: string): string {
-  // 检测是否包含非ASCII字符
-  const hasNonAscii = /[^\x00-\x7F]/.test(subject);
-  
-  if (hasNonAscii) {
-    // 对包含非ASCII字符的主题进行Base64编码
-    return `=?UTF-8?B?${Buffer.from(subject, 'utf-8').toString('base64')}?=`;
-  } else {
-    // ASCII字符直接返回
-    return subject;
-  }
-}
-
-// 编码邮件内容（支持中文、日文等多字节字符）
-function encodeContent(content: string): string {
-  // 确保内容使用UTF-8编码
-  return Buffer.from(content, 'utf-8').toString('utf-8');
-}
-
-// 发送单封邮件
-async function sendSingleEmail(to: string, subject: string, html: string) {
-  // 生成 Message-ID
-  const messageId = `<${Date.now()}.${Math.random().toString(36).substr(2, 9)}@${process.env.GOOGLE_EMAIL?.split('@')[1]}>`;
-
-  // 构建邮件头信息
-  const headers = [
-    `From: ${process.env.GOOGLE_EMAIL}`,
-    `To: ${to}`,
-    `Subject: ${encodeSubject(subject)}`,
-    `Message-ID: ${messageId}`,
-    `Date: ${new Date().toUTCString()}`,
-    `MIME-Version: 1.0`,
-    `X-Mailer: Email-Test-App`,
-    `Content-Type: text/html; charset=UTF-8`,
-    `Content-Transfer-Encoding: 8bit`,
-    ``,
-    encodeContent(html)
-  ];
-
-  // 使用正确的邮件头信息
-  const emailContent = headers.join('\r\n');
-
-  const message = {
-    raw: Buffer.from(emailContent, 'utf-8').toString('base64')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '')
-  };
-
-  const response = await gmail.users.messages.send({
-    userId: 'me',
-    requestBody: message,
-  });
-
-  return response.data;
-}
+import { sendSingleEmail, sendBulkEmails } from '@/lib/resend';
 
 // 发送邮件
 export async function POST(request: NextRequest) {
@@ -256,41 +182,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// 获取邮件列表
+// 获取邮件列表 - 暂时禁用，因为Resend不提供邮件接收功能
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || '';
-    const maxResults = parseInt(searchParams.get('maxResults') || '10');
-
-    const response = await gmail.users.messages.list({
-      userId: 'me',
-      q: query,
-      maxResults,
-    });
-
-    const messages = response.data.messages || [];
-    
-    const detailedMessages = await Promise.all(
-      messages.map(async (message) => {
-        const detail = await gmail.users.messages.get({
-          userId: 'me',
-          id: message.id!,
-        });
-        return detail.data;
-      })
-    );
-
-    return NextResponse.json({
-      success: true,
-      messages: detailedMessages,
-    });
-
-  } catch (error) {
-    console.error('获取邮件失败:', error);
-    return NextResponse.json(
-      { error: '获取邮件失败' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { error: '邮件接收功能暂不可用' },
+    { status: 501 }
+  );
 } 
