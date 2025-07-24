@@ -201,7 +201,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     const emailAddress = emailMatch ? emailMatch[1] || emailMatch[2] : from;
     
     // 构建回复内容
-    const replySubject = subject.startsWith('回复:') ? subject : `回复: ${subject}`;
+    const replySubject = subject.startsWith(t('email.replyPrefix')) ? subject : `${t('email.replyPrefix')} ${subject}`;
     const replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${content}`;
     
     if (onReply) {

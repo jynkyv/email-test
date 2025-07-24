@@ -372,10 +372,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   label: t('email.templateMode'),
                   children: (
                     <div className="space-y-4 min-h-[272px]">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="flex justify-center">
                         {/* 默认模板 */}
                         <div
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-64 w-80 flex flex-col ${
                             selectedTemplate === TemplateType.DEFAULT
                               ? 'border-blue-500 bg-blue-50' 
                               : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -383,63 +383,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                           onClick={() => setSelectedTemplate(TemplateType.DEFAULT)}
                         >
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-semibold text-gray-800">默认模板</h3>
+                            <h3 className="text-sm font-semibold text-gray-800">{t('email.defaultTemplate')}</h3>
                           </div>
-                          <p className="text-xs text-gray-500 mb-2 flex-1">完整的品牌展示模板，包含所有元素</p>
-                          <div className="mt-auto">
-                            <Button
-                              type="primary"
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowTemplatePreview(true);
-                              }}
-                            >
-                              {t('email.previewTemplate')}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* 简单模板 */}
-                        <div
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
-                            selectedTemplate === TemplateType.SIMPLE
-                              ? 'border-blue-500 bg-blue-50' 
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                          }`}
-                          onClick={() => setSelectedTemplate(TemplateType.SIMPLE)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-semibold text-gray-800">简单模板</h3>
-                          </div>
-                          <p className="text-xs text-gray-500 mb-2 flex-1">简洁的邮件模板，适合日常沟通</p>
-                          <div className="mt-auto">
-                            <Button
-                              type="primary"
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowTemplatePreview(true);
-                              }}
-                            >
-                              {t('email.previewTemplate')}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* 促销模板 */}
-                        <div
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
-                            selectedTemplate === TemplateType.PROMOTIONAL
-                              ? 'border-blue-500 bg-blue-50' 
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                          }`}
-                          onClick={() => setSelectedTemplate(TemplateType.PROMOTIONAL)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-semibold text-gray-800">促销模板</h3>
-                          </div>
-                          <p className="text-xs text-gray-500 mb-2 flex-1">带有促销元素的模板，适合营销活动</p>
+                          <p className="text-xs text-gray-500 mb-2 flex-1">{t('email.defaultTemplateDesc')}</p>
                           <div className="mt-auto">
                             <Button
                               type="primary"

@@ -129,7 +129,10 @@
     "templateFeature2": "客户服务",
     "templateFeature2Desc": "24/7专业客户服务支持",
     "templateQRDesc": "扫描二维码获取更多信息",
-    "templateFooterNote": "感谢您的关注与支持"
+    "templateFooterNote": "感谢您的关注与支持",
+    "defaultTemplate": "默认模板",
+    "defaultTemplateDesc": "完整的品牌展示模板，包含所有元素",
+    "replyPrefix": "回复:"
   },
   "customer": {
     "customer": "客户",
@@ -162,18 +165,29 @@
     "deleteConfirmTitle": "确认删除客户",
     "deleteConfirmDescription": "确定要删除客户 \"{name}\" 吗？此操作不可撤销。"
   },
-  "user": {
-    "user": "员工",
-    "users": "员工",
-    "userList": "员工列表",
-    "createUser": "创建新员工",
-    "editUser": "编辑员工",
-    "deleteUser": "删除员工",
-    "username": "用户名",
-    "password": "密码",
-    "role": "角色",
-    "admin": "管理员",
-    "employee": "员工",
+      "settings": {
+      "emailSettings": "邮件设置",
+      "settingsSaved": "设置已保存",
+      "maxResults": "最大结果数",
+      "maxResultsRequired": "请输入最大结果数",
+      "maxResultsRange": "最大结果数必须在1-500之间",
+      "emails": "封邮件",
+      "maxResultsPlaceholder": "请输入最大结果数",
+      "maxResultsDescription": "设置每次加载邮件的最大数量，数值越大加载越慢",
+      "saveSettings": "保存设置"
+    },
+    "user": {
+      "user": "员工",
+      "users": "员工",
+      "userList": "员工列表",
+      "createUser": "创建新员工",
+      "editUser": "编辑员工",
+      "deleteUser": "删除员工",
+      "username": "用户名",
+      "password": "密码",
+      "role": "角色",
+      "admin": "管理员",
+      "employee": "员工",
     "usernameRequired": "请输入用户名",
     "passwordRequired": "请输入密码",
     "roleRequired": "请选择角色",

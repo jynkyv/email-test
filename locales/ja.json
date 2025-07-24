@@ -129,7 +129,10 @@
     "templateFeature2": "カスタマーサービス",
     "templateFeature2Desc": "24/7専門カスタマーサービスサポート",
     "templateQRDesc": "QRコードをスキャンして詳細情報を取得",
-    "templateFooterNote": "ご関心とご支援に感謝いたします"
+    "templateFooterNote": "ご関心とご支援に感謝いたします",
+    "defaultTemplate": "デフォルトテンプレート",
+    "defaultTemplateDesc": "完全なブランド表示テンプレート、すべての要素を含む",
+    "replyPrefix": "返信:"
   },
   "customer": {
     "customer": "顧客",
@@ -162,18 +165,29 @@
     "deleteConfirmTitle": "顧客削除の確認",
     "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。"
   },
-  "user": {
-    "user": "従業員",
-    "users": "従業員",
-    "userList": "従業員リスト",
-    "createUser": "新規従業員作成",
-    "editUser": "従業員編集",
-    "deleteUser": "従業員削除",
-    "username": "ユーザー名",
-    "password": "パスワード",
-    "role": "役割",
-    "admin": "管理者",
-    "employee": "従業員",
+      "settings": {
+      "emailSettings": "メール設定",
+      "settingsSaved": "設定が保存されました",
+      "maxResults": "最大結果数",
+      "maxResultsRequired": "最大結果数を入力してください",
+      "maxResultsRange": "最大結果数は1-500の間である必要があります",
+      "emails": "通のメール",
+      "maxResultsPlaceholder": "最大結果数を入力してください",
+      "maxResultsDescription": "一度に読み込むメールの最大数を設定します。数値が大きいほど読み込みが遅くなります",
+      "saveSettings": "設定を保存"
+    },
+    "user": {
+      "user": "従業員",
+      "users": "従業員",
+      "userList": "従業員リスト",
+      "createUser": "新規従業員作成",
+      "editUser": "従業員編集",
+      "deleteUser": "従業員削除",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "role": "役割",
+      "admin": "管理者",
+      "employee": "従業員",
     "usernameRequired": "ユーザー名を入力してください",
     "passwordRequired": "パスワードを入力してください",
     "roleRequired": "役割を選択してください",
