@@ -61,6 +61,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   
+  // 弹窗内的临时选择状态
+  const [tempSelectedCustomers, setTempSelectedCustomers] = useState<Customer[]>([]);
+  
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
@@ -128,19 +131,24 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 打开客户选择弹窗
   const handleOpenCustomerModal = () => {
+    // 将当前选择复制到临时选择状态
+    setTempSelectedCustomers([...selectedCustomers]);
     setShowCustomerModal(true);
     fetchCustomers();
   };
 
   // 确认选择客户
   const handleConfirmCustomers = () => {
+    // 将临时选择应用到实际选择
+    setSelectedCustomers([...tempSelectedCustomers]);
     setShowCustomerModal(false);
-    message.success(t('customer.customersSelected', { count: selectedCustomers.length }));
+    message.success(t('customer.customersSelected', { count: tempSelectedCustomers.length }));
   };
 
   // 取消选择客户
   const handleCancelCustomers = () => {
-    setSelectedCustomers([]);
+    // 取消时清空临时选择，关闭弹窗
+    setTempSelectedCustomers([]);
     setShowCustomerModal(false);
   };
 
@@ -148,13 +156,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const handleCustomerToggle = (customer: Customer, checked: boolean) => {
     if (checked) {
       // 检查是否超过50人的限制
-      if (selectedCustomers.length >= 50) {
+      if (tempSelectedCustomers.length >= 50) {
         message.warning(t('email.maxRecipientsReached', { max: 50 }));
         return;
       }
-      setSelectedCustomers(prev => [...prev, customer]);
+      setTempSelectedCustomers(prev => [...prev, customer]);
     } else {
-      setSelectedCustomers(prev => prev.filter(c => c.id !== customer.id));
+      setTempSelectedCustomers(prev => prev.filter(c => c.id !== customer.id));
     }
   };
 
@@ -163,23 +171,23 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     if (checked) {
       // 添加当前页面的所有客户（排除已选择的）
       const currentPageCustomers = customers.filter(
-        customer => !selectedCustomers.some(selected => selected.id === customer.id)
+        customer => !tempSelectedCustomers.some(selected => selected.id === customer.id)
       );
       
       // 检查是否超过50人的限制
-      const remainingSlots = 50 - selectedCustomers.length;
+      const remainingSlots = 50 - tempSelectedCustomers.length;
       if (currentPageCustomers.length > remainingSlots) {
         message.warning(t('email.maxRecipientsReached', { max: 50 }));
         // 只添加能容纳的数量
         const customersToAdd = currentPageCustomers.slice(0, remainingSlots);
-        setSelectedCustomers(prev => [...prev, ...customersToAdd]);
+        setTempSelectedCustomers(prev => [...prev, ...customersToAdd]);
       } else {
-        setSelectedCustomers(prev => [...prev, ...currentPageCustomers]);
+        setTempSelectedCustomers(prev => [...prev, ...currentPageCustomers]);
       }
     } else {
       // 移除当前页面的所有客户
       const currentPageCustomerIds = customers.map(customer => customer.id);
-      setSelectedCustomers(prev => 
+      setTempSelectedCustomers(prev => 
         prev.filter(customer => !currentPageCustomerIds.includes(customer.id))
       );
     }
@@ -189,14 +197,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const isCurrentPageAllSelected = () => {
     if (customers.length === 0) return false;
     return customers.every(customer => 
-      selectedCustomers.some(selected => selected.id === customer.id)
+      tempSelectedCustomers.some(selected => selected.id === customer.id)
     );
   };
 
   // 检查当前页面是否部分选中
   const isCurrentPageIndeterminate = () => {
     const selectedCount = customers.filter(customer => 
-      selectedCustomers.some(selected => selected.id === customer.id)
+      tempSelectedCustomers.some(selected => selected.id === customer.id)
     ).length;
     return selectedCount > 0 && selectedCount < customers.length;
   };
@@ -435,13 +443,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         okText={t('common.confirm')}
         cancelText={t('common.cancel')}
         okButtonProps={{
-          disabled: selectedCustomers.length === 0
+          disabled: tempSelectedCustomers.length === 0
         }}
       >
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
-            {t('customer.customersSelected', { count: selectedCustomers.length })}
-            {selectedCustomers.length >= 50 && (
+            {t('customer.customersSelected', { count: tempSelectedCustomers.length })}
+            {tempSelectedCustomers.length >= 50 && (
               <span className="text-orange-600 ml-2">
                 ({t('email.maxRecipientsLimit', { max: 50 })})
               </span>
@@ -504,7 +512,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                               </div>
                             </div>
                             <Checkbox
-                              checked={selectedCustomers.some(c => c.id === customer.id)}
+                              checked={tempSelectedCustomers.some(c => c.id === customer.id)}
                               onChange={(e) => handleCustomerToggle(customer, e.target.checked)}
                             />
                           </div>
