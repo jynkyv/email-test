@@ -38,7 +38,8 @@
     "internalError": "内部错误",
     "totalRecords": "共 {total} 条记录",
     "actions": "操作",
-    "pageInfo": "第 {current} 页，共 {total} 页"
+    "pageInfo": "第 {current} 页，共 {total} 页",
+    "clearFilter": "清空筛选"
   },
   "auth": {
     "login": "登录",
@@ -179,7 +180,10 @@
     "checkExistingError": "检查现有数据时发生错误",
     "allEmailsExist": "所有客户邮箱都已存在",
     "insertError": "批量插入客户数据时发生错误",
-    "processingError": "处理上传文件时发生错误"
+    "processingError": "处理上传文件时发生错误",
+    "filterByCreationTime": "按创建时间筛选",
+    "startDate": "开始日期",
+    "endDate": "结束日期"
   },
   "user": {
     "user": "员工",

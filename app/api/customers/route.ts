@@ -7,7 +7,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '50');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     const authHeader = request.headers.get('authorization');
+    
+    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate });
     
     if (!authHeader) {
       return NextResponse.json(
@@ -40,22 +44,45 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('customers')
       .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range(from, to);
+      .order('created_at', { ascending: false });
 
     // 如果不是管理员，只能查看自己创建的客户
     if (userData.role !== 'admin') {
       query = query.eq('created_by', userId);
     }
 
+    // 添加时间筛选（在分页之前应用）
+    if (startDate) {
+      query = query.gte('created_at', startDate);
+    }
+    if (endDate) {
+      // 将结束日期设置为当天的最后一刻
+      const endDateTime = new Date(endDate);
+      endDateTime.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', endDateTime.toISOString());
+    }
+
+    // 应用分页（在筛选之后）
+    query = query.range(from, to);
+
     const { data: customers, error, count } = await query;
 
     if (error) {
+      console.error('数据库查询错误:', error);
       return NextResponse.json(
         { error: '获取客户列表失败' },
         { status: 500 }
       );
     }
+
+    console.log('客户列表查询结果:', { 
+      customersCount: customers?.length, 
+      totalCount: count, 
+      page, 
+      pageSize,
+      startDate,
+      endDate
+    });
 
     return NextResponse.json({
       success: true,

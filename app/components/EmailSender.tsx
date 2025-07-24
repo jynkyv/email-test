@@ -16,7 +16,8 @@ import {
   List,
   Checkbox,
   Avatar,
-  Spin
+  Spin,
+  DatePicker
 } from 'antd';
 import { 
   SendOutlined, 
@@ -27,6 +28,7 @@ import {
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 interface ReplyData {
   to: string;
@@ -64,6 +66,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 弹窗内的临时选择状态
   const [tempSelectedCustomers, setTempSelectedCustomers] = useState<Customer[]>([]);
   
+  // 时间筛选相关状态
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
@@ -73,7 +79,19 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const fetchCustomers = async (page = 1, size = 50) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
+      let url = `/api/customers?page=${page}&pageSize=${size}`;
+      
+      // 添加时间筛选参数
+      if (startDate) {
+        url += `&startDate=${startDate.toISOString()}`;
+      }
+      if (endDate) {
+        url += `&endDate=${endDate.toISOString()}`;
+      }
+      
+      console.log('获取客户列表URL:', url);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -84,6 +102,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setTotal(data.total || 0);
         setCurrentPage(page);
         setPageSize(size);
+        console.log('客户列表获取成功:', { 
+          customers: data.customers?.length, 
+          total: data.total, 
+          page, 
+          pageSize: size,
+          startDate: startDate?.toISOString(),
+          endDate: endDate?.toISOString()
+        });
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -133,8 +159,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const handleOpenCustomerModal = () => {
     // 将当前选择复制到临时选择状态
     setTempSelectedCustomers([...selectedCustomers]);
+    // 重置时间筛选和分页
+    setStartDate(null);
+    setEndDate(null);
+    setCurrentPage(1);
     setShowCustomerModal(true);
-    fetchCustomers();
+    // 手动获取数据，因为useEffect可能不会立即触发
+    setTimeout(() => {
+      fetchCustomers(1, pageSize);
+    }, 0);
   };
 
   // 确认选择客户
@@ -217,6 +250,39 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 清空所有收件人
   const handleClearAllRecipients = () => {
     setSelectedCustomers([]);
+  };
+
+  // 处理时间筛选变化
+  const handleDateRangeChange = (dates: any) => {
+    console.log('日期选择变化:', dates);
+    if (dates && dates.length === 2) {
+      const newStartDate = dates[0].toDate();
+      const newEndDate = dates[1].toDate();
+      console.log('设置新的日期范围:', { newStartDate, newEndDate });
+      setStartDate(newStartDate);
+      setEndDate(newEndDate);
+    } else {
+      console.log('清空日期范围');
+      setStartDate(null);
+      setEndDate(null);
+    }
+    // 重置到第一页
+    setCurrentPage(1);
+  };
+
+  // 监听时间筛选变化，重新获取数据
+  useEffect(() => {
+    if (showCustomerModal) {
+      console.log('时间筛选变化，重新获取数据:', { startDate, endDate });
+      fetchCustomers(1, pageSize);
+    }
+  }, [startDate, endDate, showCustomerModal]);
+
+  // 清空时间筛选
+  const handleClearDateFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setCurrentPage(1);
   };
 
   const handleSubmit = async (values: {
@@ -461,6 +527,28 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             <div className="text-sm text-blue-800">
               <strong>{t('email.recipientsLimitNotice', { max: 50 })}</strong>
             </div>
+          </div>
+          
+          {/* 时间筛选 */}
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">{t('customer.filterByCreationTime')}</span>
+              {(startDate || endDate) && (
+                <Button 
+                  size="small" 
+                  type="text" 
+                  onClick={handleClearDateFilter}
+                >
+                  {t('common.clearFilter')}
+                </Button>
+              )}
+            </div>
+            <RangePicker
+              className="w-full"
+              placeholder={[t('customer.startDate'), t('customer.endDate')]}
+              onChange={handleDateRangeChange}
+              format="YYYY-MM-DD"
+            />
           </div>
           
           {loadingCustomers ? (
