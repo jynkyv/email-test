@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { getEmailTemplate, getPreviewEmailTemplate, TemplateType, EmailTemplateConfig } from '@/app/templates/email-template';
 import { 
   Form, 
   Input, 
@@ -63,7 +64,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [showTemplatePreview, setShowTemplatePreview] = useState(false);
   
   // 模板选择状态
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>('default');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(TemplateType.DEFAULT);
   
   // 客户选择相关状态
   const [showCustomerModal, setShowCustomerModal] = useState(false);
@@ -204,96 +205,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     if (contentMode === 'text') {
       emailContent = values.content;
     } else {
-      // 模板模式使用选中的模板或默认模板
-      if (selectedTemplate === 'default') {
-        // 默认HTML模板
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        emailContent = `
-          <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${t('email.templatePreview')}</title>
-              </head>
-              <body style="margin: 0; padding: 0;">
-                <div style="max-width: 750px; margin: 0 auto;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/header.png" alt="Header" style="width: 100%; display: block;">
-                  </a>
-                  <img src="${baseUrl}/hero.png" alt="Hero" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/web-button.png" alt="Web Button" style="width: 100%; display: block;">
-                  </a>
-                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0 20px 0;">
-                    <img src="${baseUrl}/flag.png" alt="Flag" style="width:60%; height: auto;">
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${baseUrl}/qrcode-1.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${baseUrl}/app-store.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%; margin-right: 5%">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${baseUrl}/qrcode-2.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${baseUrl}/google-play.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                  </div>
-                  <img src="${baseUrl}/detail.png" alt="Detail" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/telephone.png" alt="Telephone" style="width: 100%; display: block;">
-                  </a>
-                </div>
-              </body>
-              </html>
-        `;
-      } else if (selectedTemplate) {
-        emailContent = selectedTemplate;
-      } else {
-        // 如果没有选择模板，使用默认模板
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        emailContent = `
-          <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${t('email.templatePreview')}</title>
-              </head>
-              <body style="margin: 0; padding: 0;">
-                <div style="max-width: 750px; margin: 0 auto;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/header.png" alt="Header" style="width: 100%; display: block;">
-                  </a>
-                  <img src="${baseUrl}/hero.png" alt="Hero" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/web-button.png" alt="Web Button" style="width: 100%; display: block;">
-                  </a>
-                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0 20px 0;">
-                    <img src="${baseUrl}/flag.png" alt="Flag" style="width:60%; height: auto;">
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${baseUrl}/qrcode-1.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${baseUrl}/app-store.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%; margin-right: 5%">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${baseUrl}/qrcode-2.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${baseUrl}/google-play.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                  </div>
-                  <img src="${baseUrl}/detail.png" alt="Detail" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${baseUrl}/telephone.png" alt="Telephone" style="width: 100%; display: block;">
-                  </a>
-                </div>
-              </body>
-              </html>
-        `;
-      }
+      // 模板模式使用模板系统
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+      const templateConfig: EmailTemplateConfig = {
+        baseUrl,
+        title: t('email.templatePreview')
+      };
+      
+      emailContent = getEmailTemplate(selectedTemplate, templateConfig);
     }
 
     // 逐个发送邮件
@@ -453,29 +372,86 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   label: t('email.templateMode'),
                   children: (
                     <div className="space-y-4 min-h-[272px]">
-                      <div
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all w-64 h-32 flex flex-col ${
-                          selectedTemplate 
-                            ? 'border-blue-500 bg-blue-50' 
-                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setSelectedTemplate(selectedTemplate ? null : 'default')}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-sm font-semibold text-gray-800">{t('email.emailTemplate')}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* 默认模板 */}
+                        <div
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
+                            selectedTemplate === TemplateType.DEFAULT
+                              ? 'border-blue-500 bg-blue-50' 
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setSelectedTemplate(TemplateType.DEFAULT)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-gray-800">默认模板</h3>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-2 flex-1">完整的品牌展示模板，包含所有元素</p>
+                          <div className="mt-auto">
+                            <Button
+                              type="primary"
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTemplatePreview(true);
+                              }}
+                            >
+                              {t('email.previewTemplate')}
+                            </Button>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-500 mb-2 flex-1">{t('email.templateDescription')}</p>
-                        <div className="mt-auto">
-                          <Button
-                            type="primary"
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowTemplatePreview(true);
-                            }}
-                          >
-                            {t('email.previewTemplate')}
-                          </Button>
+
+                        {/* 简单模板 */}
+                        <div
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
+                            selectedTemplate === TemplateType.SIMPLE
+                              ? 'border-blue-500 bg-blue-50' 
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setSelectedTemplate(TemplateType.SIMPLE)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-gray-800">简单模板</h3>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-2 flex-1">简洁的邮件模板，适合日常沟通</p>
+                          <div className="mt-auto">
+                            <Button
+                              type="primary"
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTemplatePreview(true);
+                              }}
+                            >
+                              {t('email.previewTemplate')}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* 促销模板 */}
+                        <div
+                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all h-32 flex flex-col ${
+                            selectedTemplate === TemplateType.PROMOTIONAL
+                              ? 'border-blue-500 bg-blue-50' 
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setSelectedTemplate(TemplateType.PROMOTIONAL)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-semibold text-gray-800">促销模板</h3>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-2 flex-1">带有促销元素的模板，适合营销活动</p>
+                          <div className="mt-auto">
+                            <Button
+                              type="primary"
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowTemplatePreview(true);
+                              }}
+                            >
+                              {t('email.previewTemplate')}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -540,46 +516,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       >
         <div className="bg-white border rounded-lg overflow-hidden">
           <iframe
-            srcDoc={`
-               <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${t('email.templatePreview')}</title>
-              </head>
-              <body style="margin: 0; padding: 0;">
-                <div style="max-width: 750px; margin: 0 auto;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${process.env.NEXT_PUBLIC_BASE_URL}/header.png" alt="Header" style="width: 100%; display: block;">
-                  </a>
-                  <img src="${process.env.NEXT_PUBLIC_BASE_URL}/hero.png" alt="Hero" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${process.env.NEXT_PUBLIC_BASE_URL}/web-button.png" alt="Web Button" style="width: 100%; display: block;">
-                  </a>
-                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0 20px 0;">
-                    <img src="${process.env.NEXT_PUBLIC_BASE_URL}/flag.png" alt="Flag" style="width:60%; height: auto;">
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%;">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${process.env.NEXT_PUBLIC_BASE_URL}/qrcode-1.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${process.env.NEXT_PUBLIC_BASE_URL}/app-store.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 10%; margin-right: 5%">
-                    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                      <img src="${process.env.NEXT_PUBLIC_BASE_URL}/qrcode-2.png" alt="QR Code" style="width: 100%; height: auto; margin-bottom: 10px;">
-                      <img src="${process.env.NEXT_PUBLIC_BASE_URL}/google-play.svg" alt="Web Button" style="width: 100%; height: auto;">
-                      </a>
-                    </div>
-                  </div>
-                  <img src="${process.env.NEXT_PUBLIC_BASE_URL}/detail.png" alt="Detail" style="width: 100%; display: block;">
-                  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-                    <img src="${process.env.NEXT_PUBLIC_BASE_URL}/telephone.png" alt="Telephone" style="width: 100%; display: block;">
-                  </a>
-                </div>
-              </body>
-              </html>
-            `}
+            srcDoc={getEmailTemplate(selectedTemplate, {
+              baseUrl: process.env.NEXT_PUBLIC_BASE_URL || '',
+              title: t('email.templatePreview')
+            })}
             style={{ width: '100%', height: '600px', border: 'none' }}
             title="邮件模板预览"
           />
