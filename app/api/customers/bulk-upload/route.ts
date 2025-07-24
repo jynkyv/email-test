@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ 
         success: false, 
-        error: '未提供用户认证信息' 
+        error: 'AUTH_REQUIRED' 
       }, { status: 401 });
     }
     
     if (!file) {
       return NextResponse.json({ 
         success: false, 
-        error: '没有找到上传的文件' 
+        error: 'FILE_NOT_FOUND' 
       }, { status: 400 });
     }
 
@@ -34,16 +34,16 @@ export async function POST(request: NextRequest) {
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ 
         success: false, 
-        error: '只支持Excel文件格式(.xlsx, .xls)' 
+        error: 'INVALID_FILE_TYPE' 
       }, { status: 400 });
     }
 
-    // 验证文件大小 (5MB)
-    const maxSize = 5 * 1024 * 1024;
+    // 验证文件大小 (1MB)
+    const maxSize = 1 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json({ 
         success: false, 
-        error: '文件大小不能超过5MB' 
+        error: 'FILE_TOO_LARGE' 
       }, { status: 400 });
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     if (jsonData.length < 2) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Excel文件至少需要包含标题行和一行数据' 
+        error: 'INSUFFICIENT_DATA' 
       }, { status: 400 });
     }
 
@@ -93,14 +93,16 @@ export async function POST(request: NextRequest) {
     if (companyNameIndex === -1) {
       return NextResponse.json({ 
         success: false, 
-        error: `Excel文件必须包含公司名称列，支持的列名: ${companyNameHeaders.join(', ')}` 
+        error: 'MISSING_COMPANY_COLUMN',
+        details: companyNameHeaders.join(', ')
       }, { status: 400 });
     }
     
     if (emailIndex === -1) {
       return NextResponse.json({ 
         success: false, 
-        error: `Excel文件必须包含邮箱列，支持的列名: ${emailHeaders.join(', ')}` 
+        error: 'MISSING_EMAIL_COLUMN',
+        details: emailHeaders.join(', ')
       }, { status: 400 });
     }
 
@@ -165,21 +167,23 @@ export async function POST(request: NextRequest) {
     if (hasInvalidEmail) {
       return NextResponse.json({ 
         success: false, 
-        error: `数据验证失败，请检查以下错误:\n${errors.join('\n')}` 
+        error: 'VALIDATION_FAILED',
+        details: errors.join('\n')
       }, { status: 400 });
     }
 
     if (errors.length > 0) {
       return NextResponse.json({ 
         success: false, 
-        error: `数据验证失败:\n${errors.join('\n')}` 
+        error: 'VALIDATION_FAILED',
+        details: errors.join('\n')
       }, { status: 400 });
     }
 
     if (customers.length === 0) {
       return NextResponse.json({ 
         success: false, 
-        error: '没有找到有效的客户数据' 
+        error: 'NO_VALID_DATA' 
       }, { status: 400 });
     }
 
@@ -194,7 +198,7 @@ export async function POST(request: NextRequest) {
       console.error('检查现有邮箱失败:', checkError);
       return NextResponse.json({ 
         success: false, 
-        error: '检查现有数据时发生错误' 
+        error: 'CHECK_EXISTING_ERROR' 
       }, { status: 500 });
     }
 
@@ -204,7 +208,7 @@ export async function POST(request: NextRequest) {
     if (newCustomers.length === 0) {
       return NextResponse.json({ 
         success: false, 
-        error: '所有客户邮箱都已存在' 
+        error: 'ALL_EMAILS_EXIST' 
       }, { status: 400 });
     }
 
@@ -218,7 +222,7 @@ export async function POST(request: NextRequest) {
       console.error('批量插入客户失败:', insertError);
       return NextResponse.json({ 
         success: false, 
-        error: '批量插入客户数据时发生错误' 
+        error: 'INSERT_ERROR' 
       }, { status: 500 });
     }
 
@@ -236,7 +240,7 @@ export async function POST(request: NextRequest) {
     console.error('批量上传处理失败:', error);
     return NextResponse.json({ 
       success: false, 
-      error: '处理上传文件时发生错误' 
+      error: 'PROCESSING_ERROR' 
     }, { status: 500 });
   }
 } 

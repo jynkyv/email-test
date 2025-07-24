@@ -147,6 +147,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 切换客户选择状态
   const handleCustomerToggle = (customer: Customer, checked: boolean) => {
     if (checked) {
+      // 检查是否超过50人的限制
+      if (selectedCustomers.length >= 50) {
+        message.warning(t('email.maxRecipientsReached', { max: 50 }));
+        return;
+      }
       setSelectedCustomers(prev => [...prev, customer]);
     } else {
       setSelectedCustomers(prev => prev.filter(c => c.id !== customer.id));
@@ -160,7 +165,17 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       const currentPageCustomers = customers.filter(
         customer => !selectedCustomers.some(selected => selected.id === customer.id)
       );
-      setSelectedCustomers(prev => [...prev, ...currentPageCustomers]);
+      
+      // 检查是否超过50人的限制
+      const remainingSlots = 50 - selectedCustomers.length;
+      if (currentPageCustomers.length > remainingSlots) {
+        message.warning(t('email.maxRecipientsReached', { max: 50 }));
+        // 只添加能容纳的数量
+        const customersToAdd = currentPageCustomers.slice(0, remainingSlots);
+        setSelectedCustomers(prev => [...prev, ...customersToAdd]);
+      } else {
+        setSelectedCustomers(prev => [...prev, ...currentPageCustomers]);
+      }
     } else {
       // 移除当前页面的所有客户
       const currentPageCustomerIds = customers.map(customer => customer.id);
@@ -340,7 +355,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 </Button>
                 {selectedCustomers.length > 0 && (
                   <span className="text-sm text-gray-600 self-center">
-                    {t('customer.customersSelected', { count: selectedCustomers.length })}
+                    {t('customer.customersSelected', { count: selectedCustomers.length })} / 50
                   </span>
                 )}
               </div>
@@ -426,6 +441,18 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
             {t('customer.customersSelected', { count: selectedCustomers.length })}
+            {selectedCustomers.length >= 50 && (
+              <span className="text-orange-600 ml-2">
+                ({t('email.maxRecipientsLimit', { max: 50 })})
+              </span>
+            )}
+          </div>
+          
+          {/* 限制提示 */}
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="text-sm text-blue-800">
+              <strong>{t('email.recipientsLimitNotice', { max: 50 })}</strong>
+            </div>
           </div>
           
           {loadingCustomers ? (

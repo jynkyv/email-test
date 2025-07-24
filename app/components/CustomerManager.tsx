@@ -40,6 +40,40 @@ export default function CustomerManager() {
   const { user, userRole } = useAuth();
   const { t } = useI18n();
   
+  // 错误消息国际化处理函数
+  const getErrorMessage = (errorCode: string, details?: string) => {
+    switch (errorCode) {
+      case 'AUTH_REQUIRED':
+        return t('customer.authRequired');
+      case 'FILE_NOT_FOUND':
+        return t('customer.fileNotFound');
+      case 'INVALID_FILE_TYPE':
+        return t('customer.onlyExcelAllowed');
+      case 'FILE_TOO_LARGE':
+        return t('customer.fileTooLarge');
+      case 'INSUFFICIENT_DATA':
+        return t('customer.insufficientData');
+      case 'MISSING_COMPANY_COLUMN':
+        return t('customer.missingCompanyColumn', { details });
+      case 'MISSING_EMAIL_COLUMN':
+        return t('customer.missingEmailColumn', { details });
+      case 'VALIDATION_FAILED':
+        return t('customer.validationFailed', { details });
+      case 'NO_VALID_DATA':
+        return t('customer.noValidData');
+      case 'CHECK_EXISTING_ERROR':
+        return t('customer.checkExistingError');
+      case 'ALL_EMAILS_EXIST':
+        return t('customer.allEmailsExist');
+      case 'INSERT_ERROR':
+        return t('customer.insertError');
+      case 'PROCESSING_ERROR':
+        return t('customer.processingError');
+      default:
+        return t('customer.bulkUploadFailed');
+    }
+  };
+  
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
@@ -160,7 +194,9 @@ export default function CustomerManager() {
         setUploadFileList([]);
         fetchCustomers();
       } else {
-        message.error(data.error || t('customer.bulkUploadFailed'));
+        // 处理国际化的错误消息
+        const errorMessage = getErrorMessage(data.error, data.details);
+        message.error(errorMessage);
       }
     } catch (error) {
       console.error('批量上传失败:', error);
@@ -181,8 +217,8 @@ export default function CustomerManager() {
         return Upload.LIST_IGNORE;
       }
       
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      if (!isLt5M) {
+      const isLt1M = file.size / 1024 / 1024 < 1;
+      if (!isLt1M) {
         message.error(t('customer.fileTooLarge'));
         return Upload.LIST_IGNORE;
       }
@@ -448,6 +484,7 @@ export default function CustomerManager() {
               <li>• {t('customer.excelColumn2')}</li>
               <li>• {t('customer.excelColumn3')}</li>
               <li>• {t('customer.excelColumn4')}</li>
+              <li>• {t('customer.excelColumn5')}</li>
             </ul>
             <div className="mt-3">
               <Button 
