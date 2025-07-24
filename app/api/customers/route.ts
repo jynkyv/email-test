@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '50');
     const authHeader = request.headers.get('authorization');
     
     if (!authHeader) {
@@ -31,17 +33,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // 计算偏移量
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
     let query = supabase
       .from('customers')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     // 如果不是管理员，只能查看自己创建的客户
     if (userData.role !== 'admin') {
       query = query.eq('created_by', userId);
     }
 
-    const { data: customers, error } = await query;
+    const { data: customers, error, count } = await query;
 
     if (error) {
       return NextResponse.json(
@@ -53,6 +60,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       customers,
+      total: count || 0,
+      page,
+      pageSize,
     });
 
   } catch (error) {

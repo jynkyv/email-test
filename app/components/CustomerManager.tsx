@@ -14,15 +14,23 @@ import {
   Modal,
   Spin,
   Popconfirm,
-  Tooltip
+  Tooltip,
+  Upload,
+  Progress
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined } from '@ant-design/icons';
+import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 
 interface Customer {
   id: string;
   company_name: string;
   email: string;
   created_at: string;
+}
+
+interface ExcelCustomer {
+  company_name: string;
+  email: string;
 }
 
 export default function CustomerManager() {
@@ -32,18 +40,29 @@ export default function CustomerManager() {
   const { user, userRole } = useAuth();
   const { t } = useI18n();
   
+  // 分页相关状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [total, setTotal] = useState(0);
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
+
+  // Excel上传相关状态
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = currentPage, size = pageSize) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/customers', {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -52,6 +71,9 @@ export default function CustomerManager() {
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers);
+        setTotal(data.total);
+        setCurrentPage(page);
+        setPageSize(size);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -113,6 +135,67 @@ export default function CustomerManager() {
     }
   };
 
+  // Excel上传处理
+  const handleExcelUpload = async (file: File) => {
+    setUploadLoading(true);
+    setUploadProgress(0);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/customers/bulk-upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        message.success(t('customer.bulkUploadSuccess', { count: data.importedCount }));
+        setUploadModalVisible(false);
+        setUploadFileList([]);
+        fetchCustomers();
+      } else {
+        message.error(data.error || t('customer.bulkUploadFailed'));
+      }
+    } catch (error) {
+      console.error('批量上传失败:', error);
+      message.error(t('customer.bulkUploadFailed'));
+    } finally {
+      setUploadLoading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    fileList: uploadFileList,
+    beforeUpload: (file) => {
+      const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                     file.type === 'application/vnd.ms-excel';
+      if (!isExcel) {
+        message.error(t('customer.onlyExcelAllowed'));
+        return Upload.LIST_IGNORE;
+      }
+      
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.error(t('customer.fileTooLarge'));
+        return Upload.LIST_IGNORE;
+      }
+      
+      setUploadFileList([file]);
+      return Upload.LIST_IGNORE; // 阻止自动上传
+    },
+    onRemove: () => {
+      setUploadFileList([]);
+    },
+    accept: '.xlsx,.xls',
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
     form.resetFields();
@@ -121,6 +204,43 @@ export default function CustomerManager() {
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
+  };
+
+  const showUploadModal = () => {
+    setUploadModalVisible(true);
+    setUploadFileList([]);
+  };
+
+  const handleUploadCancel = () => {
+    setUploadModalVisible(false);
+    setUploadFileList([]);
+  };
+
+  const handleUploadSubmit = () => {
+    if (uploadFileList.length === 0) {
+      message.error(t('customer.pleaseSelectFile'));
+      return;
+    }
+    
+    const uploadFile = uploadFileList[0];
+    const file = uploadFile.originFileObj;
+    
+    if (file) {
+      handleExcelUpload(file);
+    } else {
+      if (uploadFile instanceof File) {
+        handleExcelUpload(uploadFile);
+      }
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    const link = document.createElement('a');
+    link.href = '/api/customers/download-template';
+    link.download = 'customer_import_template.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const columns = [
@@ -191,25 +311,44 @@ export default function CustomerManager() {
             <TeamOutlined className="text-xl" />
             <span className="text-lg font-medium">{t('customer.customerList')}</span>
           </div>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={showModal}
-            size="large"
-          >
-            {t('customer.createCustomer')}
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={showUploadModal}
+              size="large"
+            >
+              {t('customer.bulkUpload')}
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={showModal}
+              size="large"
+            >
+              {t('customer.createCustomer')}
+            </Button>
+          </Space>
         </div>
 
         <Table
           dataSource={customers}
           columns={columns}
           rowKey="id"
+          loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: total,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total) => t('common.totalRecords', { total }),
+            onChange: (page, size) => {
+              fetchCustomers(page, size);
+            },
+            onShowSizeChange: (current, size) => {
+              fetchCustomers(1, size);
+            },
           }}
           locale={{
             emptyText: t('customer.noCustomers'),
@@ -275,6 +414,66 @@ export default function CustomerManager() {
             </div>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Excel批量上传 Modal */}
+      <Modal
+        title={t('customer.bulkUpload')}
+        open={uploadModalVisible}
+        onCancel={handleUploadCancel}
+
+        footer={[
+          <Button key="cancel" onClick={handleUploadCancel}>
+            {t('common.cancel')}
+          </Button>,
+          <Button 
+            key="upload" 
+            type="primary" 
+            loading={uploadLoading}
+            onClick={handleUploadSubmit}
+            disabled={uploadFileList.length === 0}
+          >
+            {t('customer.uploadExcel')}
+          </Button>,
+        ]}
+        width={600}
+        destroyOnClose
+      >
+        <div className="space-y-6">
+          <div className="bg-blue-50 p-4 mb-4 rounded-lg">
+            <h4 className="font-medium text-blue-800 mb-2">{t('customer.excelFormat')}</h4>
+            <p className="text-sm text-blue-700 mb-2">{t('customer.excelRequirements')}</p>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• {t('customer.excelColumn1')}</li>
+              <li>• {t('customer.excelColumn2')}</li>
+              <li>• {t('customer.excelColumn3')}</li>
+              <li>• {t('customer.excelColumn4')}</li>
+            </ul>
+            <div className="mt-3">
+              <Button 
+                type="link" 
+                icon={<DownloadOutlined />}
+                onClick={handleDownloadTemplate}
+                className="p-0 text-blue-600 hover:text-blue-800"
+              >
+                {t('customer.downloadTemplate')}
+              </Button>
+            </div>
+          </div>
+          
+          <Upload {...uploadProps}>
+            <Button icon={<UploadOutlined />} size="large" block>
+              {t('customer.selectExcelFile')}
+            </Button>
+          </Upload>
+          
+          {uploadLoading && (
+            <div className="space-y-2">
+              <Progress percent={uploadProgress} status="active" />
+              <p className="text-sm text-gray-600">{t('customer.uploading')}</p>
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );

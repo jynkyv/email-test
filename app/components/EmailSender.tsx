@@ -60,12 +60,17 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
+  
+  // 分页相关状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [total, setTotal] = useState(0);
 
   // 获取客户列表
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = 1, size = 50) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch('/api/customers', {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -73,6 +78,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
+        setTotal(data.total || 0);
+        setCurrentPage(page);
+        setPageSize(size);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -143,6 +151,39 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     } else {
       setSelectedCustomers(prev => prev.filter(c => c.id !== customer.id));
     }
+  };
+
+  // 全选当前页面的客户
+  const handleSelectAllCurrentPage = (checked: boolean) => {
+    if (checked) {
+      // 添加当前页面的所有客户（排除已选择的）
+      const currentPageCustomers = customers.filter(
+        customer => !selectedCustomers.some(selected => selected.id === customer.id)
+      );
+      setSelectedCustomers(prev => [...prev, ...currentPageCustomers]);
+    } else {
+      // 移除当前页面的所有客户
+      const currentPageCustomerIds = customers.map(customer => customer.id);
+      setSelectedCustomers(prev => 
+        prev.filter(customer => !currentPageCustomerIds.includes(customer.id))
+      );
+    }
+  };
+
+  // 检查当前页面是否全部选中
+  const isCurrentPageAllSelected = () => {
+    if (customers.length === 0) return false;
+    return customers.every(customer => 
+      selectedCustomers.some(selected => selected.id === customer.id)
+    );
+  };
+
+  // 检查当前页面是否部分选中
+  const isCurrentPageIndeterminate = () => {
+    const selectedCount = customers.filter(customer => 
+      selectedCustomers.some(selected => selected.id === customer.id)
+    ).length;
+    return selectedCount > 0 && selectedCount < customers.length;
   };
 
   // 移除单个收件人
@@ -396,16 +437,22 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               {t('customer.noCustomerData')}
             </div>
           ) : (
-            <div className="max-h-96 overflow-y-auto border rounded-lg">
-              {loadingCustomers ? (
-                <div className="text-center py-8">
-                  <Spin />
-                </div>
-              ) : customers.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  {t('customer.noCustomerData')}
-                </div>
-              ) : (
+            <div className="border rounded-lg">
+              {/* 全选当前页面 */}
+              <div className="px-6 py-3 border-b bg-gray-50">
+                <Checkbox
+                  checked={isCurrentPageAllSelected()}
+                  indeterminate={isCurrentPageIndeterminate()}
+                  onChange={(e) => handleSelectAllCurrentPage(e.target.checked)}
+                >
+                  <span className="text-sm font-medium">
+                    {t('customer.selectAllCurrentPage')}
+                  </span>
+                </Checkbox>
+              </div>
+              
+              {/* 客户列表 */}
+              <div className="max-h-96 overflow-y-auto">
                 <div className="divide-y divide-gray-100">
                   {customers.map((customer) => (
                     <div
@@ -439,7 +486,35 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
+              
+              {/* 分页 */}
+              <div className="px-6 py-3 border-t bg-gray-50">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    {t('common.totalRecords', { total })}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="small"
+                      disabled={currentPage === 1}
+                      onClick={() => fetchCustomers(currentPage - 1, pageSize)}
+                    >
+                      {t('common.previous')}
+                    </Button>
+                    <span className="text-sm text-gray-600">
+                      {t('common.pageInfo', { current: currentPage, total: Math.ceil(total / pageSize) })}
+                    </span>
+                    <Button
+                      size="small"
+                      disabled={currentPage >= Math.ceil(total / pageSize)}
+                      onClick={() => fetchCustomers(currentPage + 1, pageSize)}
+                    >
+                      {t('common.next')}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

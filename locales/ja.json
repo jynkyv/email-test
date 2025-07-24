@@ -14,8 +14,8 @@
     "save": "保存",
     "submit": "送信",
     "back": "戻る",
-    "next": "次へ",
-    "previous": "前へ",
+    "next": "次ページ",
+    "previous": "前ページ",
     "search": "検索",
     "filter": "フィルター",
     "sort": "並び替え",
@@ -37,7 +37,8 @@
     "notFound": "ページが見つかりません",
     "internalError": "内部エラー",
     "totalRecords": "合計 {total} 件",
-    "actions": "操作"
+    "actions": "操作",
+    "pageInfo": "{current}ページ / {total}ページ"
   },
   "auth": {
     "login": "ログイン",
@@ -106,7 +107,15 @@
     "myCustomers": "私の顧客",
     "refreshCustomers": "顧客を更新",
     "customerEmails": "{customerName}のメール",
-    "addedToRecipients": "宛先リストに追加されました"
+    "addedToRecipients": "宛先リストに追加されました",
+    "sent": "送信済み",
+    "received": "受信済み",
+    "read": "既読",
+    "unread": "未読",
+    "markedAsRead": "メールを既読としてマークしました",
+    "markedAsUnread": "メールを未読としてマークしました",
+    "updateStatusFailed": "メールステータスの更新に失敗しました",
+    "autoMarkedAsRead": "メールを自動的に既読としてマークしました"
   },
   "customer": {
     "customer": "顧客",
@@ -137,7 +146,24 @@
     "customerNamePlaceholder": "企業名を入力してください",
     "emailPlaceholder": "メールアドレスを入力してください",
     "deleteConfirmTitle": "顧客削除の確認",
-    "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。"
+    "deleteConfirmDescription": "顧客「{name}」を削除してもよろしいですか？この操作は取り消せません。",
+    "bulkUpload": "一括アップロード",
+    "uploadExcel": "Excelアップロード",
+    "selectExcelFile": "Excelファイルを選択",
+    "onlyExcelAllowed": "Excelファイル形式(.xlsx, .xls)のみ対応しています",
+    "fileTooLarge": "ファイルサイズは5MB以下にしてください",
+    "pleaseSelectFile": "アップロードするファイルを選択してください",
+    "uploading": "アップロード中...",
+    "bulkUploadSuccess": "{count}人の顧客を正常にインポートしました",
+    "bulkUploadFailed": "一括アップロードに失敗しました",
+    "excelFormat": "Excelファイル形式の要件",
+    "excelRequirements": "Excelファイルに以下の列が含まれていることを確認してください：",
+    "excelColumn1": "会社名/法人名 - 顧客の企業名",
+    "excelColumn2": "E-Mail/メールアドレス - 顧客のメールアドレス（複数の形式に対応：純粋なメールアドレス、'Eメール xxx@xxx.com'のようなプレフィックス付き、メールアドレスがない場合はその行をスキップ）",
+    "excelColumn3": "最初の行はヘッダー行である必要があります",
+    "excelColumn4": "メールアドレスの形式が正しくない場合や無効な内容が含まれている場合は、アップロードを停止してチェックを促します",
+    "downloadTemplate": "Excelテンプレートをダウンロード",
+    "selectAllCurrentPage": "現在のページをすべて選択"
   },
   "user": {
     "user": "従業員",

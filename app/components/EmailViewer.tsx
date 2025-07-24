@@ -80,12 +80,18 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [maxResults, setMaxResults] = useState(50); // 默认50
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
+  const [selectedEmailIds, setSelectedEmailIds] = useState<string[]>([]);
+  
+  // 客户列表分页相关状态
+  const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
+  const [customerPageSize, setCustomerPageSize] = useState(50);
+  const [customerTotal, setCustomerTotal] = useState(0);
 
   // 获取客户列表
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = 1, size = 50) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch('/api/customers', {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -94,6 +100,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       const data = await response.json();
       if (data.success) {
         setCustomers(data.customers || []);
+        setCustomerTotal(data.total || 0);
+        setCustomerCurrentPage(page);
+        setCustomerPageSize(size);
       }
     } catch (error) {
       console.error('获取客户列表失败:', error);
@@ -157,10 +166,86 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     }
   }, [user]);
 
+
+
   const getHeaderValue = (headers: Array<{name: string, value: string}>, name: string) => {
     const header = headers.find(h => h.name.toLowerCase() === name.toLowerCase());
     return header?.value || '';
   };
+
+  // 判断邮件是发出的还是收到的
+  const isOutgoingEmail = (email: Email, customerEmail: string) => {
+    const from = getHeaderValue(email.payload.headers, 'From');
+    const to = getHeaderValue(email.payload.headers, 'To');
+    
+    // 提取邮箱地址的函数
+    const extractEmail = (emailString: string) => {
+      const emailMatch = emailString.match(/<(.+?)>/) || emailString.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      return emailMatch ? emailMatch[1] || emailMatch[2] : emailString.toLowerCase();
+    };
+    
+    const fromEmail = extractEmail(from);
+    const toEmails = to.split(',').map(email => extractEmail(email.trim()));
+    
+    // 如果发件人等于当前选择的客户邮箱，则认为是收到的邮件（已接收）
+    // 如果收件人包含当前选择的客户邮箱，则认为是发出的邮件（已发送）
+    const isFromCustomer = fromEmail.includes(customerEmail.toLowerCase());
+    const isToCustomer = toEmails.some(email => email.includes(customerEmail.toLowerCase()));
+    
+    return !isFromCustomer && isToCustomer;
+  };
+
+  // 判断邮件是否已读
+  const isEmailRead = (email: Email) => {
+    return !email.labelIds.includes('UNREAD');
+  };
+
+  // 更新邮件已读/未读状态
+  const updateEmailStatus = async (emailId: string, action: 'read' | 'unread', showMessage = true) => {
+    try {
+      const response = await fetch(`/api/email/${emailId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // 更新本地邮件状态
+        setEmails(prevEmails => 
+          prevEmails.map(email => 
+            email.id === emailId 
+              ? {
+                  ...email,
+                  labelIds: action === 'read' 
+                    ? email.labelIds.filter(id => id !== 'UNREAD')
+                    : [...email.labelIds, 'UNREAD']
+                }
+              : email
+          )
+        );
+        
+        if (showMessage) {
+          message.success(action === 'read' ? t('email.markedAsRead') : t('email.markedAsUnread'));
+        }
+      } else {
+        if (showMessage) {
+          message.error(t('email.updateStatusFailed'));
+        }
+      }
+    } catch (error) {
+      console.error('更新邮件状态失败:', error);
+      if (showMessage) {
+        message.error(t('email.updateStatusFailed'));
+      }
+    }
+  };
+
+
 
   const decodeEmailContent = (data: string) => {
     try {
@@ -231,7 +316,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             </Tooltip>
             <Button
               icon={<ReloadOutlined />}
-              onClick={fetchCustomers}
+              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize)}
               loading={loadingCustomers}
             >
               {t('email.refreshCustomers')}
@@ -244,7 +329,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         {/* 客户列表 */}
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
-            <span className="text-sm font-medium">{t('customer.customerList')}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">{t('customer.customerList')}</span>
+              <span className="text-xs text-gray-500">
+                {t('common.totalRecords', { total: customerTotal })}
+              </span>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto">
             {loadingCustomers ? (
@@ -288,6 +378,33 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             )}
           </div>
+          
+          {/* 客户列表分页 */}
+          {!loadingCustomers && customers.length > 0 && (
+            <div className="px-4 py-3 border-t bg-gray-50 flex-shrink-0">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">
+                  {t('common.pageInfo', { current: customerCurrentPage, total: Math.ceil(customerTotal / customerPageSize) })}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="small"
+                    disabled={customerCurrentPage === 1}
+                    onClick={() => fetchCustomers(customerCurrentPage - 1, customerPageSize)}
+                  >
+                    {t('common.previous')}
+                  </Button>
+                  <Button
+                    size="small"
+                    disabled={customerCurrentPage >= Math.ceil(customerTotal / customerPageSize)}
+                    onClick={() => fetchCustomers(customerCurrentPage + 1, customerPageSize)}
+                  >
+                    {t('common.next')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 邮件列表 */}
@@ -297,11 +414,13 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <span className="text-sm font-medium">
                 {selectedCustomer ? t('email.customerEmails', { customerName: selectedCustomer.company_name }) : t('email.emailList')}
               </span>
-              {selectedCustomer && (
-                <Tag color="blue">
-                  {t('settings.maxResults')}: {maxResults}
-                </Tag>
-              )}
+              <div className="flex items-center gap-2">
+                {selectedCustomer && (
+                  <Tag color="blue">
+                    {t('settings.maxResults')}: {maxResults}
+                  </Tag>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
@@ -327,20 +446,52 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                     key={email.id}
                     className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
                       selectedEmail && selectedEmail.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                    }`}
-                    onClick={() => setSelectedEmail(email)}
+                    } ${!isEmailRead(email) ? 'bg-yellow-50 border-l-4 border-l-yellow-500' : ''}`}
+                    onClick={() => {
+                      setSelectedEmail(email);
+                      // 如果邮件未读，立即标记为已读
+                      if (!isEmailRead(email)) {
+                        updateEmailStatus(email.id, 'read', false);
+                      }
+                    }}
                   >
                     <div className="flex items-start space-x-3">
                       <Avatar icon={<MailOutlined />} size="large" />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
-                            {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
-                          </h4>
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <h4 className={`text-sm truncate ${
+                              isEmailRead(email) ? 'font-medium text-gray-900' : 'font-bold text-gray-900'
+                            }`}>
+                              {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
+                            </h4>
+                            <div className="flex items-center gap-1">
+                              {selectedCustomer && (
+                                <Tag 
+                                  color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                                >
+                                  {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                                </Tag>
+                              )}
+                              <Tag 
+                                color={isEmailRead(email) ? 'default' : 'orange'}
+                                className="cursor-pointer hover:opacity-80"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateEmailStatus(email.id, isEmailRead(email) ? 'unread' : 'read');
+                                }}
+                              >
+                                {isEmailRead(email) ? t('email.read') : t('email.unread')}
+                              </Tag>
+                            </div>
+                          </div>
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">
-                            {getHeaderValue(email.payload.headers, 'From')}
+                            {isOutgoingEmail(email, selectedCustomer?.email || '') ? 
+                              `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}` :
+                              `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
+                            }
                           </p>
                           <p className="text-xs text-gray-500">
                             {formatDate(email.internalDate || '')}
