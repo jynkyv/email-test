@@ -15,8 +15,7 @@ import {
   Spin,
   Popconfirm,
   Tooltip,
-  Upload,
-  Progress
+  Upload
 } from 'antd';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
@@ -86,7 +85,6 @@ export default function CustomerManager() {
   // Excel上传相关状态
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
@@ -172,7 +170,6 @@ export default function CustomerManager() {
   // Excel上传处理
   const handleExcelUpload = async (file: File) => {
     setUploadLoading(true);
-    setUploadProgress(0);
     
     try {
       const formData = new FormData();
@@ -203,7 +200,6 @@ export default function CustomerManager() {
       message.error(t('customer.bulkUploadFailed'));
     } finally {
       setUploadLoading(false);
-      setUploadProgress(0);
     }
   };
 
@@ -504,12 +500,6 @@ export default function CustomerManager() {
             </Button>
           </Upload>
           
-          {uploadLoading && (
-            <div className="space-y-2">
-              <Progress percent={uploadProgress} status="active" />
-              <p className="text-sm text-gray-600">{t('customer.uploading')}</p>
-            </div>
-          )}
         </div>
       </Modal>
     </div>
