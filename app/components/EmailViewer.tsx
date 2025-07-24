@@ -380,7 +380,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
           </div>
           
           {/* 客户列表分页 */}
-          {!loadingCustomers && customers.length > 0 && (
+          {!loadingCustomers && customerTotal > 0 && (
             <div className="px-4 py-3 border-t bg-gray-50 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">
@@ -488,7 +488,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">
-                            {isOutgoingEmail(email, selectedCustomer?.email || '') ? 
                               `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}` :
                               `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
                             }
