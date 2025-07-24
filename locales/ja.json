@@ -115,7 +115,10 @@
     "markedAsRead": "メールを既読としてマークしました",
     "markedAsUnread": "メールを未読としてマークしました",
     "updateStatusFailed": "メールステータスの更新に失敗しました",
-    "autoMarkedAsRead": "メールを自動的に既読としてマークしました"
+    "autoMarkedAsRead": "メールを自動的に既読としてマークしました",
+    "maxRecipientsReached": "最大{max}人の受信者まで選択できます",
+    "maxRecipientsLimit": "最大制限{max}人に達しました",
+    "recipientsLimitNotice": "注意：一度に最大{max}人の受信者まで選択できます"
   },
   "customer": {
     "customer": "顧客",
@@ -151,7 +154,8 @@
     "uploadExcel": "Excelアップロード",
     "selectExcelFile": "Excelファイルを選択",
     "onlyExcelAllowed": "Excelファイル形式(.xlsx, .xls)のみ対応しています",
-    "fileTooLarge": "ファイルサイズは5MB以下にしてください",
+    "fileTooLarge": "ファイルサイズは1MB以下にしてください",
+    "fileSizeLimit": "ファイルサイズ制限：最大1MB",
     "pleaseSelectFile": "アップロードするファイルを選択してください",
     "uploading": "アップロード中...",
     "bulkUploadSuccess": "{count}人の顧客を正常にインポートしました",
@@ -162,8 +166,20 @@
     "excelColumn2": "E-Mail/メールアドレス - 顧客のメールアドレス（複数の形式に対応：純粋なメールアドレス、'Eメール xxx@xxx.com'のようなプレフィックス付き、メールアドレスがない場合はその行をスキップ）",
     "excelColumn3": "最初の行はヘッダー行である必要があります",
     "excelColumn4": "メールアドレスの形式が正しくない場合や無効な内容が含まれている場合は、アップロードを停止してチェックを促します",
+    "excelColumn5": "ファイルサイズ制限：最大1MB",
     "downloadTemplate": "Excelテンプレートをダウンロード",
-    "selectAllCurrentPage": "現在のページをすべて選択"
+    "selectAllCurrentPage": "現在のページをすべて選択",
+    "authRequired": "ユーザー認証情報が提供されていません",
+    "fileNotFound": "アップロードされたファイルが見つかりません",
+    "insufficientData": "Excelファイルには少なくともヘッダー行と1行のデータが含まれている必要があります",
+    "missingCompanyColumn": "Excelファイルには会社名列が含まれている必要があります。サポートされている列名: {details}",
+    "missingEmailColumn": "Excelファイルにはメール列が含まれている必要があります。サポートされている列名: {details}",
+    "validationFailed": "データ検証に失敗しました。以下のエラーを確認してください:\n{details}",
+    "noValidData": "有効な顧客データが見つかりません",
+    "checkExistingError": "既存データの確認中にエラーが発生しました",
+    "allEmailsExist": "すべての顧客メールアドレスが既に存在します",
+    "insertError": "顧客データの一括挿入中にエラーが発生しました",
+    "processingError": "アップロードファイルの処理中にエラーが発生しました"
   },
   "user": {
     "user": "従業員",

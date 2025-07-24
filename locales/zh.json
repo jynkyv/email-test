@@ -115,7 +115,10 @@
     "markedAsRead": "邮件已标记为已读",
     "markedAsUnread": "邮件已标记为未读",
     "updateStatusFailed": "更新邮件状态失败",
-    "autoMarkedAsRead": "邮件已自动标记为已读"
+    "autoMarkedAsRead": "邮件已自动标记为已读",
+    "maxRecipientsReached": "最多只能选择 {max} 个收件人",
+    "maxRecipientsLimit": "已达到最大限制 {max} 人",
+    "recipientsLimitNotice": "注意：每次最多只能选择 {max} 个收件人"
   },
   "customer": {
     "customer": "客户",
@@ -151,7 +154,8 @@
     "uploadExcel": "上传Excel",
     "selectExcelFile": "选择Excel文件",
     "onlyExcelAllowed": "只支持Excel文件格式(.xlsx, .xls)",
-    "fileTooLarge": "文件大小不能超过5MB",
+    "fileTooLarge": "文件大小不能超过1MB",
+    "fileSizeLimit": "文件大小限制：最大1MB",
     "pleaseSelectFile": "请选择要上传的文件",
     "uploading": "正在上传...",
     "bulkUploadSuccess": "成功导入 {count} 个客户",
@@ -162,8 +166,20 @@
     "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持多种格式：纯邮箱、带前缀如'Eメール xxx@xxx.com'、无邮箱则跳过该行）",
     "excelColumn3": "第一行必须是标题行",
     "excelColumn4": "如果邮箱格式不正确或包含无效内容，将终止上传并提示检查",
+    "excelColumn5": "文件大小限制：最大 1MB",
     "downloadTemplate": "下载Excel模板",
-    "selectAllCurrentPage": "全选当前页面"
+    "selectAllCurrentPage": "全选当前页面",
+    "authRequired": "未提供用户认证信息",
+    "fileNotFound": "没有找到上传的文件",
+    "insufficientData": "Excel文件至少需要包含标题行和一行数据",
+    "missingCompanyColumn": "Excel文件必须包含公司名称列，支持的列名: {details}",
+    "missingEmailColumn": "Excel文件必须包含邮箱列，支持的列名: {details}",
+    "validationFailed": "数据验证失败，请检查以下错误:\n{details}",
+    "noValidData": "没有找到有效的客户数据",
+    "checkExistingError": "检查现有数据时发生错误",
+    "allEmailsExist": "所有客户邮箱都已存在",
+    "insertError": "批量插入客户数据时发生错误",
+    "processingError": "处理上传文件时发生错误"
   },
   "user": {
     "user": "员工",
