@@ -135,7 +135,8 @@ export async function POST(request: NextRequest) {
     const customers = [];
     const errors = [];
     let hasInvalidEmail = false;
-    const processedEmails = new Set<string>(); // 用于检查文件内的重复邮箱
+    const processedEmails = new Map<string, number>(); // 邮箱 -> 行号，用于记录重复
+    const duplicateRows = []; // 记录重复的行号
     
     for (let i = 1; i < jsonData.length; i++) {
       const row = jsonData[i] as any[];
@@ -182,11 +183,19 @@ export async function POST(request: NextRequest) {
 
       // 检查文件内是否有重复邮箱
       if (processedEmails.has(email)) {
-        errors.push(`第${i + 1}行: 邮箱 ${email} 在文件中重复`);
-        continue;
+        // 记录重复的行号，但跳过这条数据
+        const firstRow = processedEmails.get(email)!;
+        duplicateRows.push({
+          row: i + 1,
+          email: email,
+          firstRow: firstRow + 1
+        });
+        continue; // 跳过重复的数据，保留第一条
       }
 
-      processedEmails.add(email);
+      // 记录邮箱和行号
+      processedEmails.set(email, i);
+      
       customers.push({
         company_name: companyName,
         email: email,
@@ -243,8 +252,9 @@ export async function POST(request: NextRequest) {
       existingCustomers?.forEach((c: any) => existingEmailSet.add(c.email));
     }
 
-    // 过滤出新客户（排除已存在的邮箱）
+    // 过滤出新客户（排除已存在于数据库中的邮箱）
     const newCustomers = customers.filter(c => !existingEmailSet.has(c.email));
+    const dbDuplicateCount = customers.length - newCustomers.length;
 
     if (newCustomers.length === 0) {
       return NextResponse.json({ 
@@ -253,13 +263,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 使用 UPSERT 操作，避免重复键错误
+    // 插入新客户
     const { data: insertedCustomers, error: insertError } = await supabase
       .from('customers')
-      .upsert(newCustomers, {
-        onConflict: 'email',
-        ignoreDuplicates: true
-      })
+      .insert(newCustomers)
       .select();
 
     if (insertError) {
@@ -271,14 +278,34 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    const skippedCount = customers.length - newCustomers.length;
+    const fileDuplicateCount = duplicateRows.length;
     const importedCount = insertedCustomers?.length || 0;
+    const totalSkipped = dbDuplicateCount + fileDuplicateCount;
+
+    // 构建详细的结果信息
+    let resultMessage = `成功导入 ${importedCount} 个客户`;
+    const skipDetails = [];
+    
+    if (fileDuplicateCount > 0) {
+      skipDetails.push(`文件内重复: ${fileDuplicateCount} 个`);
+    }
+    
+    if (dbDuplicateCount > 0) {
+      skipDetails.push(`数据库已存在: ${dbDuplicateCount} 个`);
+    }
+    
+    if (skipDetails.length > 0) {
+      resultMessage += `，跳过 ${totalSkipped} 个重复邮箱 (${skipDetails.join(', ')})`;
+    }
 
     return NextResponse.json({
       success: true,
       importedCount,
-      skippedCount,
-      message: `成功导入 ${importedCount} 个客户${skippedCount > 0 ? `，跳过 ${skippedCount} 个重复邮箱` : ''}`
+      fileDuplicateCount,
+      dbDuplicateCount,
+      totalSkipped,
+      duplicateRows, // 返回重复行的详细信息
+      message: resultMessage
     });
 
   } catch (error) {
