@@ -488,8 +488,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">
-                              `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}` :
-                              `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
+                            {selectedCustomer && isOutgoingEmail(email, selectedCustomer.email) 
+                              ? `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}`
+                              : `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
                             }
                           </p>
                           <p className="text-xs text-gray-500">
