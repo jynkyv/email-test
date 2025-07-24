@@ -65,6 +65,7 @@
     "emailManagement": "メール管理",
     "customerManagement": "顧客管理",
     "userManagement": "従業員管理",
+    "approvalManagement": "承認管理",
     "emailSystem": "メール管理システム"
   },
   "email": {
@@ -113,13 +114,24 @@
     "received": "受信済み",
     "read": "既読",
     "unread": "未読",
+    "sentResults": "送信結果",
+    "failed": "送信失敗",
+    "pending": "送信待ち",
+    "processing": "送信中",
+    "queueAdded": "メールが送信キューに追加されました",
+    "queueProcessing": "キュー処理中",
+    "queueCompleted": "キュー処理完了",
     "markedAsRead": "メールを既読としてマークしました",
     "markedAsUnread": "メールを未読としてマークしました",
     "updateStatusFailed": "メールステータスの更新に失敗しました",
     "autoMarkedAsRead": "メールを自動的に既読としてマークしました",
     "maxRecipientsReached": "最大{max}人の受信者まで選択できます",
     "maxRecipientsLimit": "最大制限{max}人に達しました",
-    "recipientsLimitNotice": "注意：一度に最大{max}人の受信者まで選択できます"
+    "recipientsLimitNotice": "注意：一度に最大{max}人の受信者まで選択できます",
+    "submitForApproval": "承認申請",
+    "submitting": "申請中...",
+    "approvalSubmitted": "承認申請が正常に送信されました",
+    "approvalSubmitFailed": "承認申請の送信に失敗しました"
   },
   "customer": {
     "customer": "顧客",
@@ -184,6 +196,29 @@
     "filterByCreationTime": "作成日時でフィルター",
     "startDate": "開始日",
     "endDate": "終了日"
+  },
+  "approval": {
+    "approvalManagement": "承認管理",
+    "applicant": "申請者",
+    "applicationTime": "申請日時",
+    "content": "送信内容",
+    "status": "ステータス",
+    "pending": "承認待ち",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "approver": "承認者",
+    "recipients": "受信者",
+    "emailContent": "メール内容",
+    "viewDetail": "詳細表示",
+    "edit": "編集",
+    "editContent": "内容編集",
+    "approvalDetail": "承認詳細",
+    "confirmApprove": "この承認申請を承認しますか？",
+    "confirmReject": "この承認申請を却下しますか？",
+    "fetchApprovalsFailed": "承認リストの取得に失敗しました",
+    "fetchDetailFailed": "承認詳細の取得に失敗しました",
+    "actionFailed": "承認操作に失敗しました",
+    "updateFailed": "内容の更新に失敗しました"
   },
   "user": {
     "user": "従業員",

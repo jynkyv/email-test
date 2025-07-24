@@ -9,13 +9,15 @@ import {
   MailOutlined, 
   UserOutlined, 
   TeamOutlined, 
-  LogoutOutlined 
+  LogoutOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import EmailSender from './components/EmailSender';
 import EmailViewer from './components/EmailViewer';
 import CustomerManager from './components/CustomerManager';
 import UserManager from './components/UserManager';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import ApprovalsPage from './approvals/page';
 
 const { Header, Content } = Layout;
 
@@ -93,6 +95,11 @@ export default function Home() {
       icon: <UserOutlined />,
       label: t('navigation.customerManagement'),
     },
+    {
+      key: 'approvals',
+      icon: <CheckCircleOutlined />,
+      label: t('navigation.approvalManagement'),
+    },
     ...(userRole === 'admin' ? [{
       key: 'users',
       icon: <TeamOutlined />,
@@ -121,6 +128,12 @@ export default function Home() {
         return (
           <div className="max-w-4xl mx-auto">
             <CustomerManager />
+          </div>
+        );
+      case 'approvals':
+        return (
+          <div className="max-w-4xl mx-auto">
+            <ApprovalsPage />
           </div>
         );
       case 'users':

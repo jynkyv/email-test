@@ -53,9 +53,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const { t } = useI18n();
   const [form] = Form.useForm();
   const [isSending, setIsSending] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [totalEmails, setTotalEmails] = useState(0);
-  const [sentEmails, setSentEmails] = useState(0);
   
   // 客户选择相关状态
   const [showCustomerModal, setShowCustomerModal] = useState(false);
@@ -302,12 +299,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     }
 
     setIsSending(true);
-    setProgress(0);
-    setSentEmails(0);
 
     // 使用选中的客户邮箱
     const recipients = selectedCustomers.map(customer => customer.email);
-    setTotalEmails(recipients.length);
 
     if (recipients.length === 0) {
       message.error(t('email.noRecipients'));
@@ -315,53 +309,39 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
-    // 逐个发送邮件
-    for (let i = 0; i < recipients.length; i++) {
       try {
-        const response = await fetch('/api/email', {
+      // 提交审核申请
+      const response = await fetch('/api/email-approvals', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${user?.id}`,
           },
           body: JSON.stringify({
-            to: recipients[i],
             subject: values.subject,
-            html: values.content,
-            isBulk: true
+          content: values.content,
+          recipients: recipients
           }),
         });
 
         const result = await response.json();
         
         if (result.success) {
-          setSentEmails(prev => prev + 1);
-        }
-        
-        // 更新进度
-        setProgress(((i + 1) / recipients.length) * 100);
-        
-        // 等待3秒再发送下一封
-        if (i < recipients.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-      } catch (error) {
-        console.error('发送邮件失败:', error);
-      }
-    }
-
-    setIsSending(false);
-    setProgress(0);
-    setSentEmails(0);
-    setTotalEmails(0);
-    
+        message.success(t('email.approvalSubmitted'));
     // 清空表单
     form.resetFields();
     setSelectedCustomers([]);
-    
     // 通知父组件发送完成
     onSendComplete?.();
-    message.success(t('email.sendComplete'));
+      } else {
+        message.error(result.error || t('email.approvalSubmitFailed'));
+      }
+    } catch (error) {
+      console.error('提交审核申请失败:', error);
+      message.error(t('email.approvalSubmitFailed'));
+    } finally {
+      setIsSending(false);
+    }
   };
 
   // 渲染收件人标签
@@ -471,33 +451,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             size="large"
             block
           >
-            {isSending ? t('email.sending') : t('email.sendEmail')}
+            {isSending ? t('email.submitting') : t('email.submitForApproval')}
           </Button>
         </Form.Item>
       </Form>
-
-      {/* 发送进度通知 */}
-      {isSending && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-full shadow-lg px-6 py-3 flex items-center space-x-3 min-w-80">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-gray-900">{t('email.sendInProgress')}</span>
-                <span className="text-xs text-gray-500">{sentEmails}/{totalEmails}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 客户选择模态框 */}
       <Modal

@@ -65,6 +65,7 @@
     "emailManagement": "邮件管理",
     "customerManagement": "客户管理",
     "userManagement": "员工管理",
+    "approvalManagement": "审核管理",
     "emailSystem": "邮件管理系统"
   },
   "email": {
@@ -113,13 +114,24 @@
     "received": "已收到",
     "read": "已读",
     "unread": "未读",
+    "sentResults": "发送结果",
+    "failed": "发送失败",
+    "pending": "待发送",
+    "processing": "发送中",
+    "queueAdded": "邮件已添加到发送队列",
+    "queueProcessing": "队列处理中",
+    "queueCompleted": "队列处理完成",
     "markedAsRead": "邮件已标记为已读",
     "markedAsUnread": "邮件已标记为未读",
     "updateStatusFailed": "更新邮件状态失败",
     "autoMarkedAsRead": "邮件已自动标记为已读",
     "maxRecipientsReached": "最多只能选择 {max} 个收件人",
     "maxRecipientsLimit": "已达到最大限制 {max} 人",
-    "recipientsLimitNotice": "注意：每次最多只能选择 {max} 个收件人"
+    "recipientsLimitNotice": "注意：每次最多只能选择 {max} 个收件人",
+    "submitForApproval": "提交审核",
+    "submitting": "提交中...",
+    "approvalSubmitted": "审核申请提交成功",
+    "approvalSubmitFailed": "提交审核申请失败"
   },
   "customer": {
     "customer": "客户",
@@ -184,6 +196,29 @@
     "filterByCreationTime": "按创建时间筛选",
     "startDate": "开始日期",
     "endDate": "结束日期"
+  },
+  "approval": {
+    "approvalManagement": "审核管理",
+    "applicant": "申请人",
+    "applicationTime": "申请时间",
+    "content": "发送内容",
+    "status": "状态",
+    "pending": "待审核",
+    "approved": "已通过",
+    "rejected": "已拒绝",
+    "approver": "审核人",
+    "recipients": "收件人",
+    "emailContent": "邮件内容",
+    "viewDetail": "查看详情",
+    "edit": "编辑",
+    "editContent": "编辑内容",
+    "approvalDetail": "审核详情",
+    "confirmApprove": "确认通过此审核申请？",
+    "confirmReject": "确认拒绝此审核申请？",
+    "fetchApprovalsFailed": "获取审核列表失败",
+    "fetchDetailFailed": "获取审核详情失败",
+    "actionFailed": "审核操作失败",
+    "updateFailed": "更新内容失败"
   },
   "user": {
     "user": "员工",
