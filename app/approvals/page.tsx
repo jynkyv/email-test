@@ -69,12 +69,22 @@ export default function ApprovalsPage() {
   const [sentCount, setSentCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [sendingResults, setSendingResults] = useState<any[]>([]);
+  
+  // 筛选相关状态
+  const [applicantName, setApplicantName] = useState('');
 
   // 获取审核列表
   const fetchApprovals = async (page = 1, size = 50) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/email-approvals?page=${page}&pageSize=${size}`, {
+      let url = `/api/email-approvals?page=${page}&pageSize=${size}`;
+      
+      // 添加申请人名称筛选参数
+      if (applicantName.trim()) {
+        url += `&applicantName=${encodeURIComponent(applicantName.trim())}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -348,6 +358,24 @@ export default function ApprovalsPage() {
     }
   };
 
+  // 处理申请人名称筛选
+  const handleApplicantNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApplicantName(e.target.value);
+  };
+
+  // 处理筛选搜索
+  const handleSearch = () => {
+    setCurrentPage(1); // 重置到第一页
+    fetchApprovals(1, pageSize);
+  };
+
+  // 清空筛选
+  const handleClearFilter = () => {
+    setApplicantName('');
+    setCurrentPage(1);
+    fetchApprovals(1, pageSize);
+  };
+
   useEffect(() => {
     if (user) {
       fetchApprovals();
@@ -460,6 +488,27 @@ export default function ApprovalsPage() {
   return (
     <div className="p-6">
       <Card title={t('approval.approvalManagement')} className="h-full">
+        {/* 筛选区域 */}
+        <div className="mb-4 flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">{t('approval.applicant')}:</span>
+            <Input
+              placeholder={t('approval.searchByApplicant')}
+              value={applicantName}
+              onChange={handleApplicantNameChange}
+              style={{ width: 200 }}
+              onPressEnter={handleSearch}
+              allowClear
+            />
+            <Button type="primary" onClick={handleSearch}>
+              {t('common.search')}
+            </Button>
+            <Button onClick={handleClearFilter}>
+              {t('common.clear')}
+            </Button>
+          </div>
+        </div>
+
         <Table
           columns={columns}
           dataSource={approvals}

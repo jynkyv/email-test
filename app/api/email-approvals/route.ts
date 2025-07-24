@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const pageSize = parseInt(searchParams.get('pageSize') || '50');
+    const applicantName = searchParams.get('applicantName') || '';
     const authHeader = request.headers.get('authorization');
     
     if (!authHeader) {
@@ -37,6 +38,36 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
+    // 如果有申请人名称筛选，先查询匹配的用户ID
+    let applicantIds: string[] = [];
+    if (applicantName.trim()) {
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id')
+        .ilike('username', `%${applicantName.trim()}%`);
+      
+      if (usersError) {
+        console.error('用户查询错误:', usersError);
+        return NextResponse.json(
+          { error: '筛选用户失败' },
+          { status: 500 }
+        );
+      }
+      
+      applicantIds = users.map(user => user.id);
+      
+      // 如果没有找到匹配的用户，直接返回空结果
+      if (applicantIds.length === 0) {
+        return NextResponse.json({
+          success: true,
+          approvals: [],
+          total: 0,
+          page,
+          pageSize,
+        });
+      }
+    }
+
     let query = supabase
       .from('email_approvals')
       .select(`
@@ -44,13 +75,20 @@ export async function GET(request: NextRequest) {
         applicant:users!email_approvals_applicant_id_fkey(username, role),
         approver:users!email_approvals_approver_id_fkey(username)
       `, { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range(from, to);
+      .order('created_at', { ascending: false });
 
     // 如果不是管理员，只能查看自己提交的申请
     if (userData.role !== 'admin') {
       query = query.eq('applicant_id', userId);
     }
+
+    // 添加申请人名称筛选
+    if (applicantIds.length > 0) {
+      query = query.in('applicant_id', applicantIds);
+    }
+
+    // 应用分页
+    query = query.range(from, to);
 
     const { data: approvals, error, count } = await query;
 

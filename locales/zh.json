@@ -200,6 +200,7 @@
   "approval": {
     "approvalManagement": "审核管理",
     "applicant": "申请人",
+    "searchByApplicant": "请输入申请人名称",
     "applicationTime": "申请时间",
     "content": "发送内容",
     "status": "状态",

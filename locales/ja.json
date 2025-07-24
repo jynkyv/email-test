@@ -200,6 +200,7 @@
   "approval": {
     "approvalManagement": "承認管理",
     "applicant": "申請者",
+    "searchByApplicant": "申請者名を入力してください",
     "applicationTime": "申請日時",
     "content": "送信内容",
     "status": "ステータス",
