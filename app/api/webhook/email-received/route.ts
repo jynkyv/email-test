@@ -48,10 +48,10 @@ export async function POST(request: NextRequest) {
       htmlLength: html?.length
     });
 
-    if (!to) {
-      console.log('❌ 缺少收件人信息');
+    if (!from) {
+      console.log('❌ 缺少发件人信息');
       return NextResponse.json(
-        { success: false, message: '缺少收件人信息' },
+        { success: false, message: '缺少发件人信息' },
         { 
           status: 400,
           headers: {
@@ -63,40 +63,59 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 查找对应的客户
-    console.log('🔍 查找客户:', to);
+    // 从发件人信息中提取邮箱
+    let fromEmail = '';
+    if (from.includes('<') && from.includes('>')) {
+      // 格式: "Name <email@domain.com>"
+      const match = from.match(/<(.+?)>/);
+      fromEmail = match ? match[1] : from;
+    } else {
+      // 格式: "email@domain.com"
+      fromEmail = from;
+    }
+
+    console.log('🔍 查找发件人客户:', fromEmail);
+
+    // 查找对应的客户（根据发件人邮箱）
     let { data: customer, error: customerError } = await supabase
       .from('customers')
       .select('id, company_name, email')
-      .eq('email', to)
+      .eq('email', fromEmail)
       .single();
 
     // 如果客户不存在，自动创建
     if (!customer && customerError?.code === 'PGRST116') {
-      console.log('⚠️ 客户不存在，自动创建客户记录');
+      console.log('⚠️ 发件人客户不存在，自动创建客户记录');
       
       // 从发件人信息中提取公司名称
       let companyName = '未知公司';
       if (from) {
         // 尝试从发件人信息中提取公司名称
-        const fromMatch = from.match(/<(.+?)>/);
-        if (fromMatch) {
-          const email = fromMatch[1];
-          const domain = email.split('@')[1];
-          companyName = domain ? domain.split('.')[0] : '未知公司';
+        if (from.includes('<') && from.includes('>')) {
+          // 格式: "Name <email@domain.com>"
+          const nameMatch = from.match(/^(.+?)\s*</);
+          if (nameMatch) {
+            companyName = nameMatch[1].trim();
+          } else {
+            const domain = fromEmail.split('@')[1];
+            companyName = domain ? domain.split('.')[0] : '未知公司';
+          }
         } else {
           // 如果没有尖括号，直接使用发件人信息
-          companyName = from.split('@')[0] || '未知公司';
+          companyName = fromEmail.split('@')[0] || '未知公司';
         }
       }
+      
+      // 生成一个有效的UUID作为created_by
+      const systemUserId = '00000000-0000-0000-0000-000000000000';
       
       // 创建新客户记录
       const { data: newCustomer, error: createError } = await supabase
         .from('customers')
         .insert({
           company_name: companyName,
-          email: to,
-          created_by: 'system' // 系统自动创建
+          email: fromEmail,
+          created_by: systemUserId
         })
         .select('id, company_name, email')
         .single();
@@ -134,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!customer) {
-      console.log('❌ 未找到对应客户且创建失败:', to);
+      console.log('❌ 未找到对应客户且创建失败:', fromEmail);
       return NextResponse.json(
         { success: false, message: '客户不存在且创建失败' },
         { 
@@ -179,7 +198,7 @@ export async function POST(request: NextRequest) {
       .from('customer_emails')
       .insert({
         customer_id: customer.id,
-        from_email: from || 'unknown@example.com',
+        from_email: fromEmail,
         to_email: to,
         subject: subject || '无主题',
         content: html || text || '',
@@ -207,10 +226,23 @@ export async function POST(request: NextRequest) {
     console.log('✅ 邮件记录插入成功:', email.id);
 
     // 更新客户状态
+    console.log('🎉 更新客户未读状态...');
+    const { error: updateError } = await supabase
+      .from('customers')
+      .update({ has_unread_emails: true })
+      .eq('id', customer.id);
+
+    if (updateError) {
+      console.error('⚠️ 更新客户状态失败:', updateError);
+      // 不阻止整个流程，只记录错误
+    } else {
+      console.log('✅ 客户状态更新成功');
+    }
+
     console.log('🎉 邮件处理完成:', {
       emailId: email.id,
       customerId: customer.id,
-      from,
+      from: fromEmail,
       to,
       subject: subject?.substring(0, 30)
     });
@@ -256,7 +288,7 @@ export async function POST(request: NextRequest) {
 
 // 添加GET方法用于测试
 export async function GET(request: NextRequest) {
-  console.log('�� Webhook接口测试访问');
+  console.log(' Webhook接口测试访问');
   return NextResponse.json(
     { 
       success: true, 
