@@ -83,7 +83,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [maxResults, setMaxResults] = useState(50); // 默认50
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
-  const [selectedEmailIds, setSelectedEmailIds] = useState<string[]>([]);
   
   // 客户列表分页相关状态
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
@@ -127,12 +126,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       
       const data = await response.json();
       
-      // 修改这里：检查messages字段而不是success字段
-      if (data.messages) {
+      if (data.success) {
         setEmails(data.messages || []);
-      } else {
-        console.error('API返回格式错误:', data);
-        message.error(t('common.networkError'));
       }
     } catch (error) {
       console.error('获取邮件失败:', error);
@@ -152,6 +147,68 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSelectedCustomer(customer);
     setSelectedEmail(null);
     fetchCustomerEmails(customer.email);
+  };
+
+  // 更新邮件已读/未读状态
+  const updateEmailStatus = async (emailId: string, action: 'read' | 'unread', showMessage = true) => {
+    try {
+      const response = await fetch(`/api/email/${emailId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // 更新本地邮件状态
+        setEmails(prevEmails => 
+          prevEmails.map(email => 
+            email.id === emailId 
+              ? {
+                  ...email,
+                  labelIds: action === 'read' 
+                    ? email.labelIds.filter(id => id !== 'UNREAD')
+                    : [...email.labelIds.filter(id => id !== 'READ'), 'UNREAD']
+                }
+              : email
+          )
+        );
+
+        // 如果标记为已读，更新客户列表中的未读状态
+        if (action === 'read' && selectedCustomer) {
+          // 检查是否还有其他未读邮件
+          const updatedEmails = emails.map(email => 
+            email.id === emailId 
+              ? { ...email, labelIds: email.labelIds.filter(id => id !== 'UNREAD') }
+              : email
+          );
+          
+          const hasUnreadEmails = updatedEmails.some(email => email.labelIds.includes('UNREAD'));
+          
+          // 更新客户列表
+          setCustomers(prevCustomers => 
+            prevCustomers.map(customer => 
+              customer.id === selectedCustomer.id 
+                ? { ...customer, has_unread_emails: hasUnreadEmails }
+                : customer
+            )
+          );
+        }
+
+        if (showMessage) {
+          message.success(data.message);
+        }
+      } else {
+        message.error(data.error || '操作失败');
+      }
+    } catch (error) {
+      console.error('更新邮件状态失败:', error);
+      message.error(t('common.networkError'));
+    }
   };
 
   // 保存设置
@@ -207,52 +264,15 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     return !email.labelIds.includes('UNREAD');
   };
 
-  // 更新邮件已读/未读状态
-  const updateEmailStatus = async (emailId: string, action: 'read' | 'unread', showMessage = true) => {
-    try {
-      const response = await fetch(`/api/email/${emailId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.id}`,
-        },
-        body: JSON.stringify({ action }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // 更新本地邮件状态
-        setEmails(prevEmails => 
-          prevEmails.map(email => 
-            email.id === emailId 
-              ? {
-                  ...email,
-                  labelIds: action === 'read' 
-                    ? email.labelIds.filter(id => id !== 'UNREAD')
-                    : [...email.labelIds, 'UNREAD']
-                }
-              : email
-          )
-        );
-        
-        if (showMessage) {
-          message.success(action === 'read' ? t('email.markedAsRead') : t('email.markedAsUnread'));
-        }
-      } else {
-        if (showMessage) {
-          message.error(t('email.updateStatusFailed'));
-        }
-      }
-    } catch (error) {
-      console.error('更新邮件状态失败:', error);
-      if (showMessage) {
-        message.error(t('email.updateStatusFailed'));
-      }
+  // 处理邮件点击
+  const handleEmailClick = (email: Email) => {
+    setSelectedEmail(email);
+    
+    // 如果邮件未读，立即标记为已读
+    if (!isEmailRead(email)) {
+      updateEmailStatus(email.id, 'read', false);
     }
   };
-
-
 
   const decodeEmailContent = (data: string) => {
     try {
@@ -357,7 +377,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                     key={customer.id}
                     className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
                       selectedCustomer && selectedCustomer.id === customer.id 
-                        ? 'customer-selected' 
+                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
                         : ''
                     } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
                     onClick={() => handleSelectCustomer(customer)}
@@ -463,15 +483,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                   <div
                     key={email.id}
                     className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
-                      selectedEmail && selectedEmail.id === email.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      selectedEmail && selectedEmail.id === email.id 
+                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                        : ''
                     } ${!isEmailRead(email) ? 'bg-yellow-50 border-l-4 border-l-yellow-500' : ''}`}
-                    onClick={() => {
-                      setSelectedEmail(email);
-                      // 如果邮件未读，立即标记为已读
-                      if (!isEmailRead(email)) {
-                        updateEmailStatus(email.id, 'read', false);
-                      }
-                    }}
+                    onClick={() => handleEmailClick(email)}
                   >
                     <div className="flex items-start space-x-3">
                       <Avatar icon={<MailOutlined />} size="large" />
@@ -596,31 +612,25 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       >
         <Form
           form={settingsForm}
-          initialValues={{ maxResults }}
           onFinish={handleSettingsSave}
           layout="vertical"
-          className="mt-4"
+          initialValues={{ maxResults }}
         >
           <Form.Item
             name="maxResults"
             label={t('settings.maxResults')}
             rules={[
               { required: true, message: t('settings.maxResultsRequired') },
-              { type: 'number', min: 1, max: 500, message: t('settings.maxResultsRange') }
+              { type: 'number', min: 10, max: 100, message: t('settings.maxResultsRange') }
             ]}
           >
-            <InputNumber
-              min={1}
-              max={500}
+            <InputNumber 
+              min={10} 
+              max={100} 
               style={{ width: '100%' }}
-              addonAfter={t('settings.emails')}
               placeholder={t('settings.maxResultsPlaceholder')}
             />
           </Form.Item>
-          
-          <div className="text-xs text-gray-500 mb-4">
-            {t('settings.maxResultsDescription')}
-          </div>
           
           <Form.Item className="mb-0">
             <div className="flex justify-end gap-3">
@@ -628,7 +638,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 {t('common.cancel')}
               </Button>
               <Button type="primary" htmlType="submit">
-                {t('settings.saveSettings')}
+                {t('settings.save')}
               </Button>
             </div>
           </Form.Item>

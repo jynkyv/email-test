@@ -1,71 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { google } from 'googleapis';
+import { supabase } from '@/lib/supabase';
 
-// Google OAuth2 配置
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-// 设置刷新token
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-});
-
-// 创建Gmail API实例
-const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-
-// 更新邮件状态（已读/未读）
+// 更新邮件已读/未读状态
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json({ error: '未授权访问' }, { status: 401 });
+    }
+
+    const userId = authHeader.replace('Bearer ', '');
+    const emailId = params.id;
     const body = await request.json();
     const { action } = body; // 'read' 或 'unread'
 
-    if (!id) {
-      return NextResponse.json(
-        { error: '邮件ID不能为空' },
-        { status: 400 }
-      );
-    }
+    // 获取用户信息
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', userId)
+      .single();
 
-    if (!action || !['read', 'unread'].includes(action)) {
-      return NextResponse.json(
-        { error: '无效的操作类型' },
-        { status: 400 }
-      );
+    if (userError || !user) {
+      return NextResponse.json({ error: '用户不存在' }, { status: 401 });
     }
-
-    // 根据操作类型设置标签
-    const addLabelIds = action === 'unread' ? ['UNREAD'] : [];
-    const removeLabelIds = action === 'read' ? ['UNREAD'] : [];
 
     // 更新邮件状态
-    const response = await gmail.users.messages.modify({
-      userId: 'me',
-      id: id,
-      requestBody: {
-        addLabelIds,
-        removeLabelIds,
-      },
-    });
+    const { data: email, error: updateError } = await supabase
+      .from('customer_emails')
+      .update({ is_read: action === 'read' })
+      .eq('id', emailId)
+      .select('customer_id')
+      .single();
 
-    return NextResponse.json({
-      success: true,
-      message: action === 'read' ? '邮件已标记为已读' : '邮件已标记为未读',
-      data: response.data,
+    if (updateError) {
+      console.error('更新邮件状态失败:', updateError);
+      return NextResponse.json({ error: '更新失败' }, { status: 500 });
+    }
+
+    // 检查该客户是否还有未读邮件
+    const { data: unreadCount, error: countError } = await supabase
+      .from('customer_emails')
+      .select('id', { count: 'exact' })
+      .eq('customer_id', email.customer_id)
+      .eq('is_read', false);
+
+    if (countError) {
+      console.error('检查未读邮件数量失败:', countError);
+    } else {
+      // 更新客户的未读状态
+      const { error: customerUpdateError } = await supabase
+        .from('customers')
+        .update({ has_unread_emails: unreadCount && unreadCount.length > 0 })
+        .eq('id', email.customer_id);
+
+      if (customerUpdateError) {
+        console.error('更新客户未读状态失败:', customerUpdateError);
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `邮件已标记为${action === 'read' ? '已读' : '未读'}`,
+      isRead: action === 'read'
     });
 
   } catch (error) {
     console.error('更新邮件状态失败:', error);
-    return NextResponse.json(
-      { error: '更新邮件状态失败' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '操作失败' }, { status: 500 });
   }
 }
 
