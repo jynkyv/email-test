@@ -65,7 +65,18 @@ export async function GET(request: NextRequest) {
     // 应用分页（在筛选之后）
     query = query.range(from, to);
 
-    const { data: customers, error, count } = await query;
+    // 在select中添加has_unread_emails字段
+    const { data: customers, error, count } = await supabase
+      .from('customers')
+      .select(`
+        *,
+        customer_emails!inner(
+          id,
+          is_read
+        )
+      `)
+      .eq('created_by', userId)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('数据库查询错误:', error);

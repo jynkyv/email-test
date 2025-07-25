@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { sendSingleEmail, sendBulkEmails } from '@/lib/resend';
+import { sendSingleEmail, sendBulkEmails } from '@/lib/sendgrid';
 
 // 发送邮件
 export async function POST(request: NextRequest) {
@@ -171,8 +171,8 @@ export async function POST(request: NextRequest) {
       errorMessage = '网络连接被重置，请检查代理设置';
     } else if (errorObj.code === 'ETIMEDOUT') {
       errorMessage = '网络连接超时，请检查网络和代理';
-    } else if (errorObj.message?.includes('oauth2.googleapis.com')) {
-      errorMessage = '无法连接到Google服务，请检查代理设置';
+    } else if (errorObj.message?.includes('sendgrid')) {
+      errorMessage = 'SendGrid服务连接失败，请检查API配置';
     }
     
     return NextResponse.json(

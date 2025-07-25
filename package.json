@@ -11,11 +11,13 @@
     "auth": "node scripts/simple-auth.js",
     "create-admin": "node scripts/create-admin.js",
     "deploy-check": "node scripts/deploy-checklist.js",
-    "test-resend": "node scripts/test-resend.js",
-    "setup-resend": "node scripts/setup-resend.js"
+    "test-sendgrid": "node scripts/test-sendgrid-verified.js",
+    "setup-sendgrid": "node scripts/setup-sender-identity.js",
+    "validate-sendgrid": "node scripts/validate-sendgrid-config.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@sendgrid/mail": "^8.1.0",
     "@supabase/supabase-js": "^2.39.0",
     "@types/nodemailer": "^6.4.17",
     "@types/xlsx": "^0.0.36",

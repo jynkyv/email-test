@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { sendSingleEmail } from '@/lib/resend';
+import { sendSingleEmail } from '@/lib/sendgrid';
 
 // 处理邮件队列
 export async function POST(request: NextRequest) {
