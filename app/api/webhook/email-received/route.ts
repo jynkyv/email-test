@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// 添加CORS支持
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   console.log('📧 收到SendGrid Inbound Parse webhook请求');
   console.log('请求时间:', new Date().toISOString());
@@ -38,7 +50,17 @@ export async function POST(request: NextRequest) {
 
     if (!to) {
       console.log('❌ 缺少收件人信息');
-      return NextResponse.json({ success: false, message: '缺少收件人信息' });
+      return NextResponse.json(
+        { success: false, message: '缺少收件人信息' },
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
     }
 
     // 查找对应的客户
@@ -51,12 +73,32 @@ export async function POST(request: NextRequest) {
 
     if (customerError) {
       console.log('❌ 查询客户失败:', customerError);
-      return NextResponse.json({ success: false, message: '查询客户失败' });
+      return NextResponse.json(
+        { success: false, message: '查询客户失败' },
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
     }
 
     if (!customer) {
       console.log('❌ 未找到对应客户:', to);
-      return NextResponse.json({ success: false, message: '客户不存在' });
+      return NextResponse.json(
+        { success: false, message: '客户不存在' },
+        { 
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
     }
 
     console.log('✅ 找到客户:', { id: customer.id, company: customer.company_name, email: customer.email });
@@ -71,7 +113,16 @@ export async function POST(request: NextRequest) {
 
       if (existingEmail) {
         console.log('⚠️ 邮件已存在，跳过处理:', messageId);
-        return NextResponse.json({ success: true, message: '邮件已存在' });
+        return NextResponse.json(
+          { success: true, message: '邮件已存在' },
+          { 
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type',
+            }
+          }
+        );
       }
     }
 
@@ -93,7 +144,17 @@ export async function POST(request: NextRequest) {
 
     if (emailError) {
       console.error('❌ 插入邮件失败:', emailError);
-      return NextResponse.json({ success: false, message: '插入邮件失败' });
+      return NextResponse.json(
+        { success: false, message: '插入邮件失败' },
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
     }
 
     console.log('✅ 邮件记录插入成功:', email.id);
@@ -120,12 +181,21 @@ export async function POST(request: NextRequest) {
       subject: subject?.substring(0, 30)
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      emailId: email.id,
-      customerId: customer.id,
-      message: '邮件处理成功'
-    });
+    return NextResponse.json(
+      { 
+        success: true, 
+        emailId: email.id,
+        customerId: customer.id,
+        message: '邮件处理成功'
+      },
+      { 
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      }
+    );
 
   } catch (error) {
     console.error('❌ 处理邮件webhook失败:', error);
@@ -138,7 +208,14 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(
       { success: false, message: '处理失败', error: errorObj.message },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      }
     );
   }
 }
@@ -146,9 +223,18 @@ export async function POST(request: NextRequest) {
 // 添加GET方法用于测试
 export async function GET(request: NextRequest) {
   console.log('🧪 Webhook接口测试访问');
-  return NextResponse.json({ 
-    success: true, 
-    message: 'Webhook接口可访问',
-    timestamp: new Date().toISOString()
-  });
+  return NextResponse.json(
+    { 
+      success: true, 
+      message: 'Webhook接口可访问',
+      timestamp: new Date().toISOString()
+    },
+    { 
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    }
+  );
 } 
