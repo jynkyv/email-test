@@ -373,47 +373,53 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <div className="text-center py-8 text-gray-500">{t('customer.noCustomers')}</div>
             ) : (
               <div className="divide-y divide-gray-100">
-                {customers.map((customer) => (
-                  <div
-                    key={customer.id}
-                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
-                      selectedCustomer && selectedCustomer.id === customer.id 
-                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                        : ''
-                    } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
-                    onClick={() => handleSelectCustomer(customer)}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <Avatar icon={<UserOutlined />} size="large" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
-                            {customer.company_name}
-                          </h4>
-                          {customer.has_unread_emails && (
-                            <div 
-                              style={{ 
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                backgroundColor: '#52c41a',
-                                flexShrink: 0
-                              }} 
-                            />
-                          )}
-                        </div>
-                        <div className="mt-1 space-y-1">
-                          <p className="text-sm text-gray-600">
-                            {customer.email}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
-                          </p>
+                {customers.map((customer) => {
+                  const isSelected = selectedCustomer && selectedCustomer.id === customer.id;
+                  
+                  return (
+                    <div
+                      key={customer.id}
+                      className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
+                        isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      } ${loading ? 'opacity-50 pointer-events-none' : ''}`}
+                      onClick={() => handleSelectCustomer(customer)}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar icon={<UserOutlined />} size="large" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start">
+                            <h4 className={`text-sm font-medium truncate ${
+                              isSelected ? 'text-blue-700' : 'text-gray-900'
+                            }`}>
+                              {customer.company_name}
+                            </h4>
+                            {customer.has_unread_emails && (
+                              <div 
+                                style={{ 
+                                  width: '8px',
+                                  height: '8px',
+                                  borderRadius: '50%',
+                                  backgroundColor: '#52c41a',
+                                  flexShrink: 0
+                                }} 
+                              />
+                            )}
+                          </div>
+                          <div className="mt-1 space-y-1">
+                            <p className={`text-sm ${
+                              isSelected ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
+                              {customer.email}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -481,13 +487,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             ) : (
               <div className="divide-y divide-gray-100">
                 {emails.map((email) => {
-                  // 计算样式类
                   const isSelected = selectedEmail && selectedEmail.id === email.id;
                   const isUnread = !isEmailRead(email);
                   
+                  // 计算样式类 - 选中状态优先于未读状态
                   let className = 'cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200';
                   
-                  // 优先级：选中状态 > 未读状态
                   if (isSelected) {
                     className += ' bg-blue-50 border-l-4 border-l-blue-500';
                   } else if (isUnread) {
@@ -506,7 +511,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                           <div className="flex justify-between items-start">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                               <h4 className={`text-sm truncate ${
-                                isEmailRead(email) ? 'font-medium text-gray-900' : 'font-bold text-gray-900'
+                                isSelected 
+                                  ? 'font-bold text-blue-700' 
+                                  : isUnread 
+                                    ? 'font-bold text-gray-900' 
+                                    : 'font-medium text-gray-900'
                               }`}>
                                 {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
                               </h4>
@@ -532,7 +541,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             </div>
                           </div>
                           <div className="mt-1 space-y-1">
-                            <p className="text-sm text-gray-600">
+                            <p className={`text-sm ${
+                              isSelected ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
                               {selectedCustomer && isOutgoingEmail(email, selectedCustomer.email) 
                                 ? `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}`
                                 : `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
@@ -541,7 +552,9 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             <p className="text-xs text-gray-500">
                               {formatDate(email.internalDate || '')}
                             </p>
-                            <p className="text-xs text-gray-400 truncate">
+                            <p className={`text-xs truncate ${
+                              isSelected ? 'text-blue-500' : 'text-gray-400'
+                            }`}>
                               {email.snippet}
                             </p>
                           </div>
