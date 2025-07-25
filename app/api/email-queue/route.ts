@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 将邮件添加到队列
-    const queueItems = approval.recipients.map(recipient => ({
+    const queueItems = approval.recipients.map((recipient: string) => ({
       approval_id: approvalId,
       recipient,
       subject: approval.subject,
