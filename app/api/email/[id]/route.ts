@@ -81,6 +81,7 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+    const authHeader = request.headers.get('authorization');
 
     if (!id) {
       return NextResponse.json(
@@ -89,14 +90,83 @@ export async function GET(
       );
     }
 
-    const response = await gmail.users.messages.get({
-      userId: 'me',
-      id: id,
-    });
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: '未授权访问' },
+        { status: 401 }
+      );
+    }
+
+    const userId = authHeader.replace('Bearer ', '');
+    
+    // 获取用户信息
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !userData) {
+      return NextResponse.json(
+        { error: '用户不存在' },
+        { status: 401 }
+      );
+    }
+
+    // 从数据库获取邮件详情
+    const { data: email, error } = await supabase
+      .from('customer_emails')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !email) {
+      return NextResponse.json(
+        { error: '邮件不存在' },
+        { status: 404 }
+      );
+    }
+
+    // 权限检查：非管理员只能查看自己创建的客户的邮件
+    if (userData.role !== 'admin') {
+      const { data: customer, error: customerError } = await supabase
+        .from('customers')
+        .select('created_by')
+        .eq('id', email.customer_id)
+        .single();
+
+      if (customerError || customer.created_by !== userId) {
+        return NextResponse.json(
+          { error: '权限不足' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // 转换格式以匹配Gmail API格式
+    const message = {
+      id: email.id,
+      threadId: email.message_id || email.id,
+      labelIds: email.is_read ? ['INBOX', 'READ'] : ['INBOX', 'UNREAD'],
+      snippet: email.content?.substring(0, 100) || '',
+      payload: {
+        headers: [
+          { name: 'From', value: email.from_email },
+          { name: 'To', value: email.to_email },
+          { name: 'Subject', value: email.subject || '无主题' },
+          { name: 'Date', value: new Date(email.created_at).toISOString() },
+          { name: 'Direction', value: email.direction || 'inbound' }
+        ],
+        body: {
+          data: Buffer.from(email.content || '').toString('base64')
+        }
+      },
+      internalDate: new Date(email.created_at).getTime().toString()
+    };
 
     return NextResponse.json({
       success: true,
-      message: response.data,
+      message: message,
     });
 
   } catch (error) {
