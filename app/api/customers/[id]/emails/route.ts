@@ -2,14 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 // 获取邮件列表 - 从数据库中查询邮件记录
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q') || '';
     const maxResults = parseInt(searchParams.get('maxResults') || '50');
     const authHeader = request.headers.get('authorization');
+    const customerId = params.id;
 
-    console.log('邮件查询参数:', { q, maxResults });
+    console.log('邮件查询参数:', { q, maxResults, customerId });
 
     if (!authHeader) {
       return NextResponse.json(
@@ -34,53 +38,69 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 解析查询参数
-    let fromEmail = '';
-    let toEmail = '';
-    
-    if (q.includes('from:')) {
-      const fromMatch = q.match(/from:([^\s]+)/);
-      if (fromMatch) {
-        fromEmail = fromMatch[1];
-        fromEmail = fromEmail.replace(/['"]/g, '');
-      }
-    }
-    
-    if (q.includes('to:')) {
-      const toMatch = q.match(/to:([^\s]+)/);
-      if (toMatch) {
-        toEmail = toMatch[1];
-        toEmail = toEmail.replace(/['"]/g, '');
+    // 检查权限
+    if (userData.role !== 'admin') {
+      const { data: customer, error: customerError } = await supabase
+        .from('customers')
+        .select('created_by')
+        .eq('id', customerId)
+        .single();
+
+      if (customerError || customer.created_by !== userId) {
+        return NextResponse.json({ error: '权限不足' }, { status: 403 });
       }
     }
 
-    console.log('解析的查询参数:', { fromEmail, toEmail });
-
-    // 构建查询 - 直接查询customer_emails表，不进行权限过滤
+    // 构建查询 - 查询指定客户的所有邮件（收发的都包括）
     let query = supabase
       .from('customer_emails')
       .select('*')
+      .eq('customer_id', customerId)
       .order('created_at', { ascending: false })
       .limit(maxResults);
 
-    // 添加邮箱筛选
-    if (fromEmail) {
-      query = query.eq('from_email', fromEmail);
-    }
-    
-    if (toEmail) {
-      query = query.eq('to_email', toEmail);
-    }
+    // 如果有搜索查询，添加筛选条件
+    if (q) {
+      // 解析查询参数
+      let fromEmail = '';
+      let toEmail = '';
+      
+      if (q.includes('from:')) {
+        const fromMatch = q.match(/from:([^\s]+)/);
+        if (fromMatch) {
+          fromEmail = fromMatch[1].replace(/['"]/g, '');
+        }
+      }
+      
+      if (q.includes('to:')) {
+        const toMatch = q.match(/to:([^\s]+)/);
+        if (toMatch) {
+          toEmail = toMatch[1].replace(/['"]/g, '');
+        }
+      }
 
-    // 移除权限过滤逻辑 - 所有用户都可以查看邮件
-    console.log('查询邮件，不进行权限过滤');
+      // 添加邮箱筛选
+      if (fromEmail) {
+        query = query.eq('from_email', fromEmail);
+      }
+      
+      if (toEmail) {
+        query = query.eq('to_email', toEmail);
+      }
+    }
 
     const { data: emails, error } = await query;
 
     console.log('邮件查询结果:', { 
       emailsCount: emails?.length, 
       error: error?.message,
-      emails: emails?.map(e => ({ id: e.id, from: e.from_email, to: e.to_email, subject: e.subject }))
+      emails: emails?.map(e => ({ 
+        id: e.id, 
+        from: e.from_email, 
+        to: e.to_email, 
+        subject: e.subject,
+        direction: e.direction 
+      }))
     });
 
     if (error) {
@@ -102,7 +122,8 @@ export async function GET(request: NextRequest) {
           { name: 'From', value: email.from_email },
           { name: 'To', value: email.to_email },
           { name: 'Subject', value: email.subject || '无主题' },
-          { name: 'Date', value: new Date(email.created_at).toISOString() }
+          { name: 'Date', value: new Date(email.created_at).toISOString() },
+          { name: 'Direction', value: email.direction || 'inbound' } // 添加方向标记
         ],
         body: {
           data: Buffer.from(email.content || '').toString('base64')
@@ -113,7 +134,11 @@ export async function GET(request: NextRequest) {
 
     console.log('转换后的消息:', { 
       messagesCount: messages.length,
-      messages: messages.map(m => ({ id: m.id, from: m.payload.headers.find(h => h.name === 'From')?.value }))
+      messages: messages.map(m => ({ 
+        id: m.id, 
+        from: m.payload.headers.find(h => h.name === 'From')?.value,
+        direction: m.payload.headers.find(h => h.name === 'Direction')?.value
+      }))
     });
 
     return NextResponse.json({

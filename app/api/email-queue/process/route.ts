@@ -83,6 +83,9 @@ export async function POST(request: NextRequest) {
         try {
           const result = await sendSingleEmail(email.recipient, email.subject, email.content);
           
+          // 记录发送的邮件到customer_emails表
+          await recordSentEmail(email.recipient, email.subject, email.content, email.approval_id, result.id);
+          
           // 发送成功
           await supabase
             .from('email_queue')
@@ -121,24 +124,13 @@ export async function POST(request: NextRequest) {
           });
         }
       } catch (error) {
-        // 处理异常
-        const errorMessage = error instanceof Error ? error.message : '未知错误';
-        await supabase
-          .from('email_queue')
-          .update({ 
-            status: 'failed',
-            error_message: errorMessage,
-            retry_count: email.retry_count + 1,
-            processed_at: new Date().toISOString()
-          })
-          .eq('id', email.id);
-
+        console.error(`处理邮件 ${email.id} 失败:`, error);
         failCount++;
         results.push({
           id: email.id,
           recipient: email.recipient,
           success: false,
-          error: errorMessage
+          error: '处理失败'
         });
       }
     }
@@ -146,8 +138,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: `处理完成。成功: ${successCount}, 失败: ${failCount}`,
-      processed: pendingEmails.length,
-      results
+      results,
+      processed: successCount + failCount
     });
 
   } catch (error) {
@@ -156,5 +148,65 @@ export async function POST(request: NextRequest) {
       { error: '处理邮件队列失败' },
       { status: 500 }
     );
+  }
+}
+
+// 记录发送的邮件到customer_emails表
+async function recordSentEmail(toEmail: string, subject: string, content: string, approvalId: string, messageId: string) {
+  try {
+    // 查找对应的客户
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('id')
+      .eq('email', toEmail)
+      .single();
+
+    if (customerError || !customer) {
+      console.log('收件人不是客户，跳过记录:', toEmail);
+      return;
+    }
+
+    // 获取审核申请信息以获取申请人ID
+    const { data: approval, error: approvalError } = await supabase
+      .from('email_approvals')
+      .select('applicant_id')
+      .eq('id', approvalId)
+      .single();
+
+    if (approvalError || !approval) {
+      console.error('获取审核申请信息失败:', approvalError);
+      return;
+    }
+
+    // 获取发送者的邮箱（从用户表或环境变量）
+    const { data: senderUser } = await supabase
+      .from('users')
+      .select('email')
+      .eq('id', approval.applicant_id)
+      .single();
+
+    const fromEmail = senderUser?.email || process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com';
+
+    // 插入发送的邮件记录
+    const { error: insertError } = await supabase
+      .from('customer_emails')
+      .insert({
+        customer_id: customer.id,
+        from_email: fromEmail,
+        to_email: toEmail,
+        subject: subject || '无主题',
+        content: content || '',
+        message_id: messageId,
+        is_read: true, // 发送的邮件默认标记为已读
+        direction: 'outbound' // 标记为发出的邮件
+      });
+
+    if (insertError) {
+      console.error('记录发送邮件失败:', insertError);
+    } else {
+      console.log('✅ 发送邮件记录成功:', { customerId: customer.id, toEmail, messageId });
+    }
+  } catch (error) {
+    console.error('记录发送邮件时出错:', error);
   }
 } 

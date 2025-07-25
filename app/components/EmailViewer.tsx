@@ -119,7 +119,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setLoading(true);
     try {
       // 使用客户ID查询邮件
-      const response = await fetch(`/api/email?customerId=${customer.id}&maxResults=${maxResults}`, {
+      const response = await fetch(`/api/customers/${customer.id}/emails?maxResults=${maxResults}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -127,7 +127,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       
       const data = await response.json();
       
-      if (data.success) {
+      if (data.messages) {
         setEmails(data.messages || []);
       }
     } catch (error) {
@@ -242,6 +242,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const isOutgoingEmail = (email: Email, customerEmail: string) => {
     const from = getHeaderValue(email.payload.headers, 'From');
     const to = getHeaderValue(email.payload.headers, 'To');
+    const direction = getHeaderValue(email.payload.headers, 'Direction');
+    
+    // 如果有direction标记，直接使用
+    if (direction === 'outbound') {
+      return true;
+    }
     
     // 提取邮箱地址的函数
     const extractEmail = (emailString: string) => {
@@ -324,6 +330,70 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         content: replyContent
       });
     }
+  };
+
+  // 渲染邮件列表项
+  const renderEmailItem = (email: Email, index: number) => {
+    const from = getHeaderValue(email.payload.headers, 'From');
+    const to = getHeaderValue(email.payload.headers, 'To');
+    const subject = getHeaderValue(email.payload.headers, 'Subject');
+    const date = getHeaderValue(email.payload.headers, 'Date');
+    const direction = getHeaderValue(email.payload.headers, 'Direction');
+    
+    const isOutgoing = direction === 'outbound' || isOutgoingEmail(email, selectedCustomer?.email || '');
+    const isRead = isEmailRead(email);
+    
+    return (
+      <div
+        key={email.id}
+        className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
+          selectedEmail?.id === email.id ? 'bg-blue-50 border-blue-200' : ''
+        } ${!isRead ? 'bg-yellow-50' : ''}`}
+        onClick={() => handleEmailClick(email)}
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center space-x-2">
+              <span className={`text-xs px-2 py-1 rounded ${
+                isOutgoing 
+                  ? 'bg-blue-100 text-blue-800' 
+                  : 'bg-green-100 text-green-800'
+              }`}>
+                {isOutgoing ? t('email.sent') : t('email.received')}
+              </span>
+              {!isRead && (
+                <span className="text-xs px-2 py-1 rounded bg-yellow-100 text-yellow-800">
+                  {t('email.unread')}
+                </span>
+              )}
+            </div>
+            <div className="mt-2">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-900">
+                  {isOutgoing ? t('email.to') : t('email.from')}:
+                </span>
+                <span className="text-sm text-gray-600">
+                  {isOutgoing ? to : from}
+                </span>
+              </div>
+              <div className="mt-1">
+                <span className="text-sm font-medium text-gray-900">
+                  {t('email.emailSubject')}:
+                </span>
+                <span className="text-sm text-gray-600 ml-2">
+                  {subject || t('email.noSubject')}
+                </span>
+              </div>
+              <div className="mt-1">
+                <span className="text-sm text-gray-500">
+                  {new Date(date).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -486,83 +556,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
-                {emails.map((email) => {
-                  const isSelected = selectedEmail && selectedEmail.id === email.id;
-                  const isUnread = !isEmailRead(email);
-                  
-                  // 计算样式类 - 选中状态优先于未读状态
-                  let className = 'cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200';
-                  
-                  if (isSelected) {
-                    className += ' bg-blue-50 border-l-4 border-l-blue-500';
-                  } else if (isUnread) {
-                    className += ' bg-yellow-50 border-l-4 border-l-yellow-500';
-                  }
-                  
-                  return (
-                    <div
-                      key={email.id}
-                      className={className}
-                      onClick={() => handleEmailClick(email)}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <Avatar icon={<MailOutlined />} size="large" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <h4 className={`text-sm truncate ${
-                                isSelected 
-                                  ? 'font-bold text-blue-700' 
-                                  : isUnread 
-                                    ? 'font-bold text-gray-900' 
-                                    : 'font-medium text-gray-900'
-                              }`}>
-                                {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
-                              </h4>
-                              <div className="flex items-center gap-1">
-                                {selectedCustomer && (
-                                  <Tag 
-                                    color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
-                                  >
-                                    {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
-                                  </Tag>
-                                )}
-                                <Tag 
-                                  color={isEmailRead(email) ? 'default' : 'orange'}
-                                  className="cursor-pointer hover:opacity-80"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    updateEmailStatus(email.id, isEmailRead(email) ? 'unread' : 'read');
-                                  }}
-                                >
-                                  {isEmailRead(email) ? t('email.read') : t('email.unread')}
-                                </Tag>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="mt-1 space-y-1">
-                            <p className={`text-sm ${
-                              isSelected ? 'text-blue-600' : 'text-gray-600'
-                            }`}>
-                              {selectedCustomer && isOutgoingEmail(email, selectedCustomer.email) 
-                                ? `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}`
-                                : `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
-                              }
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {formatDate(email.internalDate || '')}
-                            </p>
-                            <p className={`text-xs truncate ${
-                              isSelected ? 'text-blue-500' : 'text-gray-400'
-                            }`}>
-                              {email.snippet}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {emails.map((email) => renderEmailItem(email, emails.indexOf(email)))}
               </div>
             )}
           </div>

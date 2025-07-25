@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
             success: true,
             messageId: result.id
           });
+          
+          // 记录发送的邮件到customer_emails表
+          await recordSentEmail(recipient, subject, html, userData.id, result.id);
+          
         } catch (error) {
           console.error(`发送邮件给 ${recipient} 失败:`, error);
           results.push({
@@ -122,6 +126,9 @@ export async function POST(request: NextRequest) {
       const recipient = recipients[0];
       const result = await sendSingleEmail(recipient, subject, html);
       
+      // 记录发送的邮件到customer_emails表
+      await recordSentEmail(recipient, subject, html, userData.id, result.id);
+      
       // 记录邮件日志
       if (customerIds.length > 0) {
         await supabase
@@ -179,6 +186,54 @@ export async function POST(request: NextRequest) {
       { error: errorMessage, details: errorObj.message },
       { status: 500 }
     );
+  }
+}
+
+// 记录发送的邮件到customer_emails表
+async function recordSentEmail(toEmail: string, subject: string, content: string, sentBy: string, messageId: string) {
+  try {
+    // 查找对应的客户
+    const { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('id')
+      .eq('email', toEmail)
+      .single();
+
+    if (customerError || !customer) {
+      console.log('收件人不是客户，跳过记录:', toEmail);
+      return;
+    }
+
+    // 获取发送者的邮箱（从用户表或环境变量）
+    const { data: senderUser } = await supabase
+      .from('users')
+      .select('email')
+      .eq('id', sentBy)
+      .single();
+
+    const fromEmail = senderUser?.email || process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com';
+
+    // 插入发送的邮件记录
+    const { error: insertError } = await supabase
+      .from('customer_emails')
+      .insert({
+        customer_id: customer.id,
+        from_email: fromEmail,
+        to_email: toEmail,
+        subject: subject || '无主题',
+        content: content || '',
+        message_id: messageId,
+        is_read: true, // 发送的邮件默认标记为已读
+        direction: 'outbound' // 标记为发出的邮件
+      });
+
+    if (insertError) {
+      console.error('记录发送邮件失败:', insertError);
+    } else {
+      console.log('✅ 发送邮件记录成功:', { customerId: customer.id, toEmail, messageId });
+    }
+  } catch (error) {
+    console.error('记录发送邮件时出错:', error);
   }
 }
 
