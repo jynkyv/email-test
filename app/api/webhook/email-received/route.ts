@@ -89,66 +89,25 @@ export async function POST(request: NextRequest) {
     console.log('🔍 查找发件人客户:', fromEmail);
 
     // 查找对应的客户（根据发件人邮箱）
-    let { data: customer, error: customerError } = await supabaseAdmin
+    const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .select('id, company_name, email')
       .eq('email', fromEmail)
       .single();
 
-    // 如果客户不存在，自动创建
+    // 如果客户不存在，直接丢弃邮件
     if (!customer && customerError?.code === 'PGRST116') {
-      console.log('⚠️ 发件人客户不存在，自动创建客户记录');
-      
-      // 从发件人信息中提取公司名称
-      let companyName = '未知公司';
-      if (from) {
-        // 尝试从发件人信息中提取公司名称
-        if (from.includes('<') && from.includes('>')) {
-          // 格式: "Name <email@domain.com>"
-          const nameMatch = from.match(/^(.+?)\s*</);
-          if (nameMatch) {
-            companyName = nameMatch[1].trim();
-          } else {
-            const domain = fromEmail.split('@')[1];
-            companyName = domain ? domain.split('.')[0] : '未知公司';
+      console.log('❌ 发件人不是客户，丢弃邮件:', fromEmail);
+      return NextResponse.json(
+        { success: true, message: '发件人不是客户，邮件已丢弃' },
+        { 
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
           }
-        } else {
-          // 如果没有尖括号，直接使用发件人信息
-          companyName = fromEmail.split('@')[0] || '未知公司';
         }
-      }
-      
-      // 生成一个有效的UUID作为created_by
-      const systemUserId = '00000000-0000-0000-0000-000000000000';
-      
-      // 创建新客户记录
-      const { data: newCustomer, error: createError } = await supabaseAdmin
-        .from('customers')
-        .insert({
-          company_name: companyName,
-          email: fromEmail,
-          created_by: systemUserId
-        })
-        .select('id, company_name, email')
-        .single();
-
-      if (createError) {
-        console.error('❌ 创建客户失败:', createError);
-        return NextResponse.json(
-          { success: false, message: '创建客户失败' },
-          { 
-            status: 500,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-              'Access-Control-Allow-Headers': 'Content-Type',
-            }
-          }
-        );
-      }
-
-      customer = newCustomer;
-      console.log('✅ 客户创建成功:', { id: customer.id, company: customer.company_name, email: customer.email });
+      );
     } else if (customerError) {
       console.log('❌ 查询客户失败:', customerError);
       return NextResponse.json(
@@ -165,11 +124,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!customer) {
-      console.log('❌ 未找到对应客户且创建失败:', fromEmail);
+      console.log('❌ 未找到对应客户:', fromEmail);
       return NextResponse.json(
-        { success: false, message: '客户不存在且创建失败' },
+        { success: true, message: '发件人不是客户，邮件已丢弃' },
         { 
-          status: 404,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -204,14 +162,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 插入邮件记录 - 关键修复：使用客户ID
+    // 插入邮件记录
     console.log('💾 插入邮件记录到客户:', customer.id);
     const { data: email, error: emailError } = await supabaseAdmin
       .from('customer_emails')
       .insert({
-        customer_id: customer.id, // 使用客户ID
-        from_email: fromEmail,    // 发件人邮箱
-        to_email: to,             // 收件人邮箱（你的域名）
+        customer_id: customer.id,
+        from_email: fromEmail,
+        to_email: to,
         subject: subject || '无主题',
         content: html || text || '',
         message_id: messageId,
@@ -246,7 +204,6 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       console.error('⚠️ 更新客户状态失败:', updateError);
-      // 不阻止整个流程，只记录错误
     } else {
       console.log('✅ 客户状态更新成功');
     }
@@ -261,10 +218,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { 
-        success: true, 
-        emailId: email.id,
-        customerId: customer.id,
-        message: '邮件处理成功'
+      success: true, 
+      emailId: email.id,
+      customerId: customer.id,
+      message: '邮件处理成功'
       },
       { 
         headers: {
@@ -303,9 +260,9 @@ export async function GET(request: NextRequest) {
   console.log(' Webhook接口测试访问');
   return NextResponse.json(
     { 
-      success: true, 
-      message: 'Webhook接口可访问',
-      timestamp: new Date().toISOString()
+    success: true, 
+    message: 'Webhook接口可访问',
+    timestamp: new Date().toISOString()
     },
     { 
       headers: {

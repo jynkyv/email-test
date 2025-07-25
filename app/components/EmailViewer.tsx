@@ -124,8 +124,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       
       const data = await response.json();
       
-      if (data.success) {
+      // 修改这里：检查messages字段而不是success字段
+      if (data.messages) {
         setEmails(data.messages || []);
+      } else {
+        console.error('API返回格式错误:', data);
+        message.error(t('common.networkError'));
       }
     } catch (error) {
       console.error('获取邮件失败:', error);
