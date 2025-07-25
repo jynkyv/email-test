@@ -235,18 +235,10 @@ export async function GET(request: NextRequest) {
 
     console.log('解析的查询参数:', { fromEmail, toEmail });
 
-    // 构建查询 - 使用LEFT JOIN而不是INNER JOIN
+    // 构建查询 - 直接查询customer_emails表
     let query = supabase
       .from('customer_emails')
-      .select(`
-        *,
-        customers(
-          id,
-          company_name,
-          email,
-          created_by
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(maxResults);
 

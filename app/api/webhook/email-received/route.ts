@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// 使用Service Role Key创建管理员客户端
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+// 创建具有管理员权限的客户端
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 // 添加CORS支持
 export async function OPTIONS(request: NextRequest) {
@@ -77,7 +89,7 @@ export async function POST(request: NextRequest) {
     console.log('🔍 查找发件人客户:', fromEmail);
 
     // 查找对应的客户（根据发件人邮箱）
-    let { data: customer, error: customerError } = await supabase
+    let { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .select('id, company_name, email')
       .eq('email', fromEmail)
@@ -110,7 +122,7 @@ export async function POST(request: NextRequest) {
       const systemUserId = '00000000-0000-0000-0000-000000000000';
       
       // 创建新客户记录
-      const { data: newCustomer, error: createError } = await supabase
+      const { data: newCustomer, error: createError } = await supabaseAdmin
         .from('customers')
         .insert({
           company_name: companyName,
@@ -171,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     // 检查是否已存在相同message-id的邮件
     if (messageId) {
-      const { data: existingEmail } = await supabase
+      const { data: existingEmail } = await supabaseAdmin
         .from('customer_emails')
         .select('id')
         .eq('message_id', messageId)
@@ -192,14 +204,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 插入邮件记录
-    console.log('💾 插入邮件记录...');
-    const { data: email, error: emailError } = await supabase
+    // 插入邮件记录 - 关键修复：使用客户ID
+    console.log('💾 插入邮件记录到客户:', customer.id);
+    const { data: email, error: emailError } = await supabaseAdmin
       .from('customer_emails')
       .insert({
-        customer_id: customer.id,
-        from_email: fromEmail,
-        to_email: to,
+        customer_id: customer.id, // 使用客户ID
+        from_email: fromEmail,    // 发件人邮箱
+        to_email: to,             // 收件人邮箱（你的域名）
         subject: subject || '无主题',
         content: html || text || '',
         message_id: messageId,
@@ -227,7 +239,7 @@ export async function POST(request: NextRequest) {
 
     // 更新客户状态
     console.log('🎉 更新客户未读状态...');
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('customers')
       .update({ has_unread_emails: true })
       .eq('id', customer.id);
