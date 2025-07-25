@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 // 添加CORS支持
 export async function OPTIONS(request: NextRequest) {
@@ -47,18 +48,179 @@ export async function POST(request: NextRequest) {
       htmlLength: html?.length
     });
 
-    // 简化的响应 - 不依赖数据库
+    if (!to) {
+      console.log('❌ 缺少收件人信息');
+      return NextResponse.json(
+        { success: false, message: '缺少收件人信息' },
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
+    }
+
+    // 查找对应的客户
+    console.log('🔍 查找客户:', to);
+    let { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('id, company_name, email')
+      .eq('email', to)
+      .single();
+
+    // 如果客户不存在，自动创建
+    if (!customer && customerError?.code === 'PGRST116') {
+      console.log('⚠️ 客户不存在，自动创建客户记录');
+      
+      // 从发件人信息中提取公司名称
+      let companyName = '未知公司';
+      if (from) {
+        // 尝试从发件人信息中提取公司名称
+        const fromMatch = from.match(/<(.+?)>/);
+        if (fromMatch) {
+          const email = fromMatch[1];
+          const domain = email.split('@')[1];
+          companyName = domain ? domain.split('.')[0] : '未知公司';
+        } else {
+          // 如果没有尖括号，直接使用发件人信息
+          companyName = from.split('@')[0] || '未知公司';
+        }
+      }
+      
+      // 创建新客户记录
+      const { data: newCustomer, error: createError } = await supabase
+        .from('customers')
+        .insert({
+          company_name: companyName,
+          email: to,
+          created_by: 'system' // 系统自动创建
+        })
+        .select('id, company_name, email')
+        .single();
+
+      if (createError) {
+        console.error('❌ 创建客户失败:', createError);
+        return NextResponse.json(
+          { success: false, message: '创建客户失败' },
+          { 
+            status: 500,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type',
+            }
+          }
+        );
+      }
+
+      customer = newCustomer;
+      console.log('✅ 客户创建成功:', { id: customer.id, company: customer.company_name, email: customer.email });
+    } else if (customerError) {
+      console.log('❌ 查询客户失败:', customerError);
+      return NextResponse.json(
+        { success: false, message: '查询客户失败' },
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
+    }
+
+    if (!customer) {
+      console.log('❌ 未找到对应客户且创建失败:', to);
+      return NextResponse.json(
+        { success: false, message: '客户不存在且创建失败' },
+        { 
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
+    }
+
+    console.log('✅ 找到客户:', { id: customer.id, company: customer.company_name, email: customer.email });
+
+    // 检查是否已存在相同message-id的邮件
+    if (messageId) {
+      const { data: existingEmail } = await supabase
+        .from('customer_emails')
+        .select('id')
+        .eq('message_id', messageId)
+        .single();
+
+      if (existingEmail) {
+        console.log('⚠️ 邮件已存在，跳过处理:', messageId);
+        return NextResponse.json(
+          { success: true, message: '邮件已存在' },
+          { 
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type',
+            }
+          }
+        );
+      }
+    }
+
+    // 插入邮件记录
+    console.log('💾 插入邮件记录...');
+    const { data: email, error: emailError } = await supabase
+      .from('customer_emails')
+      .insert({
+        customer_id: customer.id,
+        from_email: from || 'unknown@example.com',
+        to_email: to,
+        subject: subject || '无主题',
+        content: html || text || '',
+        message_id: messageId,
+        is_read: false
+      })
+      .select()
+      .single();
+
+    if (emailError) {
+      console.error('❌ 插入邮件失败:', emailError);
+      return NextResponse.json(
+        { success: false, message: '插入邮件失败' },
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          }
+        }
+      );
+    }
+
+    console.log('✅ 邮件记录插入成功:', email.id);
+
+    // 更新客户状态
+    console.log('🎉 邮件处理完成:', {
+      emailId: email.id,
+      customerId: customer.id,
+      from,
+      to,
+      subject: subject?.substring(0, 30)
+    });
+
     return NextResponse.json(
       { 
         success: true, 
-        message: '邮件接收成功',
-        data: {
-          from,
-          to,
-          subject,
-          messageId,
-          receivedAt: new Date().toISOString()
-        }
+        emailId: email.id,
+        customerId: customer.id,
+        message: '邮件处理成功'
       },
       { 
         headers: {
@@ -94,17 +256,12 @@ export async function POST(request: NextRequest) {
 
 // 添加GET方法用于测试
 export async function GET(request: NextRequest) {
-  console.log('🧪 Webhook接口测试访问');
+  console.log('�� Webhook接口测试访问');
   return NextResponse.json(
     { 
       success: true, 
       message: 'Webhook接口可访问',
-      timestamp: new Date().toISOString(),
-      environment: {
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        baseUrl: process.env.NEXT_PUBLIC_BASE_URL
-      }
+      timestamp: new Date().toISOString()
     },
     { 
       headers: {
