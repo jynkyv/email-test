@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/api/webhook/email-received",
+      "source": "/api/webhook/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -13,9 +13,15 @@
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type"
+          "value": "Content-Type, Authorization"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/webhook/email-received",
+      "destination": "/api/webhook/email-received"
     }
   ]
 }
