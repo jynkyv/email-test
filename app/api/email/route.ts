@@ -186,10 +186,12 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const q = searchParams.get('q') || '';
+    const customerId = searchParams.get('customerId'); // 添加客户ID参数
     const maxResults = parseInt(searchParams.get('maxResults') || '50');
     const authHeader = request.headers.get('authorization');
 
-    console.log('邮件查询参数:', { maxResults });
+    console.log('邮件查询参数:', { q, customerId, maxResults });
 
     if (!authHeader) {
       return NextResponse.json(
@@ -214,16 +216,50 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('开始查询邮件...');
-    
-    // 直接查询所有邮件，不进行任何筛选
-    const { data: emails, error } = await supabase
+    // 构建查询 - 直接查询customer_emails表
+    let query = supabase
       .from('customer_emails')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(maxResults);
 
-    console.log('Supabase查询结果:', { 
+    // 如果提供了客户ID，按客户ID过滤
+    if (customerId) {
+      query = query.eq('customer_id', customerId);
+    } else {
+      // 如果没有提供客户ID，解析查询参数中的邮箱
+      let fromEmail = '';
+      let toEmail = '';
+      
+      if (q.includes('from:')) {
+        const fromMatch = q.match(/from:([^\s]+)/);
+        if (fromMatch) {
+          fromEmail = fromMatch[1].replace(/['"]/g, '');
+        }
+      }
+      
+      if (q.includes('to:')) {
+        const toMatch = q.match(/to:([^\s]+)/);
+        if (toMatch) {
+          toEmail = toMatch[1].replace(/['"]/g, '');
+        }
+      }
+
+      // 添加邮箱筛选
+      if (fromEmail) {
+        query = query.eq('from_email', fromEmail);
+      }
+      
+      if (toEmail) {
+        query = query.eq('to_email', toEmail);
+      }
+    }
+
+    console.log('查询邮件，不进行权限过滤');
+
+    const { data: emails, error } = await query;
+
+    console.log('邮件查询结果:', { 
       emailsCount: emails?.length, 
       error: error?.message,
       emails: emails?.map(e => ({ id: e.id, from: e.from_email, to: e.to_email, subject: e.subject }))
@@ -237,42 +273,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 检查emails是否为null或undefined
-    if (!emails) {
-      console.log('emails为null或undefined');
-      return NextResponse.json({
-        success: true,
-        messages: [],
-        nextPageToken: null,
-        resultSizeEstimate: 0
-      });
-    }
-
-    console.log('开始转换邮件格式...');
-
     // 转换格式以匹配Gmail API格式
-    const messages = emails.map(email => {
-      console.log('处理邮件:', { id: email.id, from: email.from_email, to: email.to_email });
-      
-      return {
-        id: email.id,
-        threadId: email.message_id || email.id,
-        labelIds: email.is_read ? ['INBOX', 'READ'] : ['INBOX', 'UNREAD'],
-        snippet: email.content?.substring(0, 100) || '',
-        payload: {
-          headers: [
-            { name: 'From', value: email.from_email },
-            { name: 'To', value: email.to_email },
-            { name: 'Subject', value: email.subject || '无主题' },
-            { name: 'Date', value: new Date(email.created_at).toISOString() }
-          ],
-          body: {
-            data: Buffer.from(email.content || '').toString('base64')
-          }
-        },
-        internalDate: new Date(email.created_at).getTime().toString()
-      };
-    });
+    const messages = emails?.map(email => ({
+      id: email.id,
+      threadId: email.message_id || email.id,
+      labelIds: email.is_read ? ['INBOX', 'READ'] : ['INBOX', 'UNREAD'],
+      snippet: email.content?.substring(0, 100) || '',
+      payload: {
+        headers: [
+          { name: 'From', value: email.from_email },
+          { name: 'To', value: email.to_email },
+          { name: 'Subject', value: email.subject || '无主题' },
+          { name: 'Date', value: new Date(email.created_at).toISOString() }
+        ],
+        body: {
+          data: Buffer.from(email.content || '').toString('base64')
+        }
+      },
+      internalDate: new Date(email.created_at).getTime().toString()
+    })) || [];
 
     console.log('转换后的消息:', { 
       messagesCount: messages.length,
@@ -280,7 +299,7 @@ export async function GET(request: NextRequest) {
     });
 
     const response = {
-      success: true,  // 添加success字段
+      success: true,
       messages,
       nextPageToken: null,
       resultSizeEstimate: messages.length

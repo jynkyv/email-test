@@ -115,10 +115,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   };
 
   // 获取指定客户的邮件
-  const fetchCustomerEmails = async (customerEmail: string) => {
+  const fetchCustomerEmails = async (customer: Customer) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/email?q=from:${customerEmail} OR to:${customerEmail}&maxResults=${maxResults}`, {
+      // 使用客户ID查询邮件
+      const response = await fetch(`/api/email?customerId=${customer.id}&maxResults=${maxResults}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -146,7 +147,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     
     setSelectedCustomer(customer);
     setSelectedEmail(null);
-    fetchCustomerEmails(customer.email);
+    fetchCustomerEmails(customer); // 传递整个客户对象
   };
 
   // 更新邮件已读/未读状态
@@ -219,7 +220,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     
     // 如果当前有选中的客户，重新获取邮件
     if (selectedCustomer) {
-      fetchCustomerEmails(selectedCustomer.email);
+      fetchCustomerEmails(selectedCustomer); // 传递整个客户对象
     }
   };
 
@@ -479,65 +480,76 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
-                {emails.map((email) => (
-                  <div
-                    key={email.id}
-                    className={`cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200 ${
-                      selectedEmail && selectedEmail.id === email.id 
-                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                        : ''
-                    } ${!isEmailRead(email) ? 'bg-yellow-50 border-l-4 border-l-yellow-500' : ''}`}
-                    onClick={() => handleEmailClick(email)}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <Avatar icon={<MailOutlined />} size="large" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <h4 className={`text-sm truncate ${
-                              isEmailRead(email) ? 'font-medium text-gray-900' : 'font-bold text-gray-900'
-                            }`}>
-                              {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
-                            </h4>
-                            <div className="flex items-center gap-1">
-                              {selectedCustomer && (
+                {emails.map((email) => {
+                  // 计算样式类
+                  const isSelected = selectedEmail && selectedEmail.id === email.id;
+                  const isUnread = !isEmailRead(email);
+                  
+                  let className = 'cursor-pointer px-6 py-4 hover:bg-gray-50 transition-colors duration-200';
+                  
+                  // 优先级：选中状态 > 未读状态
+                  if (isSelected) {
+                    className += ' bg-blue-50 border-l-4 border-l-blue-500';
+                  } else if (isUnread) {
+                    className += ' bg-yellow-50 border-l-4 border-l-yellow-500';
+                  }
+                  
+                  return (
+                    <div
+                      key={email.id}
+                      className={className}
+                      onClick={() => handleEmailClick(email)}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar icon={<MailOutlined />} size="large" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <h4 className={`text-sm truncate ${
+                                isEmailRead(email) ? 'font-medium text-gray-900' : 'font-bold text-gray-900'
+                              }`}>
+                                {getHeaderValue(email.payload.headers, 'Subject') || t('email.noSubject')}
+                              </h4>
+                              <div className="flex items-center gap-1">
+                                {selectedCustomer && (
+                                  <Tag 
+                                    color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                                  >
+                                    {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                                  </Tag>
+                                )}
                                 <Tag 
-                                  color={isOutgoingEmail(email, selectedCustomer.email) ? 'green' : 'blue'}
+                                  color={isEmailRead(email) ? 'default' : 'orange'}
+                                  className="cursor-pointer hover:opacity-80"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateEmailStatus(email.id, isEmailRead(email) ? 'unread' : 'read');
+                                  }}
                                 >
-                                  {isOutgoingEmail(email, selectedCustomer.email) ? t('email.sent') : t('email.received')}
+                                  {isEmailRead(email) ? t('email.read') : t('email.unread')}
                                 </Tag>
-                              )}
-                              <Tag 
-                                color={isEmailRead(email) ? 'default' : 'orange'}
-                                className="cursor-pointer hover:opacity-80"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateEmailStatus(email.id, isEmailRead(email) ? 'unread' : 'read');
-                                }}
-                              >
-                                {isEmailRead(email) ? t('email.read') : t('email.unread')}
-                              </Tag>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="mt-1 space-y-1">
-                          <p className="text-sm text-gray-600">
-                            {selectedCustomer && isOutgoingEmail(email, selectedCustomer.email) 
-                              ? `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}`
-                              : `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
-                            }
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(email.internalDate || '')}
-                          </p>
-                          <p className="text-xs text-gray-400 truncate">
-                            {email.snippet}
-                          </p>
+                          <div className="mt-1 space-y-1">
+                            <p className="text-sm text-gray-600">
+                              {selectedCustomer && isOutgoingEmail(email, selectedCustomer.email) 
+                                ? `${t('email.to')}: ${getHeaderValue(email.payload.headers, 'To')}`
+                                : `${t('email.from')}: ${getHeaderValue(email.payload.headers, 'From')}`
+                              }
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatDate(email.internalDate || '')}
+                            </p>
+                            <p className="text-xs text-gray-400 truncate">
+                              {email.snippet}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
