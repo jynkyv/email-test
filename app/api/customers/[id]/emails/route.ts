@@ -191,19 +191,27 @@ export async function PUT(
       .eq('is_read', false);
 
     if (countError) {
-      console.error('检查未读邮件失败:', countError);
+      console.error('检查未读邮件数量失败:', countError);
     } else {
-      // 更新客户状态
-      await supabase
+      // 更新客户的未读状态
+      const { error: customerUpdateError } = await supabase
         .from('customers')
-        .update({ has_unread_emails: unreadCount.length > 0 })
+        .update({ has_unread_emails: unreadCount && unreadCount.length > 0 })
         .eq('id', customerId);
+
+      if (customerUpdateError) {
+        console.error('更新客户未读状态失败:', customerUpdateError);
+      }
     }
 
-    return NextResponse.json({ success: true, message: '标记成功' });
+    return NextResponse.json({ 
+      success: true, 
+      message: '邮件已标记为已读',
+      unreadCount: unreadCount?.length || 0
+    });
 
   } catch (error) {
-    console.error('标记邮件失败:', error);
+    console.error('标记邮件为已读失败:', error);
     return NextResponse.json({ error: '操作失败' }, { status: 500 });
   }
 } 

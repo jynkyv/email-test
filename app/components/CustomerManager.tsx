@@ -294,15 +294,13 @@ export default function CustomerManager() {
           <UserOutlined />
           <span>{text}</span>
           {record.has_unread_emails && (
-            <Badge 
-              count="新" 
-              size="small" 
+            <div 
               style={{ 
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
                 backgroundColor: '#52c41a',
-                fontSize: '10px',
-                lineHeight: '12px',
-                height: '16px',
-                minWidth: '16px'
+                flexShrink: 0
               }} 
             />
           )}

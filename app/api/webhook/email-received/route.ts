@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ 邮件记录插入成功:', email.id);
 
-    // 更新客户状态
+    // 更新客户未读状态
     console.log('🎉 更新客户未读状态...');
     const { error: updateError } = await supabaseAdmin
       .from('customers')

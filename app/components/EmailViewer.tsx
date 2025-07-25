@@ -16,7 +16,8 @@ import {
   Modal,
   Form,
   InputNumber,
-  Tooltip
+  Tooltip,
+  Badge
 } from 'antd';
 import { 
   ReloadOutlined, 
@@ -24,7 +25,8 @@ import {
   MessageOutlined,
   UserOutlined,
   TeamOutlined,
-  SettingOutlined
+  SettingOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 
 interface Email {
@@ -62,6 +64,7 @@ interface Customer {
   company_name: string;
   email: string;
   created_at: string;
+  has_unread_emails?: boolean; // 添加未读邮件标记
 }
 
 interface EmailViewerProps {
@@ -366,6 +369,17 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                           <h4 className="text-sm font-medium text-gray-900 truncate">
                             {customer.company_name}
                           </h4>
+                          {customer.has_unread_emails && (
+                            <div 
+                              style={{ 
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor: '#52c41a',
+                                flexShrink: 0
+                              }} 
+                            />
+                          )}
                         </div>
                         <div className="mt-1 space-y-1">
                           <p className="text-sm text-gray-600">
