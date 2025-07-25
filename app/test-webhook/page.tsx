@@ -108,7 +108,7 @@ export default function TestWebhookPage() {
     {
       title: '操作',
       key: 'actions',
-      render: (_: any, record: WebhookEntry) => (
+      render: (_, record: WebhookEntry) => (
         <Space>
           <Button 
             type="link" 
