@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
-    "@sendgrid/mail": "^8.1.0",
+    "@sendgrid/mail": "^8.1.5",
     "@supabase/supabase-js": "^2.39.0",
     "@types/nodemailer": "^6.4.17",
     "@types/xlsx": "^0.0.36",
