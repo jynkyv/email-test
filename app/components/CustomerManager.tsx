@@ -26,6 +26,7 @@ interface Customer {
   company_name: string;
   email: string;
   created_at: string;
+  has_unread_emails?: boolean; // 添加未读邮件标记
 }
 
 interface ExcelCustomer {
@@ -90,6 +91,13 @@ export default function CustomerManager() {
 
   useEffect(() => {
     fetchCustomers();
+    
+    // 每30秒自动刷新一次，检查新邮件
+    const interval = setInterval(() => {
+      fetchCustomers();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchCustomers = async (page = currentPage, size = pageSize) => {
@@ -281,10 +289,23 @@ export default function CustomerManager() {
       title: t('customer.customerName'),
       dataIndex: 'company_name',
       key: 'company_name',
-      render: (text: string) => (
+      render: (text: string, record: Customer) => (
         <Space>
           <UserOutlined />
-          {text}
+          <span>{text}</span>
+          {record.has_unread_emails && (
+            <Badge 
+              count="新" 
+              size="small" 
+              style={{ 
+                backgroundColor: '#52c41a',
+                fontSize: '10px',
+                lineHeight: '12px',
+                height: '16px',
+                minWidth: '16px'
+              }} 
+            />
+          )}
         </Space>
       ),
     },

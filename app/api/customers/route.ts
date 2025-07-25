@@ -41,10 +41,16 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    // 构建基础查询
+    // 构建基础查询 - 包含未读邮件状态
     let query = supabase
       .from('customers')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        customer_emails!left(
+          id,
+          is_read
+        )
+      `, { count: 'exact' })
       .order('created_at', { ascending: false });
 
     // 如果不是管理员，只能查看自己创建的客户
@@ -66,7 +72,7 @@ export async function GET(request: NextRequest) {
     query = query.range(from, to);
 
     // 执行查询
-    const { data: customers, error, count } = await query;
+    const { data: customersWithEmails, error, count } = await query;
 
     if (error) {
       console.error('数据库查询错误:', error);
@@ -75,6 +81,16 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // 处理客户数据，计算未读邮件状态
+    const customers = customersWithEmails?.map(customer => {
+      const hasUnreadEmails = customer.customer_emails?.some((email: any) => !email.is_read) || false;
+      return {
+        ...customer,
+        has_unread_emails: hasUnreadEmails,
+        customer_emails: undefined // 移除邮件数据，只保留客户信息
+      };
+    }) || [];
 
     console.log('客户列表查询结果:', { 
       customersCount: customers?.length, 
@@ -87,7 +103,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      customers: customers || [],
+      customers,
       total: count || 0,
       page,
       pageSize,
