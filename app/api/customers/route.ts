@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
+    // 构建基础查询
     let query = supabase
       .from('customers')
       .select('*', { count: 'exact' })
@@ -51,32 +52,21 @@ export async function GET(request: NextRequest) {
       query = query.eq('created_by', userId);
     }
 
-    // 添加时间筛选（在分页之前应用）
+    // 添加时间筛选
     if (startDate) {
       query = query.gte('created_at', startDate);
     }
     if (endDate) {
-      // 将结束日期设置为当天的最后一刻
       const endDateTime = new Date(endDate);
       endDateTime.setHours(23, 59, 59, 999);
       query = query.lte('created_at', endDateTime.toISOString());
     }
 
-    // 应用分页（在筛选之后）
+    // 应用分页
     query = query.range(from, to);
 
-    // 在select中添加has_unread_emails字段
-    const { data: customers, error, count } = await supabase
-      .from('customers')
-      .select(`
-        *,
-        customer_emails!inner(
-          id,
-          is_read
-        )
-      `)
-      .eq('created_by', userId)
-      .order('created_at', { ascending: false });
+    // 执行查询
+    const { data: customers, error, count } = await query;
 
     if (error) {
       console.error('数据库查询错误:', error);
@@ -97,7 +87,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      customers,
+      customers: customers || [],
       total: count || 0,
       page,
       pageSize,
