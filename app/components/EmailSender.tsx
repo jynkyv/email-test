@@ -161,15 +161,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const handleOpenCustomerModal = () => {
     // 将当前选择复制到临时选择状态
     setTempSelectedCustomers([...selectedCustomers]);
-    // 重置时间筛选和分页
-    setStartDate(null);
-    setEndDate(null);
-    setCurrentPage(1);
     setShowCustomerModal(true);
-    // 手动获取数据，因为useEffect可能不会立即触发
-    setTimeout(() => {
+    // 只有在没有数据时才获取数据，保留用户的分页状态
+    if (customers.length === 0) {
       fetchCustomers(1, pageSize);
-    }, 0);
+    }
   };
 
   // 确认选择客户
@@ -182,15 +178,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 取消选择客户
   const handleCancelCustomers = () => {
-    // 取消时清空临时选择，关闭弹窗
-    setTempSelectedCustomers([]);
+    // 取消时恢复原始选择，关闭弹窗
+    setTempSelectedCustomers([...selectedCustomers]);
     setShowCustomerModal(false);
   };
 
   // 模态框关闭时的处理
   const handleModalClose = () => {
-    // 确保模态框关闭后清空临时选择
-    setTempSelectedCustomers([]);
+    // 关闭时恢复原始选择，保留用户状态
+    setTempSelectedCustomers([...selectedCustomers]);
   };
 
   // 切换客户选择状态
@@ -274,22 +270,23 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setStartDate(null);
       setEndDate(null);
     }
-    // 重置到第一页
+    // 时间筛选变化时重置到第一页
     setCurrentPage(1);
   };
 
   // 监听时间筛选变化，重新获取数据
   useEffect(() => {
-    if (showCustomerModal) {
+    if (showCustomerModal && (startDate || endDate)) {
       console.log('时间筛选变化，重新获取数据:', { startDate, endDate });
-      fetchCustomers(1, pageSize);
+      fetchCustomers(currentPage, pageSize);
     }
-  }, [startDate, endDate, showCustomerModal]);
+  }, [startDate, endDate]);
 
   // 清空时间筛选
   const handleClearDateFilter = () => {
     setStartDate(null);
     setEndDate(null);
+    // 清空筛选时重置到第一页
     setCurrentPage(1);
   };
 
@@ -595,9 +592,30 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     >
                       {t('common.previous')}
                     </Button>
-                    <span className="text-sm text-gray-600">
-                      {t('common.pageInfo', { current: currentPage, total: Math.ceil(total / pageSize) })}
-                    </span>
+                    
+                    {/* 页码输入 */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm text-gray-600">{t('common.page')}:</span>
+                      <Input
+                        size="small"
+                        style={{ width: 60 }}
+                        value={currentPage}
+                        onChange={(e) => {
+                          const page = parseInt(e.target.value);
+                          if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+                            fetchCustomers(page, pageSize);
+                          }
+                        }}
+                        onPressEnter={(e) => {
+                          const page = parseInt((e.target as HTMLInputElement).value);
+                          if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+                            fetchCustomers(page, pageSize);
+                          }
+                        }}
+                      />
+                      <span className="text-sm text-gray-600">/ {Math.ceil(total / pageSize)}</span>
+                    </div>
+                    
                     <Button
                       size="small"
                       disabled={currentPage >= Math.ceil(total / pageSize)}
