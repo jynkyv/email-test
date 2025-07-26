@@ -83,6 +83,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [maxResults, setMaxResults] = useState(50); // 默认50
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
+  const [viewMode, setViewMode] = useState<'text' | 'html'>('text');
   
   // 客户列表分页相关状态
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
@@ -310,10 +311,104 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     return email.snippet || t('email.noContent');
   };
 
+  // 获取邮件的HTML内容
+  const getEmailHtmlContent = (email: Email) => {
+    if (email.payload.parts) {
+      for (const part of email.payload.parts) {
+        if (part.mimeType === 'text/html' && part.body.data) {
+          return decodeEmailContent(part.body.data);
+        }
+      }
+    }
+    
+    // 如果没有HTML部分，检查body是否包含HTML
+    if (email.payload.body?.data) {
+      const content = decodeEmailContent(email.payload.body.data);
+      // 简单检查是否包含HTML标签
+      if (content.includes('<') && content.includes('>')) {
+        return content;
+      }
+    }
+    
+    return null;
+  };
+
+  // 清理HTML内容，防止XSS攻击
+  const sanitizeHtml = (html: string): string => {
+    if (!html) return '';
+    
+    // 创建一个临时的DOM元素来解析HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // 移除所有script标签
+    const scripts = tempDiv.querySelectorAll('script');
+    scripts.forEach(script => script.remove());
+    
+    // 移除所有style标签
+    const styles = tempDiv.querySelectorAll('style');
+    styles.forEach(style => style.remove());
+    
+    // 移除所有iframe标签
+    const iframes = tempDiv.querySelectorAll('iframe');
+    iframes.forEach(iframe => iframe.remove());
+    
+    // 移除所有object标签
+    const objects = tempDiv.querySelectorAll('object');
+    objects.forEach(obj => obj.remove());
+    
+    // 移除所有embed标签
+    const embeds = tempDiv.querySelectorAll('embed');
+    embeds.forEach(embed => embed.remove());
+    
+    // 移除所有on*事件属性
+    const allElements = tempDiv.querySelectorAll('*');
+    allElements.forEach(element => {
+      const attrs = element.getAttributeNames();
+      attrs.forEach(attr => {
+        if (attr.startsWith('on')) {
+          element.removeAttribute(attr);
+        }
+      });
+    });
+    
+    return tempDiv.innerHTML;
+  };
+
+  // 将HTML转换为纯文本
+  const htmlToText = (html: string): string => {
+    if (!html) return '';
+    
+    // 创建一个临时的DOM元素来解析HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // 获取纯文本内容
+    let text = tempDiv.textContent || tempDiv.innerText || '';
+    
+    // 清理多余的空白字符
+    text = text.replace(/\s+/g, ' ').trim();
+    
+    // 处理常见的HTML实体
+    text = text
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+    
+    return text;
+  };
+
   const handleReply = (email: Email) => {
     const from = getHeaderValue(email.payload.headers, 'From');
     const subject = getHeaderValue(email.payload.headers, 'Subject');
-    const content = getEmailContent(email);
+    
+    // 优先使用HTML内容，如果没有则使用纯文本
+    const htmlContent = getEmailHtmlContent(email);
+    const textContent = getEmailContent(email);
+    const originalContent = htmlContent || textContent;
     
     // 提取邮箱地址
     const emailMatch = from.match(/<(.+?)>/) || from.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
@@ -321,7 +416,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     
     // 构建回复内容
     const replySubject = subject.startsWith('回复:') ? subject : `回复: ${subject}`;
-    const replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${content}`;
+    
+    // 如果原始内容是HTML，转换为纯文本用于回复
+    const replyContent = htmlContent 
+      ? `\n\n--- ${t('email.originalEmail')} ---\n${htmlToText(htmlContent)}`
+      : `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
     
     if (onReply) {
       onReply({
@@ -603,9 +702,47 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 <Divider />
                 
                 <div>
-                  <h4 className="font-medium mb-2">{t('email.emailContent')}</h4>
-                  <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap max-h-96 overflow-y-auto">
-                    {getEmailContent(selectedEmail)}
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium">{t('email.emailContent')}</h4>
+                    {getEmailHtmlContent(selectedEmail) && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                          {t('email.htmlContentDetected')}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="small"
+                            type={viewMode === 'text' ? 'primary' : 'default'}
+                            onClick={() => setViewMode('text')}
+                            title={t('email.switchToTextView')}
+                          >
+                            {t('email.textView')}
+                          </Button>
+                          <Button
+                            size="small"
+                            type={viewMode === 'html' ? 'primary' : 'default'}
+                            onClick={() => setViewMode('html')}
+                            title={t('email.switchToHtmlView')}
+                          >
+                            {t('email.htmlView')}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded text-sm max-h-96 overflow-y-auto">
+                    {viewMode === 'html' && getEmailHtmlContent(selectedEmail) ? (
+                      <div 
+                        className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800"
+                        dangerouslySetInnerHTML={{ 
+                          __html: sanitizeHtml(getEmailHtmlContent(selectedEmail) || '') 
+                        }}
+                      />
+                    ) : (
+                      <div className="whitespace-pre-wrap">
+                        {getEmailContent(selectedEmail)}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
