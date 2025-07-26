@@ -66,6 +66,9 @@ export async function POST(request: NextRequest) {
     const results = [];
     let successCount = 0;
     let failCount = 0;
+    
+    // 用于统计每个申请人的发送情况
+    const applicantStats = new Map<string, { sendCount: number, recipientCount: number }>();
 
     // 处理每个邮件
     for (const email of pendingEmails) {
@@ -84,7 +87,16 @@ export async function POST(request: NextRequest) {
           const result = await sendSingleEmail(email.recipient, email.subject, email.content);
           
           // 记录发送的邮件到customer_emails表
-          await recordSentEmail(email.recipient, email.subject, email.content, email.approval_id, result.id);
+          const applicantId = await recordSentEmail(email.recipient, email.subject, email.content, email.approval_id, result.id);
+          
+          // 统计申请人的发送情况
+          if (applicantId) {
+            if (!applicantStats.has(applicantId)) {
+              applicantStats.set(applicantId, { sendCount: 0, recipientCount: 0 });
+            }
+            const stats = applicantStats.get(applicantId)!;
+            stats.recipientCount += 1; // 每个成功发送的邮件，收件人数+1
+          }
           
           // 发送成功
           await supabase
@@ -135,6 +147,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 更新申请人的发送统计
+    // 注意：审核邮件发送时，发送次数只算1次（因为是一次审核操作），收件人数是实际成功发送的数量
+    for (const [applicantId, stats] of applicantStats) {
+      if (stats.recipientCount > 0) {
+        try {
+          await updateUserEmailStats(applicantId, 1, stats.recipientCount);
+        } catch (statsError) {
+          console.error(`更新申请人 ${applicantId} 统计失败:`, statsError);
+          // 不阻止邮件发送流程，只记录错误
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: `处理完成。成功: ${successCount}, 失败: ${failCount}`,
@@ -152,7 +177,7 @@ export async function POST(request: NextRequest) {
 }
 
 // 记录发送的邮件到customer_emails表
-async function recordSentEmail(toEmail: string, subject: string, content: string, approvalId: string, messageId: string) {
+async function recordSentEmail(toEmail: string, subject: string, content: string, approvalId: string, messageId: string): Promise<string | null> {
   try {
     // 查找对应的客户
     const { data: customer, error: customerError } = await supabase
@@ -163,7 +188,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
 
     if (customerError || !customer) {
       console.log('收件人不是客户，跳过记录:', toEmail);
-      return;
+      return null;
     }
 
     // 获取审核申请信息以获取申请人ID
@@ -175,7 +200,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
 
     if (approvalError || !approval) {
       console.error('获取审核申请信息失败:', approvalError);
-      return;
+      return null;
     }
 
     // 获取发送者的邮箱（从用户表或环境变量）
@@ -206,7 +231,53 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     } else {
       console.log('✅ 发送邮件记录成功:', { customerId: customer.id, toEmail, messageId });
     }
+
+    return approval.applicant_id;
   } catch (error) {
     console.error('记录发送邮件时出错:', error);
+    return null;
+  }
+}
+
+// 更新用户邮件发送统计
+async function updateUserEmailStats(userId: string, sendCount: number, recipientCount: number) {
+  try {
+    // 先获取当前用户的统计数据
+    const { data: currentStats, error: statsError } = await supabase
+      .from('users')
+      .select('email_send_count, email_recipient_count')
+      .eq('id', userId)
+      .single();
+
+    if (statsError) {
+      console.error('获取用户统计失败:', statsError);
+      throw statsError;
+    }
+
+    // 计算新的统计值
+    const newSendCount = (currentStats?.email_send_count || 0) + sendCount;
+    const newRecipientCount = (currentStats?.email_recipient_count || 0) + recipientCount;
+
+    // 更新用户统计
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        email_send_count: newSendCount,
+        email_recipient_count: newRecipientCount
+      })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('更新用户统计失败:', updateError);
+      throw updateError;
+    }
+
+    console.log(`✅ 用户 ${userId} 统计更新成功:`, {
+      sendCount: `${currentStats?.email_send_count || 0} + ${sendCount} = ${newSendCount}`,
+      recipientCount: `${currentStats?.email_recipient_count || 0} + ${recipientCount} = ${newRecipientCount}`
+    });
+  } catch (error) {
+    console.error('更新用户邮件发送统计失败:', error);
+    throw error;
   }
 } 
