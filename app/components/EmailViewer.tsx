@@ -564,14 +564,18 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                               {customer.company_name}
                             </h4>
                             {customer.has_unread_emails && (
-                              <div 
+                              <Badge 
+                                count="新" 
+                                size="small"
                                 style={{ 
-                                  width: '8px',
-                                  height: '8px',
-                                  borderRadius: '50%',
-                                  backgroundColor: '#52c41a',
-                                  flexShrink: 0
-                                }} 
+                                  backgroundColor: '#ff4d4f',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  padding: '0 6px',
+                                  height: '20px',
+                                  lineHeight: '20px',
+                                  borderRadius: '10px'
+                                }}
                               />
                             )}
                           </div>

@@ -293,17 +293,6 @@ export default function CustomerManager() {
         <Space>
           <UserOutlined />
           <span>{text}</span>
-          {record.has_unread_emails && (
-            <div 
-              style={{ 
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#52c41a',
-                flexShrink: 0
-              }} 
-            />
-          )}
         </Space>
       ),
     },
