@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 首先清理长时间处于处理中状态的邮件（超过5分钟）
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    await supabase
+      .from('email_queue')
+      .update({ 
+        status: 'pending',
+        processed_at: null
+      })
+      .eq('status', 'processing')
+      .lt('processed_at', fiveMinutesAgo);
+
     // 获取待处理的邮件（限制每次处理10个）
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('email_queue')
@@ -137,6 +148,22 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error(`处理邮件 ${email.id} 失败:`, error);
+        
+        // 确保邮件状态被正确更新，避免卡在处理中状态
+        try {
+          await supabase
+            .from('email_queue')
+            .update({ 
+              status: 'failed',
+              error_message: '处理过程中发生异常',
+              retry_count: email.retry_count + 1,
+              processed_at: new Date().toISOString()
+            })
+            .eq('id', email.id);
+        } catch (updateError) {
+          console.error(`更新邮件 ${email.id} 状态失败:`, updateError);
+        }
+        
         failCount++;
         results.push({
           id: email.id,
