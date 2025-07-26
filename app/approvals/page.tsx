@@ -535,11 +535,27 @@ export default function ApprovalsPage() {
             pageSize: pageSize,
             total: total,
             showSizeChanger: true,
-            showQuickJumper: true,
+            showQuickJumper: {
+              goButton: true
+            },
             showTotal: (total, range) => 
               t('common.totalRecords', { total }) + 
               ` (${range[0]}-${range[1]})`,
             onChange: (page, size) => fetchApprovals(page, size || 50),
+            itemRender: (page, type, originalElement) => {
+              if (type === 'page') {
+                return (
+                  <Button
+                    type={page === currentPage ? 'primary' : 'default'}
+                    size="small"
+                    onClick={() => fetchApprovals(page, pageSize)}
+                  >
+                    {page}
+                  </Button>
+                );
+              }
+              return originalElement;
+            },
           }}
           scroll={{ x: 800 }}
         />

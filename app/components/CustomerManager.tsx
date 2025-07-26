@@ -393,13 +393,29 @@ export default function CustomerManager() {
             pageSize: pageSize,
             total: total,
             showSizeChanger: true,
-            showQuickJumper: true,
+            showQuickJumper: {
+              goButton: true
+            },
             showTotal: (total) => t('common.totalRecords', { total }),
             onChange: (page, size) => {
               fetchCustomers(page, size);
             },
             onShowSizeChange: (current, size) => {
               fetchCustomers(1, size);
+            },
+            itemRender: (page, type, originalElement) => {
+              if (type === 'page') {
+                return (
+                  <Button
+                    type={page === currentPage ? 'primary' : 'default'}
+                    size="small"
+                    onClick={() => fetchCustomers(page, pageSize)}
+                  >
+                    {page}
+                  </Button>
+                );
+              }
+              return originalElement;
             },
           }}
           locale={{

@@ -38,6 +38,7 @@
     "internalError": "内部错误",
     "totalRecords": "共 {total} 条记录",
     "actions": "操作",
+    "page": "页码",
     "pageInfo": "第 {current} 页，共 {total} 页",
     "clearFilter": "清空筛选"
   },

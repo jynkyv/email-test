@@ -15,6 +15,7 @@ import {
   Tag,
   Modal,
   Form,
+  Input,
   InputNumber,
   Tooltip,
   Badge
@@ -598,7 +599,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             <div className="px-4 py-3 border-t bg-gray-50 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">
-                  {t('common.pageInfo', { current: customerCurrentPage, total: Math.ceil(customerTotal / customerPageSize) })}
+                  {t('common.totalRecords', { total: customerTotal })}
                 </span>
                 <div className="flex items-center gap-2">
                   <Button
@@ -608,6 +609,30 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                   >
                     {t('common.previous')}
                   </Button>
+                  
+                  {/* 页码输入 */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-gray-600">{t('common.page')}:</span>
+                    <Input
+                      size="small"
+                      style={{ width: 60 }}
+                      value={customerCurrentPage}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const page = parseInt(e.target.value);
+                        if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
+                          fetchCustomers(page, customerPageSize);
+                        }
+                      }}
+                      onPressEnter={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        const page = parseInt((e.target as HTMLInputElement).value);
+                        if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
+                          fetchCustomers(page, customerPageSize);
+                        }
+                      }}
+                    />
+                    <span className="text-sm text-gray-600">/ {Math.ceil(customerTotal / customerPageSize)}</span>
+                  </div>
+                  
                   <Button
                     size="small"
                     disabled={customerCurrentPage >= Math.ceil(customerTotal / customerPageSize)}

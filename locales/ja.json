@@ -38,6 +38,7 @@
     "internalError": "内部エラー",
     "totalRecords": "合計 {total} 件",
     "actions": "操作",
+    "page": "ページ",
     "pageInfo": "{current} / {total}",
     "clearFilter": "フィルターをクリア"
   },

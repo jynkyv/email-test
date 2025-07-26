@@ -203,12 +203,7 @@ export default function UserManager() {
           dataSource={users}
           columns={columns}
           rowKey="id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => t('common.totalRecords', { total }),
-          }}
+          pagination={false}
           locale={{
             emptyText: t('user.noUsers'),
           }}
