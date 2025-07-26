@@ -182,6 +182,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setShowCustomerModal(false);
   };
 
+  // 模态框关闭时的处理
+  const handleModalClose = () => {
+    // 确保模态框关闭后清空临时选择
+    setTempSelectedCustomers([]);
+  };
+
   // 切换客户选择状态
   const handleCustomerToggle = (customer: Customer, checked: boolean) => {
     if (checked) {
@@ -468,6 +474,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         okButtonProps={{
           disabled: tempSelectedCustomers.length === 0
         }}
+        afterClose={handleModalClose}
+        maskClosable={false}
       >
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
