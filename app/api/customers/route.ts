@@ -50,8 +50,7 @@ export async function GET(request: NextRequest) {
           id,
           is_read
         )
-      `, { count: 'exact' })
-      .order('created_at', { ascending: false });
+      `, { count: 'exact' });
 
     // 如果不是管理员，只能查看自己创建的客户
     if (userData.role !== 'admin') {
@@ -68,11 +67,8 @@ export async function GET(request: NextRequest) {
       query = query.lte('created_at', endDateTime.toISOString());
     }
 
-    // 应用分页
-    query = query.range(from, to);
-
-    // 执行查询
-    const { data: customersWithEmails, error, count } = await query;
+    // 先获取所有符合条件的客户数据（不分页）
+    const { data: allCustomersWithEmails, error, count } = await query;
 
     if (error) {
       console.error('数据库查询错误:', error);
@@ -82,8 +78,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 处理客户数据，计算未读邮件状态
-    const customers = customersWithEmails?.map(customer => {
+    // 处理客户数据，计算未读邮件状态并排序
+    const processedCustomers = allCustomersWithEmails?.map(customer => {
       const hasUnreadEmails = customer.customer_emails?.some((email: any) => !email.is_read) || false;
       return {
         ...customer,
@@ -91,6 +87,22 @@ export async function GET(request: NextRequest) {
         customer_emails: undefined // 移除邮件数据，只保留客户信息
       };
     }) || [];
+
+    // 排序：有未读邮件的客户排在前面，然后按创建时间倒序
+    const sortedCustomers = processedCustomers.sort((a, b) => {
+      // 首先按未读邮件状态排序（有未读邮件的排在前面）
+      if (a.has_unread_emails && !b.has_unread_emails) {
+        return -1;
+      }
+      if (!a.has_unread_emails && b.has_unread_emails) {
+        return 1;
+      }
+      // 如果未读邮件状态相同，按创建时间倒序
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    // 应用分页
+    const customers = sortedCustomers.slice(from, from + pageSize);
 
     console.log('客户列表查询结果:', { 
       customersCount: customers?.length, 
