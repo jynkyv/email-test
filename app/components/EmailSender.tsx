@@ -117,6 +117,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   };
 
   // 当收到回信数据时，重置选择并设置回信人
+  // 当replyData为null时，清空表单和选择
   useEffect(() => {
     if (replyData) {
       // 重置表单和选择
@@ -149,6 +150,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setSelectedCustomers([tempCustomer]);
         message.success(`${t('email.replyTo')}: ${replyData.to} ${t('email.addedToRecipients')}`);
       }
+    } else {
+      // 当replyData为null时，清空表单和选择
+      form.resetFields();
+      setSelectedCustomers([]);
     }
   }, [replyData, form, customers]);
 

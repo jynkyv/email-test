@@ -54,6 +54,13 @@ export default function Home() {
     setReplyData(null);
   };
 
+  // 当切换tab时，清空回复数据，重置表单
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    // 清空回复数据，这样EmailSender组件会重置表单
+    setReplyData(null);
+  };
+
   const handleSignOut = () => {
     signOut();
     message.success(t('auth.logoutSuccess'));
@@ -156,7 +163,7 @@ export default function Home() {
             mode="horizontal"
             selectedKeys={[activeTab]}
             items={menuItems}
-            onClick={({ key }) => setActiveTab(key)}
+            onClick={({ key }) => handleTabChange(key)}
             className="border-none bg-transparent"
           />
         </div>
