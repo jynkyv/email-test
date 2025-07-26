@@ -95,7 +95,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const fetchCustomers = async (page = 1, size = 50) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
+      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}&sortByUnread=true`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
