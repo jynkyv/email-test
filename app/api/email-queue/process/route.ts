@@ -49,14 +49,13 @@ export async function POST(request: NextRequest) {
       .eq('status', 'processing')
       .lt('processed_at', fiveMinutesAgo);
 
-    // 获取待处理的邮件（限制每次处理10个）
+    // 获取待处理的邮件（处理所有待处理邮件，不限制数量）
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('email_queue')
       .select('*')
       .eq('status', 'pending')
       .lte('retry_count', 3)
-      .order('created_at', { ascending: true })
-      .limit(10);
+      .order('created_at', { ascending: true });
 
     if (fetchError) {
       console.error('获取待处理邮件失败:', fetchError);
@@ -187,11 +186,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 检查是否还有待处理的邮件，如果有则继续处理
+    const { data: remainingEmails } = await supabase
+      .from('email_queue')
+      .select('id')
+      .eq('status', 'pending')
+      .lte('retry_count', 3);
+
+    const hasRemaining = remainingEmails && remainingEmails.length > 0;
+
     return NextResponse.json({
       success: true,
       message: `处理完成。成功: ${successCount}, 失败: ${failCount}`,
       results,
-      processed: successCount + failCount
+      processed: successCount + failCount,
+      hasRemaining,
+      remainingCount: hasRemaining ? remainingEmails.length : 0
     });
 
   } catch (error) {

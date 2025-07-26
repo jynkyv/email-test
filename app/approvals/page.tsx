@@ -266,15 +266,31 @@ export default function ApprovalsPage() {
           }
         }, 3000); // 每3秒轮询一次
 
-        // 同时开始处理队列
-        fetch('/api/email-queue/process', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${user?.id}`,
-          },
-        }).catch(error => {
-          console.error('启动队列处理失败:', error);
-        });
+        // 开始持续处理队列直到完成
+        const processQueue = async () => {
+          try {
+            const processResponse = await fetch('/api/email-queue/process', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${user?.id}`,
+              },
+            });
+            
+            const processData = await processResponse.json();
+            if (processData.success && processData.hasRemaining) {
+              // 如果还有待处理的邮件，继续处理
+              console.log(`还有 ${processData.remainingCount} 个邮件待处理，继续处理...`);
+              setTimeout(processQueue, 1000); // 1秒后继续处理
+            } else {
+              console.log('队列处理完成');
+            }
+          } catch (error) {
+            console.error('队列处理失败:', error);
+          }
+        };
+        
+        // 启动队列处理
+        processQueue();
 
       } else {
         message.error('获取审核申请详情失败');

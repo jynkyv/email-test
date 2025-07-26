@@ -61,19 +61,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 将邮件添加到队列
-    const queueItems = approval.recipients.map((recipient: string) => ({
-      approval_id: approvalId,
-      recipient,
-      subject: approval.subject,
-      content: approval.content,
-      status: 'pending'
-    }));
-
-    const { data: queueData, error: queueError } = await supabase
-      .from('email_queue')
-      .insert(queueItems)
-      .select();
+    // 使用事务确保队列添加和状态更新的原子性
+    const { data: queueData, error: queueError } = await supabase.rpc('add_emails_to_queue_and_update_approval', {
+      p_approval_id: approvalId,
+      p_approver_id: userId,
+      p_recipients: approval.recipients,
+      p_subject: approval.subject,
+      p_content: approval.content
+    });
 
     if (queueError) {
       console.error('添加邮件到队列失败:', queueError);
@@ -83,28 +78,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 更新审核申请状态为处理中
-    const { error: updateError } = await supabase
-      .from('email_approvals')
-      .update({
-        status: 'approved',
-        approver_id: userId,
-        approved_at: new Date().toISOString()
-      })
-      .eq('id', approvalId);
-
-    if (updateError) {
-      console.error('更新审核申请状态失败:', updateError);
-      return NextResponse.json(
-        { error: '更新审核申请状态失败' },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json({
       success: true,
       message: '邮件已添加到发送队列',
-      queueCount: queueItems.length
+      queueCount: approval.recipients.length
     });
 
   } catch (error) {
