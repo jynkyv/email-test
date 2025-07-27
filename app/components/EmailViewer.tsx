@@ -431,7 +431,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     const emailAddress = emailMatch ? emailMatch[1] || emailMatch[2] : from;
     
     // 构建回复内容
-    const replySubject = subject.startsWith('回复:') ? subject : `回复: ${subject}`;
+    const replyPrefix = t('email.replyPrefix');
+    const replySubject = subject.startsWith(replyPrefix) ? subject : `${replyPrefix} ${subject}`;
     
     // 如果原始内容是HTML，转换为纯文本用于回复
     const replyContent = htmlContent 

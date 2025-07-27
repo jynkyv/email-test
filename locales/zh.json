@@ -95,6 +95,7 @@
     "noRecipients": "请选择至少一个客户",
     "reply": "回复",
     "replyTo": "回复给",
+    "replyPrefix": "回复:",
     "originalEmail": "原始邮件",
     "emailDetails": "邮件详情",
     "from": "发件人",

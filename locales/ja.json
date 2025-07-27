@@ -95,6 +95,7 @@
     "noRecipients": "少なくとも1人の顧客を選択してください",
     "reply": "返信",
     "replyTo": "返信先",
+    "replyPrefix": "返信:",
     "originalEmail": "元のメール",
     "emailDetails": "メール詳細",
     "from": "送信者",
