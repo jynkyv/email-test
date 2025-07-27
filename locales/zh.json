@@ -289,6 +289,7 @@
   "settings": {
     "emailSettings": "邮件设置",
     "maxResults": "邮件获取数量",
+    "save": "保存",
     "saveSettings": "保存设置",
     "settingsSaved": "设置已保存",
     "maxResultsRequired": "请输入邮件获取数量",
