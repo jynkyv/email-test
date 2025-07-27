@@ -84,7 +84,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [maxResults, setMaxResults] = useState(50); // 默认50
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [settingsForm] = Form.useForm();
-  const [viewMode, setViewMode] = useState<'text' | 'html'>('text');
+  const [viewMode, setViewMode] = useState<'text' | 'html'>('html');
   
   // 客户列表分页相关状态
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
@@ -277,6 +277,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const handleEmailClick = (email: Email) => {
     setSelectedEmail(email);
     
+    // 自动设置显示模式
+    const autoViewMode = getAutoViewMode(email);
+    setViewMode(autoViewMode);
+    
     // 如果邮件未读，立即标记为已读
     if (!isEmailRead(email)) {
       updateEmailStatus(email.id, 'read', false);
@@ -325,13 +329,24 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     // 如果没有HTML部分，检查body是否包含HTML
     if (email.payload.body?.data) {
       const content = decodeEmailContent(email.payload.body.data);
-      // 简单检查是否包含HTML标签
+      // 检查是否包含HTML标签
       if (content.includes('<') && content.includes('>')) {
-        return content;
+        // 进一步检查是否包含常见的HTML标签
+        const htmlTags = ['<div', '<p', '<br', '<span', '<strong', '<em', '<b', '<i', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6', '<ul', '<ol', '<li', '<table', '<tr', '<td', '<th'];
+        const hasHtmlTags = htmlTags.some(tag => content.toLowerCase().includes(tag));
+        if (hasHtmlTags) {
+          return content;
+        }
       }
     }
     
     return null;
+  };
+
+  // 检测邮件内容类型并自动选择显示模式
+  const getAutoViewMode = (email: Email) => {
+    const htmlContent = getEmailHtmlContent(email);
+    return htmlContent ? 'html' : 'text';
   };
 
   // 清理HTML内容，防止XSS攻击
@@ -733,45 +748,55 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <h4 className="font-medium">{t('email.emailContent')}</h4>
-                    {getEmailHtmlContent(selectedEmail) && (
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      {getEmailHtmlContent(selectedEmail) && (
                         <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
                           {t('email.htmlContentDetected')}
                         </span>
-                        <div className="flex gap-1">
-                          <Button
-                            size="small"
-                            type={viewMode === 'text' ? 'primary' : 'default'}
-                            onClick={() => setViewMode('text')}
-                            title={t('email.switchToTextView')}
-                          >
-                            {t('email.textView')}
-                          </Button>
-                          <Button
-                            size="small"
-                            type={viewMode === 'html' ? 'primary' : 'default'}
-                            onClick={() => setViewMode('html')}
-                            title={t('email.switchToHtmlView')}
-                          >
-                            {t('email.htmlView')}
-                          </Button>
-                        </div>
+                      )}
+                      <div className="flex gap-1">
+                        <Button
+                          size="small"
+                          type={viewMode === 'text' ? 'primary' : 'default'}
+                          onClick={() => setViewMode('text')}
+                          title={t('email.switchToTextView')}
+                        >
+                          {t('email.textView')}
+                        </Button>
+                        <Button
+                          size="small"
+                          type={viewMode === 'html' ? 'primary' : 'default'}
+                          onClick={() => setViewMode('html')}
+                          title={t('email.switchToHtmlView')}
+                        >
+                          {t('email.htmlView')}
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </div>
                   <div className="bg-gray-50 p-3 rounded text-sm max-h-96 overflow-y-auto">
-                    {viewMode === 'html' && getEmailHtmlContent(selectedEmail) ? (
-                      <div 
-                        className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800"
-                        dangerouslySetInnerHTML={{ 
-                          __html: sanitizeHtml(getEmailHtmlContent(selectedEmail) || '') 
-                        }}
-                      />
-                    ) : (
-                      <div className="whitespace-pre-wrap">
-                        {getEmailContent(selectedEmail)}
-                      </div>
-                    )}
+                    {(() => {
+                      const htmlContent = getEmailHtmlContent(selectedEmail);
+                      const autoViewMode = getAutoViewMode(selectedEmail);
+                      const displayMode = viewMode === 'html' && htmlContent ? 'html' : 'text';
+                      
+                      if (displayMode === 'html' && htmlContent) {
+                        return (
+                          <div 
+                            className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800"
+                            dangerouslySetInnerHTML={{ 
+                              __html: sanitizeHtml(htmlContent) 
+                            }}
+                          />
+                        );
+                      } else {
+                        return (
+                          <div className="whitespace-pre-wrap">
+                            {getEmailContent(selectedEmail)}
+                          </div>
+                        );
+                      }
+                    })()}
                   </div>
                 </div>
               </div>
