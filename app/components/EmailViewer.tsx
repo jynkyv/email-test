@@ -448,7 +448,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         key={email.id}
         className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
           selectedEmail?.id === email.id ? 'bg-blue-50 border-blue-200' : ''
-        } ${!isRead ? 'bg-yellow-50' : ''}`}
+        }`}
         onClick={() => handleEmailClick(email)}
       >
         <div className="flex items-start justify-between">
@@ -461,11 +461,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               }`}>
                 {isOutgoing ? t('email.sent') : t('email.received')}
               </span>
-              {!isRead && (
-                <span className="text-xs px-2 py-1 rounded bg-yellow-100 text-yellow-800">
-                  {t('email.unread')}
-                </span>
-              )}
             </div>
             <div className="mt-2">
               <div className="flex items-center space-x-2">
@@ -563,21 +558,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             }`}>
                               {customer.company_name}
                             </h4>
-                            {customer.has_unread_emails && (
-                              <Badge 
-                                count="新" 
-                                size="small"
-                                style={{ 
-                                  backgroundColor: '#ff4d4f',
-                                  fontSize: '12px',
-                                  fontWeight: 'bold',
-                                  padding: '0 6px',
-                                  height: '20px',
-                                  lineHeight: '20px',
-                                  borderRadius: '10px'
-                                }}
-                              />
-                            )}
                           </div>
                           <div className="mt-1 space-y-1">
                             <p className={`text-sm ${
