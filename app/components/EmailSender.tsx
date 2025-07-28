@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { textToHtml } from '@/lib/utils';
 import { 
   Form, 
   Input, 
@@ -335,12 +336,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     }
 
     // 将纯文本内容转换为HTML格式，保持换行
-    const htmlContent = values.content
-      .split('\n')  // 按换行符分割
-      .map(line => line.trim())  // 清理每行的首尾空格
-      .filter(line => line.length > 0)  // 过滤空行
-      .map(line => `<p>${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)  // 将每行包装在<p>标签中
-      .join('');  // 连接所有段落
+    const htmlContent = textToHtml(values.content);
 
     try {
       // 提交审核申请

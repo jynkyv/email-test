@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { htmlToText } from '@/lib/utils';
 import { 
   Card, 
   List, 
@@ -305,20 +306,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       const content = decodeEmailContent(email.payload.body.data);
       // 检查是否是HTML内容（包含HTML标签）
       if (content.includes('<') && content.includes('>')) {
-        // 将HTML转换为纯文本
-        return content
-          .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
-          .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
-          .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
-          .replace(/<[^>]*>/g, '')        // 移除所有其他HTML标签
-          .replace(/&nbsp;/g, ' ')        // 将&nbsp;转换为空格
-          .replace(/&amp;/g, '&')         // 将&amp;转换为&
-          .replace(/&lt;/g, '<')          // 将&lt;转换为<
-          .replace(/&gt;/g, '>')          // 将&gt;转换为>
-          .replace(/&quot;/g, '"')        // 将&quot;转换为"
-          .replace(/&#39;/g, "'")         // 将&#39;转换为'
-          .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
-          .trim();
+        // 使用改进的HTML转换函数
+        return htmlToText(content);
       }
       return content;
     }
@@ -329,20 +318,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
           const content = decodeEmailContent(part.body.data);
           // 检查是否是HTML内容
           if (content.includes('<') && content.includes('>')) {
-            // 将HTML转换为纯文本
-            return content
-              .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
-              .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
-              .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
-              .replace(/<[^>]*>/g, '')        // 移除所有其他HTML标签
-              .replace(/&nbsp;/g, ' ')        // 将&nbsp;转换为空格
-              .replace(/&amp;/g, '&')         // 将&amp;转换为&
-              .replace(/&lt;/g, '<')          // 将&lt;转换为<
-              .replace(/&gt;/g, '>')          // 将&gt;转换为>
-              .replace(/&quot;/g, '"')        // 将&quot;转换为"
-              .replace(/&#39;/g, "'")         // 将&#39;转换为'
-              .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
-              .trim();
+            // 使用改进的HTML转换函数
+            return htmlToText(content);
           }
           return content;
         }
@@ -438,31 +415,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     return tempDiv.innerHTML;
   };
 
-  // 将HTML转换为纯文本
-  const htmlToText = (html: string): string => {
-    if (!html) return '';
-    
-    // 创建一个临时的DOM元素来解析HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    
-    // 获取纯文本内容
-    let text = tempDiv.textContent || tempDiv.innerText || '';
-    
-    // 清理多余的空白字符
-    text = text.replace(/\s+/g, ' ').trim();
-    
-    // 处理常见的HTML实体
-    text = text
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'");
-    
-    return text;
-  };
+
 
   const handleReply = (email: Email) => {
     const from = getHeaderValue(email.payload.headers, 'From');

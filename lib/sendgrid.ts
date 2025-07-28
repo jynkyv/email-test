@@ -1,9 +1,10 @@
 import sgMail from '@sendgrid/mail';
+import { htmlToText } from './utils';
 
-// 设置SendGrid API Key
+// 配置SendGrid
 const apiKey = process.env.SENDGRID_API_KEY;
 if (!apiKey) {
-  throw new Error('SENDGRID_API_KEY环境变量未设置');
+  throw new Error('SENDGRID_API_KEY 环境变量未设置');
 }
 sgMail.setApiKey(apiKey);
 
@@ -26,19 +27,7 @@ function getFromName(): string {
 export async function sendSingleEmail(to: string, subject: string, html: string) {
   try {
     // 将HTML内容转换为纯文本，保持换行格式
-    const text = html
-      .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
-      .replace(/<\/p>/gi, '\n\n')     // 将</p>标签转换为双换行
-      .replace(/<p[^>]*>/gi, '')      // 移除<p>开始标签
-      .replace(/<[^>]*>/g, '')        // 移除所有其他HTML标签
-      .replace(/&nbsp;/g, ' ')        // 将&nbsp;转换为空格
-      .replace(/&amp;/g, '&')         // 将&amp;转换为&
-      .replace(/&lt;/g, '<')          // 将&lt;转换为<
-      .replace(/&gt;/g, '>')          // 将&gt;转换为>
-      .replace(/&quot;/g, '"')        // 将&quot;转换为"
-      .replace(/&#39;/g, "'")         // 将&#39;转换为'
-      .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
-      .trim();
+    const text = htmlToText(html);
 
     // 构建完整的HTML文档
     const fullHtml = `<!DOCTYPE html>
