@@ -150,12 +150,29 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setSelectedCustomers([tempCustomer]);
         message.success(`${t('email.replyTo')}: ${replyData.to} ${t('email.addedToRecipients')}`);
       }
-    } else {
-      // 当replyData为null时，清空表单和选择
+    } else if (replyData === null) {
+      // 只有当replyData明确为null时，才清空表单和选择
       form.resetFields();
       setSelectedCustomers([]);
     }
-  }, [replyData, form, customers]);
+    // 当replyData为undefined时，不执行任何操作，保持当前状态
+  }, [replyData, form]); // 移除customers依赖，避免客户列表更新时重置表单
+
+  // 当客户列表更新时，检查是否需要更新回信人的客户信息
+  useEffect(() => {
+    if (replyData && customers.length > 0 && selectedCustomers.length === 1) {
+      const currentSelected = selectedCustomers[0];
+      // 检查当前选择的客户是否是临时客户（用于回信）
+      if (currentSelected.id.startsWith('temp_') && currentSelected.email === replyData.to) {
+        // 查找真实的客户信息
+        const existingCustomer = customers.find(customer => customer.email === replyData.to);
+        if (existingCustomer) {
+          // 用真实客户信息替换临时客户信息
+          setSelectedCustomers([existingCustomer]);
+        }
+      }
+    }
+  }, [customers, replyData, selectedCustomers]);
 
   // 打开客户选择弹窗
   const handleOpenCustomerModal = () => {
@@ -280,7 +297,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       console.log('时间筛选变化，重新获取数据:', { startDate, endDate });
       fetchCustomers(currentPage, pageSize);
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, showCustomerModal]); // 添加showCustomerModal依赖，确保只在模态框打开时重新获取
 
   // 清空时间筛选
   const handleClearDateFilter = () => {
