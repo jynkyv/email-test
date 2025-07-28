@@ -310,6 +310,14 @@ export default function ApprovalsPage() {
       const values = await editForm.validateFields();
       setUpdating(true);
 
+      // 将纯文本内容转换为HTML格式，保持换行
+      const htmlContent = values.content
+        .split('\n')  // 按换行符分割
+        .map((line: string) => line.trim())  // 清理每行的首尾空格
+        .filter((line: string) => line.length > 0)  // 过滤空行
+        .map((line: string) => `<p>${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)  // 将每行包装在<p>标签中
+        .join('');  // 连接所有段落
+
       const response = await fetch(`/api/email-approvals/${selectedApproval.id}`, {
         method: 'PUT',
         headers: {
@@ -319,7 +327,7 @@ export default function ApprovalsPage() {
         body: JSON.stringify({
           action: 'update',
           subject: values.subject,
-          content: values.content
+          content: htmlContent // 使用转换后的HTML内容
         }),
       });
 
@@ -333,7 +341,7 @@ export default function ApprovalsPage() {
           setSelectedApproval({
             ...selectedApproval,
             subject: values.subject,
-            content: values.content
+            content: htmlContent // 使用转换后的HTML内容
           });
         }
       } else {
@@ -352,9 +360,24 @@ export default function ApprovalsPage() {
     setSelectedApproval(approval);
     setIsEditing(false);
     setDetailModalVisible(true);
+    
+    // 将HTML内容转换为纯文本用于编辑
+    const textContent = approval.content
+      .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
+      .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
+      .replace(/<[^>]*>/g, '')     // 移除所有其他HTML标签
+      .replace(/&nbsp;/g, ' ')     // 将&nbsp;转换为空格
+      .replace(/&amp;/g, '&')      // 将&amp;转换为&
+      .replace(/&lt;/g, '<')       // 将&lt;转换为<
+      .replace(/&gt;/g, '>')       // 将&gt;转换为>
+      .replace(/&quot;/g, '"')     // 将&quot;转换为"
+      .replace(/&#39;/g, "'")      // 将&#39;转换为'
+      .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
+      .trim();
+    
     editForm.setFieldsValue({
       subject: approval.subject,
-      content: approval.content
+      content: textContent
     });
   };
 
@@ -367,9 +390,23 @@ export default function ApprovalsPage() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     if (selectedApproval) {
+      // 将HTML内容转换为纯文本用于编辑
+      const textContent = selectedApproval.content
+        .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
+        .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
+        .replace(/<[^>]*>/g, '')     // 移除所有其他HTML标签
+        .replace(/&nbsp;/g, ' ')     // 将&nbsp;转换为空格
+        .replace(/&amp;/g, '&')      // 将&amp;转换为&
+        .replace(/&lt;/g, '<')       // 将&lt;转换为<
+        .replace(/&gt;/g, '>')       // 将&gt;转换为>
+        .replace(/&quot;/g, '"')     // 将&quot;转换为"
+        .replace(/&#39;/g, "'")      // 将&#39;转换为'
+        .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
+        .trim();
+      
       editForm.setFieldsValue({
         subject: selectedApproval.subject,
-        content: selectedApproval.content
+        content: textContent
       });
     }
   };
@@ -642,8 +679,38 @@ export default function ApprovalsPage() {
                   </div>
                   <div>
                     <div className="font-medium text-gray-700">{t('email.emailContent')}:</div>
-                    <div className="bg-gray-50 p-3 rounded-lg whitespace-pre-wrap max-h-64 overflow-y-auto">
-                      {selectedApproval.content}
+                    <div className="bg-gray-50 p-3 rounded-lg max-h-64 overflow-y-auto">
+                      {(() => {
+                        // 检查是否是HTML内容（包含<p>标签）
+                        if (selectedApproval.content.includes('<p>')) {
+                          // 将HTML转换为纯文本显示
+                          const textContent = selectedApproval.content
+                            .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
+                            .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
+                            .replace(/<[^>]*>/g, '')     // 移除所有其他HTML标签
+                            .replace(/&nbsp;/g, ' ')     // 将&nbsp;转换为空格
+                            .replace(/&amp;/g, '&')      // 将&amp;转换为&
+                            .replace(/&lt;/g, '<')       // 将&lt;转换为<
+                            .replace(/&gt;/g, '>')       // 将&gt;转换为>
+                            .replace(/&quot;/g, '"')     // 将&quot;转换为"
+                            .replace(/&#39;/g, "'")      // 将&#39;转换为'
+                            .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
+                            .trim();
+                          
+                          return (
+                            <div className="whitespace-pre-wrap">
+                              {textContent}
+                            </div>
+                          );
+                        } else {
+                          // 复杂HTML内容使用dangerouslySetInnerHTML
+                          return (
+                            <div 
+                              dangerouslySetInnerHTML={{ __html: selectedApproval.content }}
+                            />
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
                 </div>

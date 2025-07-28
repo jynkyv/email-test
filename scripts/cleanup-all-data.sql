@@ -30,11 +30,17 @@ DELETE FROM email_approvals;
 DELETE FROM customers;
 DELETE FROM customer_groups;
 
--- 3. 清理用户数据（保留管理员账户，可选）
--- 如果只想清理普通用户，使用下面的语句：
--- DELETE FROM users WHERE role != 'admin';
--- 如果要清理所有用户（包括管理员），使用下面的语句：
-DELETE FROM users;
+-- 3. 清理用户数据（保留管理员账户）
+-- 只清理普通用户，保留admin账户
+DELETE FROM users WHERE role != 'admin';
+
+-- 4. 重置admin账号的统计数据并更新创建时间
+UPDATE users 
+SET 
+    email_send_count = 0,
+    email_recipient_count = 0,
+    created_at = CURRENT_TIMESTAMP
+WHERE role = 'admin';
 
 -- ========================================
 -- 重置自增序列（如果有的话）
@@ -115,4 +121,4 @@ SELECT 'users' as table_name, COUNT(*) as record_count FROM users;
 -- 清理完成确认
 -- ========================================
 
-SELECT '✅ 数据清理完成！所有表数据已清空，表结构保持不变。' as completion_message; 
+SELECT '✅ 数据清理完成！所有表数据已清空，admin账号统计数据已重置，表结构保持不变。' as completion_message; 
