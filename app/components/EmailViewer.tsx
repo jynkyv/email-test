@@ -302,13 +302,49 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
   const getEmailContent = (email: Email) => {
     if (email.payload.body?.data) {
-      return decodeEmailContent(email.payload.body.data);
+      const content = decodeEmailContent(email.payload.body.data);
+      // 检查是否是HTML内容（包含HTML标签）
+      if (content.includes('<') && content.includes('>')) {
+        // 将HTML转换为纯文本
+        return content
+          .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
+          .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
+          .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
+          .replace(/<[^>]*>/g, '')        // 移除所有其他HTML标签
+          .replace(/&nbsp;/g, ' ')        // 将&nbsp;转换为空格
+          .replace(/&amp;/g, '&')         // 将&amp;转换为&
+          .replace(/&lt;/g, '<')          // 将&lt;转换为<
+          .replace(/&gt;/g, '>')          // 将&gt;转换为>
+          .replace(/&quot;/g, '"')        // 将&quot;转换为"
+          .replace(/&#39;/g, "'")         // 将&#39;转换为'
+          .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
+          .trim();
+      }
+      return content;
     }
     
     if (email.payload.parts) {
       for (const part of email.payload.parts) {
         if (part.mimeType === 'text/plain' && part.body.data) {
-          return decodeEmailContent(part.body.data);
+          const content = decodeEmailContent(part.body.data);
+          // 检查是否是HTML内容
+          if (content.includes('<') && content.includes('>')) {
+            // 将HTML转换为纯文本
+            return content
+              .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
+              .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
+              .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
+              .replace(/<[^>]*>/g, '')        // 移除所有其他HTML标签
+              .replace(/&nbsp;/g, ' ')        // 将&nbsp;转换为空格
+              .replace(/&amp;/g, '&')         // 将&amp;转换为&
+              .replace(/&lt;/g, '<')          // 将&lt;转换为<
+              .replace(/&gt;/g, '>')          // 将&gt;转换为>
+              .replace(/&quot;/g, '"')        // 将&quot;转换为"
+              .replace(/&#39;/g, "'")         // 将&#39;转换为'
+              .replace(/\n\s*\n\s*\n/g, '\n\n') // 清理多余的空行
+              .trim();
+          }
+          return content;
         }
       }
     }
@@ -321,7 +357,13 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     if (email.payload.parts) {
       for (const part of email.payload.parts) {
         if (part.mimeType === 'text/html' && part.body.data) {
-          return decodeEmailContent(part.body.data);
+          const content = decodeEmailContent(part.body.data);
+          // 检查是否是简单的HTML内容（主要是<br>标签），如果是则不当作HTML处理
+          if (content.includes('<br>') && !content.includes('<div') && !content.includes('<p>') && 
+              !content.includes('<span') && !content.includes('<strong') && !content.includes('<em')) {
+            return null; // 简单HTML内容不当作HTML处理
+          }
+          return content;
         }
       }
     }
@@ -335,6 +377,11 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         const htmlTags = ['<div', '<p', '<br', '<span', '<strong', '<em', '<b', '<i', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6', '<ul', '<ol', '<li', '<table', '<tr', '<td', '<th'];
         const hasHtmlTags = htmlTags.some(tag => content.toLowerCase().includes(tag));
         if (hasHtmlTags) {
+          // 检查是否是简单的HTML内容
+          if (content.includes('<br>') && !content.includes('<div') && !content.includes('<p>') && 
+              !content.includes('<span') && !content.includes('<strong') && !content.includes('<em')) {
+            return null; // 简单HTML内容不当作HTML处理
+          }
           return content;
         }
       }
