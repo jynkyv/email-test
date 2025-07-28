@@ -25,6 +25,7 @@ const { Option } = Select;
 interface User {
   id: string;
   username: string;
+  nickname?: string;
   role: string;
   created_at: string;
   email_send_count?: number;
@@ -68,7 +69,7 @@ export default function UserManager() {
     }
   };
 
-  const handleSubmit = async (values: { username: string; password: string; role: string }) => {
+  const handleSubmit = async (values: { username: string; nickname?: string; password: string; role: string }) => {
     setModalLoading(true);
     try {
       const response = await fetch('/api/users', {
@@ -117,6 +118,16 @@ export default function UserManager() {
           <UserOutlined />
           {text}
         </Space>
+      ),
+    },
+    {
+      title: t('user.nickname'),
+      dataIndex: 'nickname',
+      key: 'nickname',
+      render: (nickname: string) => (
+        <span className="text-gray-600">
+          {nickname || '-'}
+        </span>
       ),
     },
     {
@@ -232,6 +243,16 @@ export default function UserManager() {
           >
             <Input 
               placeholder={t('user.username')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="nickname"
+            label={t('user.nickname')}
+          >
+            <Input 
+              placeholder={t('user.nicknamePlaceholder')}
               size="large"
             />
           </Form.Item>

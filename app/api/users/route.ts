@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 // 创建新用户（仅管理员）
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, role = 'employee' } = await request.json();
+    const { username, nickname, password, role = 'employee' } = await request.json();
 
     if (!username || !password) {
       return NextResponse.json(
@@ -131,6 +131,7 @@ export async function POST(request: NextRequest) {
       .insert({
         id: newUserId,
         username,
+        nickname,
         role,
       });
 
@@ -147,6 +148,7 @@ export async function POST(request: NextRequest) {
       user: {
         id: newUserId,
         username,
+        nickname,
         role,
       },
     });

@@ -236,6 +236,8 @@
     "editUser": "编辑员工",
     "deleteUser": "删除员工",
     "username": "用户名",
+    "nickname": "昵称",
+    "nicknamePlaceholder": "请输入昵称（可选）",
     "password": "密码",
     "role": "角色",
     "admin": "管理员",

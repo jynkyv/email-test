@@ -236,6 +236,8 @@
     "editUser": "従業員編集",
     "deleteUser": "従業員削除",
     "username": "ユーザー名",
+    "nickname": "ニックネーム",
+    "nicknamePlaceholder": "ニックネームを入力してください（任意）",
     "password": "パスワード",
     "role": "ロール",
     "admin": "管理者",
