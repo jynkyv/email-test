@@ -91,13 +91,6 @@ export default function CustomerManager() {
 
   useEffect(() => {
     fetchCustomers();
-    
-    // 每30秒自动刷新一次，检查新邮件
-    const interval = setInterval(() => {
-      fetchCustomers();
-    }, 30000);
-
-    return () => clearInterval(interval);
   }, []);
 
   const fetchCustomers = async (page = currentPage, size = pageSize) => {
