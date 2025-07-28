@@ -91,13 +91,7 @@ export default function CustomerManager() {
 
   useEffect(() => {
     fetchCustomers();
-    
-    // 每30秒自动刷新一次，检查新邮件
-    const interval = setInterval(() => {
-      fetchCustomers();
-    }, 30000);
-
-    return () => clearInterval(interval);
+    // 移除自动刷新逻辑 - 客户管理页面不需要频繁刷新
   }, []);
 
   const fetchCustomers = async (page = currentPage, size = pageSize) => {
@@ -502,7 +496,9 @@ export default function CustomerManager() {
             <p className="text-sm text-blue-700 mb-2">{t('customer.excelRequirements')}</p>
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• {t('customer.excelColumn1')}</li>
-              <li>• {t('customer.excelColumn2')}</li>
+              <li>• <span dangerouslySetInnerHTML={{ 
+                __html: t('customer.excelColumn2').replace(/\n/g, '<br>') 
+              }} /></li>
               <li>• {t('customer.excelColumn3')}</li>
               <li>• {t('customer.excelColumn4')}</li>
               <li>• {t('customer.excelColumn5')}</li>
