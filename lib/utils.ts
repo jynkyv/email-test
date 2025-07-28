@@ -8,6 +8,8 @@ export const htmlToText = (html: string): string => {
   
   // 处理常见的HTML标签，保留格式
   let text = html
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')  // 移除所有style标签及其内容
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')  // 移除所有script标签及其内容
     .replace(/<p[^>]*>/gi, '')  // 移除<p>开始标签
     .replace(/<\/p>/gi, '\n\n')  // 将</p>标签转换为双换行
     .replace(/<br\s*\/?>/gi, '\n')  // 将<br>标签转换为换行
