@@ -183,7 +183,7 @@
     "excelFormat": "Excelファイル形式の要件",
     "excelRequirements": "Excelファイルに以下の列が含まれていることを確認してください：",
     "excelColumn1": "会社名",
-    "excelColumn2": "E-Mail\n    •対応できる形式：「xxx@xxx.com」、「Eメール xxx@xxx.com」\n    •メールアドレスがない場合はその行をスキップ",
+    "excelColumn2": "E-Mail\n対応できる形式：「xxx@xxx.com」、「Eメール xxx@xxx.com」\nメールアドレスがない場合はその行をスキップ",
     "excelColumn3": "メールアドレスが正しくない場合や無効な内容が含まれている場合、アップロードが中止され、エラーメッセージが表示される",
     "excelColumn4": "テンプレートの最初の行を削除しないこと",
     "excelColumn5": "ファイルサイズ制限：最大1MB",

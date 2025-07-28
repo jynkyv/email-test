@@ -502,7 +502,9 @@ export default function CustomerManager() {
             <p className="text-sm text-blue-700 mb-2">{t('customer.excelRequirements')}</p>
             <ul className="text-sm text-blue-700 space-y-1">
               <li>• {t('customer.excelColumn1')}</li>
-              <li>• {t('customer.excelColumn2')}</li>
+              <li>• <span dangerouslySetInnerHTML={{ 
+                __html: t('customer.excelColumn2').replace(/\n/g, '<br>&nbsp;&nbsp;&nbsp;&nbsp;') 
+              }} /></li>
               <li>• {t('customer.excelColumn3')}</li>
               <li>• {t('customer.excelColumn4')}</li>
               <li>• {t('customer.excelColumn5')}</li>
