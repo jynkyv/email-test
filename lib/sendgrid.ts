@@ -7,13 +7,19 @@ if (!apiKey) {
 }
 sgMail.setApiKey(apiKey);
 
-// 获取发件人邮箱
+// 获取发件人邮箱和名称
 function getFromEmail(): string {
   const fromEmail = process.env.SENDGRID_FROM_EMAIL;
   if (!fromEmail) {
     throw new Error('SENDGRID_FROM_EMAIL环境变量未设置');
   }
   return fromEmail;
+}
+
+// 获取发件人名称
+function getFromName(): string {
+  const fromName = process.env.SENDGRID_FROM_NAME || '邮件管理系统';
+  return fromName;
 }
 
 // 发送单封邮件
@@ -66,7 +72,10 @@ export async function sendSingleEmail(to: string, subject: string, html: string)
 
     const msg = {
       to: to,
-      from: getFromEmail(),
+      from: {
+        email: getFromEmail(),
+        name: getFromName()
+      },
       subject: subject,
       html: fullHtml,
       text: text, // 添加纯文本版本
@@ -138,12 +147,18 @@ export function validateConfig() {
     issues.push('SENDGRID_FROM_EMAIL环境变量未设置');
   }
   
+  const fromName = process.env.SENDGRID_FROM_NAME;
+  if (!fromName) {
+    issues.push('SENDGRID_FROM_NAME环境变量未设置（可选，默认为"邮件管理系统"）');
+  }
+  
   return {
     isValid: issues.length === 0,
     issues,
     config: {
       apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : '未设置',
-      fromEmail: fromEmail || '未设置'
+      fromEmail: fromEmail || '未设置',
+      fromName: fromName || '邮件管理系统'
     }
   };
 } 
