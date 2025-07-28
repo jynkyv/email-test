@@ -68,8 +68,31 @@ export async function GET(request: NextRequest) {
       query = query.lte('created_at', endDateTime.toISOString());
     }
 
-    // 先获取所有符合条件的客户数据（不分页）
-    const { data: allCustomersWithEmails, error, count } = await query;
+    // 先获取总数
+    const { count: totalCount, error: countError } = await query;
+    
+    if (countError) {
+      console.error('获取总数失败:', countError);
+      return NextResponse.json(
+        { error: '获取客户列表失败' },
+        { status: 500 }
+      );
+    }
+
+    // 应用排序和分页
+    let sortedQuery = query;
+    
+    if (sortByUnread) {
+      // 邮件管理页面：按创建时间倒序，然后在内存中处理未读邮件排序
+      sortedQuery = sortedQuery.order('created_at', { ascending: false });
+    } else {
+      // 其他页面：按创建时间倒序
+      sortedQuery = sortedQuery.order('created_at', { ascending: false });
+    }
+
+    // 应用分页
+    const { data: customersWithEmails, error } = await sortedQuery
+      .range(from, from + pageSize - 1);
 
     if (error) {
       console.error('数据库查询错误:', error);
@@ -79,8 +102,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 处理客户数据，计算未读邮件状态并排序
-    const processedCustomers = allCustomersWithEmails?.map(customer => {
+    // 处理客户数据，计算未读邮件状态
+    const processedCustomers = customersWithEmails?.map(customer => {
       const hasUnreadEmails = customer.customer_emails?.some((email: any) => !email.is_read) || false;
       return {
         ...customer,
@@ -89,11 +112,10 @@ export async function GET(request: NextRequest) {
       };
     }) || [];
 
-    // 根据参数决定排序方式
-    let sortedCustomers;
+    // 如果是邮件管理页面，需要重新排序（有未读邮件的排在前面）
+    let finalCustomers = processedCustomers;
     if (sortByUnread) {
-      // 邮件管理页面：有未读邮件的客户排在前面，然后按创建时间倒序
-      sortedCustomers = processedCustomers.sort((a, b) => {
+      finalCustomers = processedCustomers.sort((a, b) => {
         // 首先按未读邮件状态排序（有未读邮件的排在前面）
         if (a.has_unread_emails && !b.has_unread_emails) {
           return -1;
@@ -104,19 +126,11 @@ export async function GET(request: NextRequest) {
         // 如果未读邮件状态相同，按创建时间倒序
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-    } else {
-      // 其他页面：按创建时间倒序（最新的客户在前面）
-      sortedCustomers = processedCustomers.sort((a, b) => {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
     }
 
-    // 应用分页
-    const customers = sortedCustomers.slice(from, from + pageSize);
-
     console.log('客户列表查询结果:', { 
-      customersCount: customers?.length, 
-      totalCount: count, 
+      customersCount: finalCustomers?.length, 
+      totalCount: totalCount, 
       page, 
       pageSize,
       startDate,
@@ -125,8 +139,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      customers,
-      total: count || 0,
+      customers: finalCustomers,
+      total: totalCount || 0,
       page,
       pageSize,
     });
