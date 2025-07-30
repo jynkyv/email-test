@@ -30,7 +30,7 @@ export async function PUT(
     // 检查用户权限
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('role')
+      .select('role, fax_send_count')
       .eq('id', userId)
       .single();
 
@@ -78,20 +78,37 @@ export async function PUT(
       );
     }
 
-    // 使用事务来确保数据一致性
-    const { data: updateResult, error: updateError } = await supabase
-      .rpc('update_fax_status_and_user_count', {
-        p_customer_id: customerId,
-        p_user_id: userId,
-        p_status: status
-      });
+    // 开始事务：更新客户传真状态
+    const { error: customerUpdateError } = await supabase
+      .from('customers')
+      .update({
+        fax_status: status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', customerId);
 
-    if (updateError) {
-      console.error('更新传真状态失败:', updateError);
+    if (customerUpdateError) {
+      console.error('更新客户传真状态失败:', customerUpdateError);
       return NextResponse.json(
         { error: '更新传真状态失败' },
         { status: 500 }
       );
+    }
+
+    // 更新用户传真发送统计
+    const currentFaxCount = userData.fax_send_count || 0;
+    const { error: userUpdateError } = await supabase
+      .from('users')
+      .update({
+        fax_send_count: currentFaxCount + 1,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId);
+
+    if (userUpdateError) {
+      console.error('更新用户统计失败:', userUpdateError);
+      // 注意：这里不返回错误，因为客户状态已经更新成功
+      console.warn('客户传真状态已更新，但用户统计更新失败');
     }
 
     return NextResponse.json({
