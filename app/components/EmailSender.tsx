@@ -98,7 +98,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         params.append('endDate', endDate.toISOString());
       }
       
-      console.log('获取客户列表URL:', `/api/customers?${params}`);
+      console.log('Fetch customers URL:', `/api/customers?${params}`);
       
       const response = await fetch(`/api/customers?${params}`, {
         headers: {
@@ -111,7 +111,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setTotal(data.total || 0);
         setCurrentPage(page);
         setPageSize(size);
-        console.log('客户列表获取成功:', { 
+        console.log('Customers fetched successfully:', { 
           customers: data.customers?.length, 
           total: data.total, 
           page, 
@@ -121,7 +121,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         });
       }
     } catch (error) {
-      console.error('获取客户列表失败:', error);
+      console.error('Failed to fetch customers:', error);
       message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoadingCustomers(false);
@@ -287,15 +287,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 处理时间筛选变化
   const handleDateRangeChange = (dates: any) => {
-    console.log('日期选择变化:', dates);
+          console.log('Date selection changed:', dates);
     if (dates && dates.length === 2) {
       const newStartDate = dates[0].toDate();
       const newEndDate = dates[1].toDate();
-      console.log('设置新的日期范围:', { newStartDate, newEndDate });
+              console.log('Setting new date range:', { newStartDate, newEndDate });
       setStartDate(newStartDate);
       setEndDate(newEndDate);
     } else {
-      console.log('清空日期范围');
+      console.log('Clear date range');
       setStartDate(null);
       setEndDate(null);
     }
@@ -306,7 +306,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 监听时间筛选变化，重新获取数据
   useEffect(() => {
     if (showCustomerModal && (startDate || endDate)) {
-      console.log('时间筛选变化，重新获取数据:', { startDate, endDate });
+      console.log('Date filter changed, refetching data:', { startDate, endDate });
       fetchCustomers(currentPage, pageSize);
     }
   }, [startDate, endDate, showCustomerModal]); // 添加showCustomerModal依赖，确保只在模态框打开时重新获取
@@ -357,7 +357,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     content: string;
   }) => {
     if (!values.subject.trim() || !values.content.trim()) {
-      message.error(t('email.subjectRequired') + ' 和 ' + t('email.contentRequired'));
+      message.error(t('email.subjectRequired') + ' ' + t('email.and') + ' ' + t('email.contentRequired'));
       return;
     }
 
@@ -409,7 +409,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         message.error(result.error || t('email.approvalSubmitFailed'));
       }
     } catch (error) {
-      console.error('提交审核申请失败:', error);
+      console.error('Failed to submit approval request:', error);
       message.error(t('email.approvalSubmitFailed'));
     } finally {
       setIsSending(false);

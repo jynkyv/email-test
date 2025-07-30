@@ -124,7 +124,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         setCustomerPageSize(size);
       }
     } catch (error) {
-      console.error('获取客户列表失败:', error);
+      console.error('Failed to fetch customers:', error);
       message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoadingCustomers(false);
@@ -148,7 +148,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         setEmails(data.messages || []);
       }
     } catch (error) {
-      console.error('获取邮件失败:', error);
+      console.error('Failed to fetch emails:', error);
       message.error(t('common.networkError'));
     } finally {
       setLoading(false);
@@ -257,10 +257,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
           message.success(data.message);
         }
       } else {
-        message.error(data.error || '操作失败');
+        message.error(data.error || t('email.operationFailed'));
       }
     } catch (error) {
-      console.error('更新邮件状态失败:', error);
+              console.error('Failed to update email status:', error);
       message.error(t('common.networkError'));
     }
   };
@@ -279,7 +279,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
   useEffect(() => {
     if (user) {
-      console.log('EmailViewer - 用户已加载，开始获取客户列表');
+      console.log('EmailViewer - User loaded, starting to fetch customers');
       fetchCustomers();
     }
   }, [user]);
@@ -610,10 +610,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 value={searchField}
                 onChange={handleSearchFieldChange}
                 options={[
-                  { label: '名称', value: 'company_name' },
-                  { label: '邮箱', value: 'email' },
-                  { label: '传真', value: 'fax' },
-                  { label: '地址', value: 'address' },
+                  { label: t('common.name'), value: 'company_name' },
+                  { label: t('common.email'), value: 'email' },
+                  { label: t('common.fax'), value: 'fax' },
+                  { label: t('common.address'), value: 'address' },
                 ]}
               />
               <Input
@@ -635,7 +635,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 {t('common.search')}
               </Button>
               <Button onClick={handleClearSearch} size="small" style={{ fontSize: '12px', height: '24px', padding: '0 8px' }}>
-                清空
+                {t('common.clear')}
               </Button>
             </div>
           </div>

@@ -98,7 +98,7 @@ export default function ApprovalsPage() {
         setPageSize(size);
       }
     } catch (error) {
-      console.error('获取审核列表失败:', error);
+              console.error('Failed to fetch approvals:', error);
       message.error(t('approval.fetchApprovalsFailed'));
     } finally {
       setLoading(false);
@@ -124,7 +124,7 @@ export default function ApprovalsPage() {
         });
       }
     } catch (error) {
-      console.error('获取审核详情失败:', error);
+              console.error('Failed to fetch approval detail:', error);
       message.error(t('approval.fetchDetailFailed'));
     }
   };
@@ -157,7 +157,7 @@ export default function ApprovalsPage() {
           message.error(data.error || t('approval.actionFailed'));
         }
       } catch (error) {
-        console.error('审核操作失败:', error);
+        console.error('Approval action failed:', error);
         message.error(t('approval.actionFailed'));
       }
     }
@@ -202,7 +202,7 @@ export default function ApprovalsPage() {
 
         const queueData = await queueResponse.json();
         if (!queueData.success) {
-          message.error(queueData.error || '添加邮件到队列失败');
+          message.error(queueData.error || t('email.queueAddFailed'));
           setSendingProgress(false);
           return;
         }
@@ -245,14 +245,14 @@ export default function ApprovalsPage() {
               });
               setSendingResults(results);
 
-              console.log('队列状态更新:', { stats, results });
+              console.log('Queue status updated:', { stats, results });
 
               // 如果所有邮件都处理完成，停止轮询
               if (stats.completed === stats.total && stats.total > 0) {
                 clearInterval(pollInterval);
                 setTimeout(() => {
-                  const successMessage = `发送完成。成功: ${stats.sent}, 失败: ${stats.failed}`;
-                  console.log('发送完成:', successMessage);
+                  const successMessage = t('email.sendComplete', { sent: stats.sent, failed: stats.failed });
+                  console.log('Send completed:', successMessage);
                   message.success(successMessage);
                   setSendingProgress(false);
                   fetchApprovals(currentPage, pageSize);
@@ -263,7 +263,7 @@ export default function ApprovalsPage() {
               }
             }
           } catch (error) {
-            console.error('轮询队列状态失败:', error);
+            console.error('Failed to poll queue status:', error);
           }
         }, 3000); // 每3秒轮询一次
 
@@ -280,13 +280,13 @@ export default function ApprovalsPage() {
             const processData = await processResponse.json();
             if (processData.success && processData.hasRemaining) {
               // 如果还有待处理的邮件，继续处理
-              console.log(`还有 ${processData.remainingCount} 个邮件待处理，继续处理...`);
+              console.log(`Still ${processData.remainingCount} emails to process, continuing...`);
               setTimeout(processQueue, 1000); // 1秒后继续处理
             } else {
-              console.log('队列处理完成');
+              console.log('Queue processing completed');
             }
           } catch (error) {
-            console.error('队列处理失败:', error);
+            console.error('Queue processing failed:', error);
           }
         };
         
@@ -294,10 +294,10 @@ export default function ApprovalsPage() {
         processQueue();
 
       } else {
-        message.error('获取审核申请详情失败');
+        message.error(t('email.fetchApprovalDetailFailed'));
       }
     } catch (error) {
-      console.error('审核操作失败:', error);
+              console.error('Approval action failed:', error);
       message.error(t('approval.actionFailed'));
       setSendingProgress(false);
     }
@@ -344,7 +344,7 @@ export default function ApprovalsPage() {
         message.error(data.error || t('approval.updateFailed'));
       }
     } catch (error) {
-      console.error('保存编辑失败:', error);
+              console.error('Failed to save edit:', error);
       message.error(t('approval.updateFailed'));
     } finally {
       setUpdating(false);

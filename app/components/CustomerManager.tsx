@@ -126,7 +126,7 @@ export default function CustomerManager() {
         setPageSize(size);
       }
     } catch (error) {
-      console.error('获取客户列表失败:', error);
+      console.error('Failed to fetch customers:', error);
       message.error(t('customer.fetchCustomersFailed'));
     } finally {
       setLoading(false);
@@ -180,7 +180,7 @@ export default function CustomerManager() {
         message.error(data.error || t('customer.customerDeleteFailed'));
       }
     } catch (error) {
-      console.error('删除客户失败:', error);
+      console.error('Failed to delete customer:', error);
       message.error(t('customer.customerDeleteFailed'));
     }
   };
@@ -212,7 +212,7 @@ export default function CustomerManager() {
             message.error(data.error || t('customer.faxSendFailed'));
           }
         } catch (error) {
-          console.error('发送传真失败:', error);
+          console.error('Fax activation failed:', error);
           message.error(t('customer.faxSendFailed'));
         }
       }
@@ -248,7 +248,7 @@ export default function CustomerManager() {
         message.error(errorMessage);
       }
     } catch (error) {
-      console.error('批量上传失败:', error);
+      console.error('Bulk upload failed:', error);
       message.error(t('customer.bulkUploadFailed'));
     } finally {
       setUploadLoading(false);
@@ -704,8 +704,8 @@ export default function CustomerManager() {
               <li>• <span dangerouslySetInnerHTML={{ 
                 __html: t('customer.excelColumn2').replace(/\n/g, '<br>&nbsp;&nbsp;&nbsp;&nbsp;') 
               }} /></li>
-              <li>• 传真/FAX/fax - 客户的传真号码（可选）</li>
-              <li>• 地址/Address/address - 客户的地址信息（可选）</li>
+              <li>• {t('customer.excelColumnFax')}</li>
+              <li>• {t('customer.excelColumnAddress')}</li>
               <li>• {t('customer.excelColumn3')}</li>
               <li>• {t('customer.excelColumn4')}</li>
               <li>• {t('customer.excelColumn5')}</li>

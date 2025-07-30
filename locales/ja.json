@@ -40,7 +40,13 @@
     "actions": "操作",
     "page": "ページ",
     "pageInfo": "{current} / {total}",
-    "clearFilter": "フィルターをクリア"
+    "clearFilter": "フィルターをクリア",
+    "searchPlaceholder": "検索キーワードを入力",
+    "name": "名称",
+    "email": "メール",
+    "fax": "FAX",
+    "address": "住所",
+    "clear": "クリア"
   },
   "auth": {
     "login": "ログイン",
@@ -91,6 +97,7 @@
     "contentPlaceholder": "メール内容を入力してください... ",
     "subjectRequired": "メール件名を入力してください",
     "contentRequired": "メール内容を入力してください",
+    "and": "と",
     "recipientsRequired": "少なくとも1人の顧客を選択してください",
     "noRecipients": "少なくとも1人の顧客を選択してください",
     "reply": "返信",
@@ -138,7 +145,11 @@
     "submitForApproval": "承認申請",
     "submitting": "申請中...",
     "approvalSubmitted": "承認申請が正常に送信されました",
-    "approvalSubmitFailed": "承認申請の送信に失敗しました"
+    "approvalSubmitFailed": "承認申請の送信に失敗しました",
+    "queueAddFailed": "メールをキューに追加できませんでした",
+    "fetchApprovalDetailFailed": "承認申請の詳細取得に失敗しました",
+    "operationFailed": "操作に失敗しました",
+    "sendComplete": "送信完了。成功: {sent}, 失敗: {failed}"
   },
   "customer": {
     "customer": "顧客",
@@ -202,7 +213,9 @@
     "processingError": "アップロードファイルの処理中にエラーが発生しました",
     "filterByCreationTime": "作成日時でフィルター",
     "startDate": "開始日",
-    "endDate": "終了日"
+    "endDate": "終了日",
+    "excelColumnFax": "FAX/FAX/fax - 顧客のFAX番号（オプション）",
+    "excelColumnAddress": "住所/Address/address - 顧客の住所情報（オプション）"
   },
   "approval": {
     "approvalManagement": "承認管理",

@@ -20,6 +20,12 @@
     "searchCustomer": "搜索客户",
     "searchPlaceholder": "输入搜索关键词",
     "filter": "筛选",
+    "clearFilter": "清空筛选",
+    "name": "名称",
+    "email": "邮箱",
+    "fax": "传真",
+    "address": "地址",
+    "clear": "清空",
     "sort": "排序",
     "export": "导出",
     "import": "导入",
@@ -93,6 +99,7 @@
     "contentPlaceholder": "请输入邮件内容...",
     "subjectRequired": "请输入邮件主题",
     "contentRequired": "请输入邮件内容",
+    "and": "和",
     "recipientsRequired": "请至少选择一个客户",
     "noRecipients": "请选择至少一个客户",
     "reply": "回复",
@@ -140,7 +147,11 @@
     "submitForApproval": "提交审核",
     "submitting": "提交中...",
     "approvalSubmitted": "审核申请提交成功",
-    "approvalSubmitFailed": "提交审核申请失败"
+    "approvalSubmitFailed": "提交审核申请失败",
+    "queueAddFailed": "添加邮件到队列失败",
+    "fetchApprovalDetailFailed": "获取审核申请详情失败",
+    "operationFailed": "操作失败",
+    "sendComplete": "发送完成。成功: {sent}, 失败: {failed}"
   },
   "customer": {
     "customer": "客户",
@@ -219,7 +230,9 @@
     "faxPlaceholder": "请输入传真号码",
     "addressPlaceholder": "请输入地址",
     "invalidFax": "请输入有效的传真号码",
-    "faxExists": "该传真号码已存在"
+    "faxExists": "该传真号码已存在",
+    "excelColumnFax": "传真/FAX/fax - 客户的传真号码（可选）",
+    "excelColumnAddress": "地址/Address/address - 客户的地址信息（可选）"
   },
   "approval": {
     "approvalManagement": "审核管理",

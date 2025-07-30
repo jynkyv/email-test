@@ -41,7 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     if (mounted && !loading && !user) {
-      console.log('用户未登录，重定向到登录页面');
+      console.log('User not logged in, redirecting to login page');
       router.push('/login');
     }
   }, [mounted, loading, user, router]);

@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserRole(userData.role);
         }
       } catch (error) {
-        console.error('检查会话时出错:', error);
+        console.error('Error checking session:', error);
         localStorage.removeItem('user_session');
       } finally {
         setLoading(false);
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (userError || !userData) {
         console.log('用户不存在');
-        return { error: { message: '用户名不存在' } };
+        return { error: { message: 'User not found' } };
       }
 
       // 这里应该验证密码，但为了简化，我们暂时跳过密码验证
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { data: userData };
     } catch (error) {
       console.error('登录错误:', error);
-      return { error: { message: '登录失败' } };
+      return { error: { message: 'Login failed' } };
     }
   };
 

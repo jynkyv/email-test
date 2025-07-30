@@ -61,7 +61,7 @@ export default function UserManager() {
         setUsers(data.users);
       }
     } catch (error) {
-      console.error('获取员工列表失败:', error);
+      console.error('Failed to fetch users:', error);
       message.error(t('user.fetchUsersFailed'));
     } finally {
       setLoading(false);
