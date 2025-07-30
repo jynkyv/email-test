@@ -17,7 +17,8 @@ import {
   Tooltip,
   Upload,
   Badge,
-  Select
+  Select,
+  Checkbox
 } from 'antd';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
@@ -89,6 +90,9 @@ export default function CustomerManager() {
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
+  // 新增：传真筛选状态
+  const [showFaxOnly, setShowFaxOnly] = useState(false);
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -102,7 +106,8 @@ export default function CustomerManager() {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
+  // 新增：带传真筛选的获取客户函数
+  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, searchFieldParam?: string, searchValueParam?: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -111,6 +116,13 @@ export default function CustomerManager() {
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });
+      
+      // 添加传真筛选参数
+      if (faxOnly) {
+        params.append('hasFaxOnly', 'true');
+      }
+      
+      console.log('Fetch customers with fax filter:', { faxOnly, params: params.toString() });
       
       const response = await fetch(`/api/customers?${params}`, {
         headers: {
@@ -131,6 +143,11 @@ export default function CustomerManager() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 修改原有的fetchCustomers函数，使用新的函数
+  const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
+    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, searchFieldParam, searchValueParam);
   };
 
   const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
@@ -333,6 +350,13 @@ export default function CustomerManager() {
     document.body.removeChild(link);
   };
 
+  // 新增：处理传真筛选切换
+  const handleFaxOnlyChange = (checked: boolean) => {
+    setShowFaxOnly(checked);
+    setCurrentPage(1);
+    // 直接传递checked参数，而不是依赖状态
+    fetchCustomersWithFaxFilter(1, pageSize, checked);
+  };
 
 
   // 处理搜索字段变化
@@ -347,9 +371,10 @@ export default function CustomerManager() {
   const handleClearSearch = () => {
     setSearchField('company_name');
     setSearchValue('');
+    setShowFaxOnly(false); // 重置传真筛选
     searchForm.resetFields();
     setCurrentPage(1);
-    fetchCustomers(1, pageSize);
+    fetchCustomersWithFaxFilter(1, pageSize, false); // 明确传递false
   };
 
   // 处理搜索按钮点击
@@ -497,6 +522,13 @@ export default function CustomerManager() {
             >
               {t('customer.createCustomer')}
             </Button>
+            <Button
+              icon={<DownloadOutlined />}
+              onClick={handleDownloadTemplate}
+              size="large"
+            >
+              {t('customer.downloadTemplate')}
+            </Button>
           </Space>
         </div>
 
@@ -548,6 +580,16 @@ export default function CustomerManager() {
               </Space>
             </Form.Item>
           </Form>
+          
+          {/* 新增：传真筛选复选框 */}
+          <div className="mt-4">
+            <Checkbox
+              checked={showFaxOnly}
+              onChange={(e) => handleFaxOnlyChange(e.target.checked)}
+            >
+              {t('customer.showFaxOnly')}
+            </Checkbox>
+          </div>
         </div>
 
         <Table
