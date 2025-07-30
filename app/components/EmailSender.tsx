@@ -18,7 +18,8 @@ import {
   Checkbox,
   Avatar,
   Spin,
-  DatePicker
+  DatePicker,
+  Select
 } from 'antd';
 import { 
   SendOutlined, 
@@ -72,24 +73,34 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
+  
+  // 搜索相关状态
+  const [searchField, setSearchField] = useState('company_name');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchForm] = Form.useForm();
 
   // 获取客户列表
-  const fetchCustomers = async (page = 1, size = 50) => {
+  const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
     setLoadingCustomers(true);
     try {
-      let url = `/api/customers?page=${page}&pageSize=${size}`;
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: size.toString(),
+        searchField: searchFieldParam || searchField,
+        searchValue: searchValueParam || searchValue
+      });
       
       // 添加时间筛选参数
       if (startDate) {
-        url += `&startDate=${startDate.toISOString()}`;
+        params.append('startDate', startDate.toISOString());
       }
       if (endDate) {
-        url += `&endDate=${endDate.toISOString()}`;
+        params.append('endDate', endDate.toISOString());
       }
       
-      console.log('获取客户列表URL:', url);
+      console.log('获取客户列表URL:', `/api/customers?${params}`);
       
-      const response = await fetch(url, {
+      const response = await fetch(`/api/customers?${params}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -306,6 +317,38 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setEndDate(null);
     // 清空筛选时重置到第一页
     setCurrentPage(1);
+  };
+
+
+
+  // 处理搜索按钮点击
+  const handleSearchClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const values = searchForm.getFieldsValue();
+    if (values.searchValue && values.searchValue.trim()) {
+      // 直接执行搜索，传递当前表单值
+      setSearchField(values.searchField);
+      setSearchValue(values.searchValue.trim());
+      setCurrentPage(1);
+      fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
+    }
+  };
+
+  // 处理搜索字段变化
+  const handleSearchFieldChange = (value: string) => {
+    setSearchField(value);
+    setSearchValue(''); // 清空搜索值
+    searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
+    // 不重新获取数据，只是清空搜索条件
+  };
+
+  // 清空搜索
+  const handleClearSearch = () => {
+    setSearchField('company_name');
+    setSearchValue('');
+    searchForm.resetFields();
+    setCurrentPage(1);
+    fetchCustomers(1, pageSize);
   };
 
   const handleSubmit = async (values: {
@@ -537,6 +580,65 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               onChange={handleDateRangeChange}
               format="YYYY-MM-DD"
             />
+          </div>
+          
+          {/* 搜索功能 */}
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">{t('common.searchCustomer')}</span>
+              {(searchValue) && (
+                <Button 
+                  size="small" 
+                  type="text" 
+                  onClick={handleClearSearch}
+                >
+                  {t('common.clearFilter')}
+                </Button>
+              )}
+            </div>
+            <Form
+              form={searchForm}
+              layout="inline"
+              className="flex items-center gap-2"
+            >
+              <Form.Item name="searchField" initialValue="company_name" className="mb-0">
+                <Select
+                  style={{ width: 100 }}
+                  size="small"
+                  onChange={handleSearchFieldChange}
+                  options={[
+                    { label: t('customer.companyName'), value: 'company_name' },
+                    { label: t('customer.customerEmail'), value: 'email' },
+                    { label: t('customer.fax'), value: 'fax' },
+                    { label: t('customer.address'), value: 'address' },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item name="searchValue" className="mb-0 flex-1">
+                <Input
+                  placeholder={t('common.searchPlaceholder')}
+                  allowClear
+                  size="small"
+                  style={{ width: 200 }}
+                  onPressEnter={(e) => {
+                    e.preventDefault();
+                    const values = searchForm.getFieldsValue();
+                    if (values.searchValue && values.searchValue.trim()) {
+                      // 直接执行搜索，传递当前表单值
+                      setSearchField(values.searchField);
+                      setSearchValue(values.searchValue.trim());
+                      setCurrentPage(1);
+                      fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item className="mb-0">
+                <Button type="primary" onClick={handleSearchClick} size="small">
+                  {t('common.search')}
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
           
           {loadingCustomers ? (

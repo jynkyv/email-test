@@ -16,7 +16,8 @@ import {
   Popconfirm,
   Tooltip,
   Upload,
-  Badge
+  Badge,
+  Select
 } from 'antd';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
@@ -83,6 +84,11 @@ export default function CustomerManager() {
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
   
+  // 搜索相关状态
+  const [searchField, setSearchField] = useState('company_name');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchForm] = Form.useForm();
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -96,10 +102,17 @@ export default function CustomerManager() {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async (page = currentPage, size = pageSize) => {
+  const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}`, {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: size.toString(),
+        searchField: searchFieldParam || searchField,
+        searchValue: searchValueParam || searchValue
+      });
+      
+      const response = await fetch(`/api/customers?${params}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -314,6 +327,38 @@ export default function CustomerManager() {
     document.body.removeChild(link);
   };
 
+
+
+  // 处理搜索字段变化
+  const handleSearchFieldChange = (value: string) => {
+    setSearchField(value);
+    setSearchValue(''); // 清空搜索值
+    searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
+    // 不重新获取数据，只是清空搜索条件
+  };
+
+  // 清空搜索
+  const handleClearSearch = () => {
+    setSearchField('company_name');
+    setSearchValue('');
+    searchForm.resetFields();
+    setCurrentPage(1);
+    fetchCustomers(1, pageSize);
+  };
+
+  // 处理搜索按钮点击
+  const handleSearchClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const values = searchForm.getFieldsValue();
+    if (values.searchValue && values.searchValue.trim()) {
+      // 直接执行搜索，传递当前表单值
+      setSearchField(values.searchField);
+      setSearchValue(values.searchValue.trim());
+      setCurrentPage(1);
+      fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
+    }
+  };
+
   const columns = [
     {
       title: t('customer.customerName'),
@@ -447,6 +492,56 @@ export default function CustomerManager() {
               {t('customer.createCustomer')}
             </Button>
           </Space>
+        </div>
+
+        {/* 搜索区域 */}
+        <div className="mb-6">
+          <Form
+            form={searchForm}
+            layout="inline"
+            className="flex items-center gap-4"
+          >
+            <Form.Item name="searchField" initialValue="company_name">
+              <Select
+                style={{ width: 120 }}
+                onChange={handleSearchFieldChange}
+                options={[
+                  { label: t('customer.companyName'), value: 'company_name' },
+                  { label: t('customer.customerEmail'), value: 'email' },
+                  { label: t('customer.fax'), value: 'fax' },
+                  { label: t('customer.address'), value: 'address' },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item name="searchValue" className="flex-1">
+              <Input
+                placeholder={t('common.search')}
+                allowClear
+                style={{ width: 300 }}
+                onPressEnter={(e) => {
+                  e.preventDefault();
+                  const values = searchForm.getFieldsValue();
+                  if (values.searchValue && values.searchValue.trim()) {
+                    // 直接执行搜索，传递当前表单值
+                    setSearchField(values.searchField);
+                    setSearchValue(values.searchValue.trim());
+                    setCurrentPage(1);
+                    fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
+                  }
+                }}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button type="primary" onClick={handleSearchClick}>
+                  {t('common.search')}
+                </Button>
+                <Button onClick={handleClearSearch}>
+                  {t('common.clearFilter')}
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
         </div>
 
         <Table

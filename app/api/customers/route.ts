@@ -10,9 +10,11 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const sortByUnread = searchParams.get('sortByUnread') === 'true'; // 新增参数控制排序方式
+    const searchField = searchParams.get('searchField') || 'company_name'; // 搜索字段
+    const searchValue = searchParams.get('searchValue') || ''; // 搜索值
     const authHeader = request.headers.get('authorization');
     
-    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread });
+    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue });
     
     if (!authHeader) {
       return NextResponse.json(
@@ -66,6 +68,29 @@ export async function GET(request: NextRequest) {
       const endDateTime = new Date(endDate);
       endDateTime.setHours(23, 59, 59, 999);
       query = query.lte('created_at', endDateTime.toISOString());
+    }
+
+    // 添加搜索筛选
+    if (searchValue && searchValue.trim()) {
+      const searchTerm = searchValue.trim();
+      
+      switch (searchField) {
+        case 'company_name':
+          query = query.ilike('company_name', `%${searchTerm}%`);
+          break;
+        case 'email':
+          query = query.ilike('email', `%${searchTerm}%`);
+          break;
+        case 'fax':
+          query = query.ilike('fax', `%${searchTerm}%`);
+          break;
+        case 'address':
+          query = query.ilike('address', `%${searchTerm}%`);
+          break;
+        default:
+          // 默认搜索公司名称
+          query = query.ilike('company_name', `%${searchTerm}%`);
+      }
     }
 
     // 先获取总数
