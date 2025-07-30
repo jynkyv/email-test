@@ -86,6 +86,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       const params = new URLSearchParams({
         page: page.toString(),
         pageSize: size.toString(),
+        hasEmailOnly: 'true', // 只获取有邮箱的客户
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });

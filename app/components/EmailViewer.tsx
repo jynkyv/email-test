@@ -106,6 +106,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         page: page.toString(),
         pageSize: size.toString(),
         sortByUnread: 'true',
+        hasEmailOnly: 'true', // 只获取有邮箱的客户
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });

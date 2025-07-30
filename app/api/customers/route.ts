@@ -12,9 +12,10 @@ export async function GET(request: NextRequest) {
     const sortByUnread = searchParams.get('sortByUnread') === 'true'; // 新增参数控制排序方式
     const searchField = searchParams.get('searchField') || 'company_name'; // 搜索字段
     const searchValue = searchParams.get('searchValue') || ''; // 搜索值
+    const hasEmailOnly = searchParams.get('hasEmailOnly') === 'true'; // 新增参数：只返回有邮箱的客户
     const authHeader = request.headers.get('authorization');
     
-    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue });
+    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue, hasEmailOnly });
     
     if (!authHeader) {
       return NextResponse.json(
@@ -58,6 +59,11 @@ export async function GET(request: NextRequest) {
     // 如果不是管理员，只能查看自己创建的客户
     if (userData.role !== 'admin') {
       query = query.eq('created_by', userId);
+    }
+
+    // 如果只返回有邮箱的客户，添加邮箱过滤条件
+    if (hasEmailOnly) {
+      query = query.not('email', 'is', null).neq('email', '');
     }
 
     // 添加时间筛选
