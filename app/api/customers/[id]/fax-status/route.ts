@@ -20,7 +20,7 @@ export async function PUT(
     const body = await request.json();
     const { status } = body;
 
-    if (!status || !['active', 'inactive'].includes(status)) {
+    if (!status || status !== 'active') {
       return NextResponse.json(
         { error: '无效的状态值' },
         { status: 400 }
@@ -70,10 +70,10 @@ export async function PUT(
       );
     }
 
-    // 检查是否已经处于目标状态
-    if (customerData.fax_status === status) {
+    // 检查是否已经发送过
+    if (customerData.fax_status === 'active') {
       return NextResponse.json(
-        { error: `传真已经是${status === 'active' ? '激活' : '停用'}状态` },
+        { error: '传真已经发送过，无法重复发送' },
         { status: 400 }
       );
     }
@@ -97,7 +97,7 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      message: `传真已${status === 'active' ? '激活' : '停用'}`,
+      message: '传真发送成功',
       status
     });
 

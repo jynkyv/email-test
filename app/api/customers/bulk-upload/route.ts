@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
         email: email,
         fax: fax || null,
         address: address || null,
-        fax_status: fax ? 'inactive' : null, // 如果有传真号码，默认设置为未激活状态
+        fax_status: fax ? 'inactive' : null, // 如果有传真号码，默认设置为未发送状态
         created_by: userId,
         group_id: groupId || null
       });

@@ -172,11 +172,11 @@ export default function CustomerManager() {
     }
   };
 
-  // 激活传真
+  // 发送传真
   const handleActivateFax = async (customerId: string) => {
     Modal.confirm({
-      title: t('customer.activateFax'),
-      content: t('customer.faxActivationConfirm'),
+      title: t('customer.sendFax'),
+      content: t('customer.faxSendConfirm'),
       okText: t('common.confirm'),
       cancelText: t('common.cancel'),
       onOk: async () => {
@@ -193,48 +193,14 @@ export default function CustomerManager() {
           const data = await response.json();
           
           if (data.success) {
-            message.success(t('customer.faxActivated'));
+            message.success(t('customer.faxSent'));
             fetchCustomers();
           } else {
-            message.error(data.error || t('customer.faxActivationFailed'));
+            message.error(data.error || t('customer.faxSendFailed'));
           }
         } catch (error) {
-          console.error('激活传真失败:', error);
-          message.error(t('customer.faxActivationFailed'));
-        }
-      }
-    });
-  };
-
-  // 停用传真
-  const handleDeactivateFax = async (customerId: string) => {
-    Modal.confirm({
-      title: t('customer.deactivateFax'),
-      content: t('customer.faxDeactivationConfirm'),
-      okText: t('common.confirm'),
-      cancelText: t('common.cancel'),
-      onOk: async () => {
-        try {
-          const response = await fetch(`/api/customers/${customerId}/fax-status`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${user?.id}`,
-            },
-            body: JSON.stringify({ status: 'inactive' }),
-          });
-
-          const data = await response.json();
-          
-          if (data.success) {
-            message.success(t('customer.faxDeactivated'));
-            fetchCustomers();
-          } else {
-            message.error(data.error || t('customer.faxDeactivationFailed'));
-          }
-        } catch (error) {
-          console.error('停用传真失败:', error);
-          message.error(t('customer.faxDeactivationFailed'));
+          console.error('发送传真失败:', error);
+          message.error(t('customer.faxSendFailed'));
         }
       }
     });
@@ -375,7 +341,16 @@ export default function CustomerManager() {
       title: t('customer.address'),
       dataIndex: 'address',
       key: 'address',
-      render: (address: string) => address || '-',
+      render: (address: string) => {
+        if (!address) return '-';
+        return (
+          <Tooltip title={address} placement="topLeft">
+            <div className="max-w-[200px] truncate cursor-help">
+              {address}
+            </div>
+          </Tooltip>
+        );
+      },
     },
     {
       title: t('customer.faxStatus'),
@@ -383,34 +358,23 @@ export default function CustomerManager() {
       key: 'fax_status',
       render: (status: string, record: Customer) => {
         if (!record.fax) return '-';
+        
+        if (status === 'inactive' || !status) {
+          return userRole === 'admin' ? (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => handleActivateFax(record.id)}
+            >
+              {t('customer.sendFax')}
+            </Button>
+          ) : (
+            <span className="text-gray-500">{t('customer.faxStatusInactive')}</span>
+          );
+        }
+        
         return (
-          <Space>
-            <Badge 
-              status={status === 'active' ? 'success' : 'default'} 
-              text={status === 'active' ? t('customer.faxStatusActive') : t('customer.faxStatusInactive')} 
-            />
-            {status === 'inactive' && userRole === 'admin' && (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => handleActivateFax(record.id)}
-                disabled={!record.fax}
-              >
-                {t('customer.activateFax')}
-              </Button>
-            )}
-            {status === 'active' && userRole === 'admin' && (
-              <Button
-                type="link"
-                size="small"
-                danger
-                onClick={() => handleDeactivateFax(record.id)}
-                disabled={!record.fax}
-              >
-                {t('customer.deactivateFax')}
-              </Button>
-            )}
-          </Space>
+          <span className="text-green-600 font-medium">{t('customer.faxStatusActive')}</span>
         );
       },
     },
