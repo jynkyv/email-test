@@ -522,13 +522,6 @@ export default function CustomerManager() {
             >
               {t('customer.createCustomer')}
             </Button>
-            <Button
-              icon={<DownloadOutlined />}
-              onClick={handleDownloadTemplate}
-              size="large"
-            >
-              {t('customer.downloadTemplate')}
-            </Button>
           </Space>
         </div>
 
