@@ -196,7 +196,7 @@
     "excelFormat": "Excel文件格式要求",
     "excelRequirements": "请确保Excel文件包含以下列：",
     "excelColumn1": "公司名称/会社名/法人名 - 客户的企业名称",
-    "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（可选，支持多种格式：纯邮箱、带前缀如'Eメール xxx@xxx.com'，邮箱和传真至少需要填写一个）",
+    "excelColumn2": "邮箱/E-Mail/メール - 客户的邮箱地址（支持多种格式：纯邮箱、带前缀如'Eメール xxx@xxx.com'，邮箱和传真至少需要填写一个）",
     "excelColumn3": "第一行必须是标题行",
     "excelColumn4": "如果邮箱格式不正确或包含无效内容，将终止上传并提示检查",
     "excelColumn5": "文件大小限制：最大 1MB",
@@ -232,8 +232,8 @@
     "invalidFax": "请输入有效的传真号码",
     "faxExists": "该传真号码已存在",
     "emailOrFaxRequired": "邮箱和传真至少需要填写一个",
-    "excelColumnFax": "传真/FAX/fax - 客户的传真号码（可选）",
-    "excelColumnAddress": "地址/Address/address - 客户的地址信息（可选）",
+    "excelColumnFax": "传真/FAX/fax - 客户的传真号码",
+    "excelColumnAddress": "地址/Address/address - 客户的地址信息",
     "showFaxOnly": "只显示有传真的客户"
   },
   "approval": {
