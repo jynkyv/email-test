@@ -202,7 +202,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('请求体:', body);
     
-    const { company_name, email, fax, address } = body;
+    const { company_name, email, fax: rawFax, address } = body;
+
+    // 处理fax列：保留数组和-符号，删除其他前缀
+    let fax = rawFax;
+    if (fax) {
+      // 移除常见的前缀，但保留数组和-符号
+      fax = fax
+        .replace(/^(fax|FAX|Fax|传真|ＦＡＸ|Ｆａｘ|fax\s*number|FAX\s*NUMBER|Fax\s*Number|传真号码|ＦＡＸ番号)\s*[:：]\s*/gi, '') // 移除前缀
+        .replace(/^(fax|FAX|Fax|传真|ＦＡＸ|Ｆａｘ)\s+/gi, '') // 移除前缀加空格
+        .replace(/^[+＋]\s*/, '') // 移除加号前缀
+        .replace(/^[0０]\s*/, '') // 移除0前缀
+        .replace(/^[8８][1１][-－]\s*/, '') // 移除81-前缀
+        .replace(/^[8８][1１]\s*/, '') // 移除81前缀
+        .trim();
+    }
 
     if (!company_name) {
       console.log('参数验证失败: 企业名称为空');
