@@ -5,10 +5,10 @@ export async function GET() {
   try {
     // 创建示例数据
     const templateData = [
-      ['会社名', 'E-Mail'],
-      ['正仙法人乙仙会', 'Eメール isuro@micta.ocn.ne.jp'],
-      ['示例公司2', 'Eメール example2@company.com'],
-      ['示例公司3', 'Eメール example3@company.com']
+      ['会社名', 'E-Mail', '传真', '地址'],
+      ['正仙法人乙仙会', 'Eメール isuro@micta.ocn.ne.jp', '03-1234-5678', '东京都新宿区西新宿2-8-1'],
+      ['示例公司2', 'Eメール example2@company.com', '03-2345-6789', '大阪府大阪市北区梅田1-1-1'],
+      ['示例公司3', 'Eメール example3@company.com', '', '神奈川县横滨市西区みなとみらい2-2-1']
     ];
 
     // 创建工作簿
@@ -18,7 +18,9 @@ export async function GET() {
     // 设置列宽
     worksheet['!cols'] = [
       { width: 20 }, // 公司名称列
-      { width: 25 }  // 邮箱列
+      { width: 25 }, // 邮箱列
+      { width: 15 }, // 传真列
+      { width: 30 }  // 地址列
     ];
 
     // 添加工作表到工作簿

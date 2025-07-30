@@ -19,6 +19,9 @@ export interface Customer {
   id: string;
   company_name: string;
   email: string;
+  fax?: string;
+  address?: string;
+  fax_status?: 'active' | 'inactive';
   created_by: string;
   created_at: string;
   updated_at: string;

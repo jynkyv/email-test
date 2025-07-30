@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('请求体:', body);
     
-    const { company_name, email } = body;
+    const { company_name, email, fax, address } = body;
 
     if (!company_name || !email) {
       console.log('参数验证失败:', { company_name, email });
@@ -225,6 +225,8 @@ export async function POST(request: NextRequest) {
     console.log('开始插入客户数据:', {
       company_name,
       email,
+      fax,
+      address,
       created_by: userId,
     });
     
@@ -233,6 +235,9 @@ export async function POST(request: NextRequest) {
       .insert({
         company_name,
         email,
+        fax: fax || null,
+        address: address || null,
+        fax_status: fax ? 'inactive' : null, // 如果有传真号码，默认设置为未激活状态
         created_by: userId,
       })
       .select()

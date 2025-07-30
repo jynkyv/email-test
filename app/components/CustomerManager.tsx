@@ -25,6 +25,9 @@ interface Customer {
   id: string;
   company_name: string;
   email: string;
+  fax?: string;
+  address?: string;
+  fax_status?: 'active' | 'inactive';
   created_at: string;
   has_unread_emails?: boolean; // 添加未读邮件标记
 }
@@ -117,7 +120,7 @@ export default function CustomerManager() {
     }
   };
 
-  const handleSubmit = async (values: { company_name: string; email: string }) => {
+  const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
     setModalLoading(true);
     try {
       const response = await fetch('/api/customers', {
@@ -167,6 +170,74 @@ export default function CustomerManager() {
       console.error('删除客户失败:', error);
       message.error(t('customer.customerDeleteFailed'));
     }
+  };
+
+  // 激活传真
+  const handleActivateFax = async (customerId: string) => {
+    Modal.confirm({
+      title: t('customer.activateFax'),
+      content: t('customer.faxActivationConfirm'),
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
+      onOk: async () => {
+        try {
+          const response = await fetch(`/api/customers/${customerId}/fax-status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user?.id}`,
+            },
+            body: JSON.stringify({ status: 'active' }),
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            message.success(t('customer.faxActivated'));
+            fetchCustomers();
+          } else {
+            message.error(data.error || t('customer.faxActivationFailed'));
+          }
+        } catch (error) {
+          console.error('激活传真失败:', error);
+          message.error(t('customer.faxActivationFailed'));
+        }
+      }
+    });
+  };
+
+  // 停用传真
+  const handleDeactivateFax = async (customerId: string) => {
+    Modal.confirm({
+      title: t('customer.deactivateFax'),
+      content: t('customer.faxDeactivationConfirm'),
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
+      onOk: async () => {
+        try {
+          const response = await fetch(`/api/customers/${customerId}/fax-status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user?.id}`,
+            },
+            body: JSON.stringify({ status: 'inactive' }),
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            message.success(t('customer.faxDeactivated'));
+            fetchCustomers();
+          } else {
+            message.error(data.error || t('customer.faxDeactivationFailed'));
+          }
+        } catch (error) {
+          console.error('停用传真失败:', error);
+          message.error(t('customer.faxDeactivationFailed'));
+        }
+      }
+    });
   };
 
   // Excel上传处理
@@ -293,6 +364,55 @@ export default function CustomerManager() {
       title: t('customer.customerEmail'),
       dataIndex: 'email',
       key: 'email',
+    },
+    {
+      title: t('customer.fax'),
+      dataIndex: 'fax',
+      key: 'fax',
+      render: (fax: string) => fax || '-',
+    },
+    {
+      title: t('customer.address'),
+      dataIndex: 'address',
+      key: 'address',
+      render: (address: string) => address || '-',
+    },
+    {
+      title: t('customer.faxStatus'),
+      dataIndex: 'fax_status',
+      key: 'fax_status',
+      render: (status: string, record: Customer) => {
+        if (!record.fax) return '-';
+        return (
+          <Space>
+            <Badge 
+              status={status === 'active' ? 'success' : 'default'} 
+              text={status === 'active' ? t('customer.faxStatusActive') : t('customer.faxStatusInactive')} 
+            />
+            {status === 'inactive' && userRole === 'admin' && (
+              <Button
+                type="link"
+                size="small"
+                onClick={() => handleActivateFax(record.id)}
+                disabled={!record.fax}
+              >
+                {t('customer.activateFax')}
+              </Button>
+            )}
+            {status === 'active' && userRole === 'admin' && (
+              <Button
+                type="link"
+                size="small"
+                danger
+                onClick={() => handleDeactivateFax(record.id)}
+                disabled={!record.fax}
+              >
+                {t('customer.deactivateFax')}
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
     {
       title: t('customer.creationTime'),
@@ -448,6 +568,33 @@ export default function CustomerManager() {
             />
           </Form.Item>
           
+          <Form.Item
+            name="fax"
+            label={t('customer.fax')}
+            rules={[
+              { 
+                pattern: /^[0-9+\-\s()]+$/, 
+                message: t('customer.invalidFax') 
+              }
+            ]}
+          >
+            <Input 
+              placeholder={t('customer.faxPlaceholder')}
+              size="large"
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="address"
+            label={t('customer.address')}
+          >
+            <Input.TextArea 
+              placeholder={t('customer.addressPlaceholder')}
+              size="large"
+              rows={3}
+            />
+          </Form.Item>
+          
           <Form.Item className="mb-0">
             <div className="flex justify-end gap-3">
               <Button onClick={handleCancel} size="large">
@@ -498,6 +645,8 @@ export default function CustomerManager() {
               <li>• <span dangerouslySetInnerHTML={{ 
                 __html: t('customer.excelColumn2').replace(/\n/g, '<br>&nbsp;&nbsp;&nbsp;&nbsp;') 
               }} /></li>
+              <li>• 传真/FAX/fax - 客户的传真号码（可选）</li>
+              <li>• 地址/Address/address - 客户的地址信息（可选）</li>
               <li>• {t('customer.excelColumn3')}</li>
               <li>• {t('customer.excelColumn4')}</li>
               <li>• {t('customer.excelColumn5')}</li>

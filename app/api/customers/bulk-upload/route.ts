@@ -131,6 +131,26 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // 查找传真列（可选）
+    const faxHeaders = ['传真', 'FAX', 'fax', 'fax number'];
+    let faxIndex = -1;
+    for (const header of faxHeaders) {
+      if (headerMap.has(header)) {
+        faxIndex = headerMap.get(header)!;
+        break;
+      }
+    }
+
+    // 查找地址列（可选）
+    const addressHeaders = ['地址', 'Address', 'address', '住所', 'location'];
+    let addressIndex = -1;
+    for (const header of addressHeaders) {
+      if (headerMap.get(header)) {
+        addressIndex = headerMap.get(header)!;
+        break;
+      }
+    }
+
     // 处理数据行
     const customers = [];
     const errors = [];
@@ -144,6 +164,8 @@ export async function POST(request: NextRequest) {
 
       const companyName = row[companyNameIndex]?.toString().trim();
       let email = row[emailIndex]?.toString().trim();
+      const fax = faxIndex !== -1 ? row[faxIndex]?.toString().trim() : '';
+      const address = addressIndex !== -1 ? row[addressIndex]?.toString().trim() : '';
 
       // 验证公司名称
       if (!companyName) {
@@ -199,6 +221,9 @@ export async function POST(request: NextRequest) {
       customers.push({
         company_name: companyName,
         email: email,
+        fax: fax || null,
+        address: address || null,
+        fax_status: fax ? 'inactive' : null, // 如果有传真号码，默认设置为未激活状态
         created_by: userId,
         group_id: groupId || null
       });
