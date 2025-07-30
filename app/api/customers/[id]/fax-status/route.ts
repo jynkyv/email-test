@@ -78,14 +78,13 @@ export async function PUT(
       );
     }
 
-    // 更新传真状态
-    const { error: updateError } = await supabase
-      .from('customers')
-      .update({ 
-        fax_status: status,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', customerId);
+    // 使用事务来确保数据一致性
+    const { data: updateResult, error: updateError } = await supabase
+      .rpc('update_fax_status_and_user_count', {
+        p_customer_id: customerId,
+        p_user_id: userId,
+        p_status: status
+      });
 
     if (updateError) {
       console.error('更新传真状态失败:', updateError);

@@ -29,6 +29,7 @@ interface User {
   created_at: string;
   email_send_count?: number;
   email_recipient_count?: number;
+  fax_send_count?: number; // 新增：已发送传真数量
 }
 
 export default function UserManager() {
@@ -147,6 +148,17 @@ export default function UserManager() {
       render: (count: number) => (
         <Space>
           <MailOutlined style={{ color: '#52c41a' }} />
+          <span className="font-medium">{count || 0}</span>
+        </Space>
+      ),
+    },
+    {
+      title: t('user.faxSendCount'), // 新增列
+      dataIndex: 'fax_send_count',
+      key: 'fax_send_count',
+      render: (count: number) => (
+        <Space>
+          <SendOutlined style={{ color: '#fa8c16' }} />
           <span className="font-medium">{count || 0}</span>
         </Space>
       ),

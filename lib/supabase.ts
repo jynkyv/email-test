@@ -11,6 +11,9 @@ export interface User {
   username: string;
   email?: string;
   role: 'admin' | 'employee';
+  email_send_count?: number;
+  email_recipient_count?: number;
+  fax_send_count?: number; // 新增：已发送传真数量
   created_at: string;
   updated_at: string;
 }

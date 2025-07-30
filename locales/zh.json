@@ -288,6 +288,7 @@
     "onlyAdminCanManageUsers": "只有管理员可以管理员工",
     "emailSendCount": "发送次数",
     "emailRecipientCount": "收件人数",
+    "faxSendCount": "已发送传真数量",
     "deleteConfirmTitle": "确认删除员工",
     "deleteConfirmDescription": "确定要删除员工 \"{name}\" 吗？此操作不可撤销。",
     "cannotDeleteSelf": "不能删除自己的账户"
