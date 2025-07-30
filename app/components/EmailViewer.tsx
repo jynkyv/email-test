@@ -19,7 +19,8 @@ import {
   Input,
   InputNumber,
   Tooltip,
-  Badge
+  Badge,
+  Select
 } from 'antd';
 import { 
   ReloadOutlined, 
@@ -91,12 +92,25 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
   const [customerPageSize, setCustomerPageSize] = useState(50);
   const [customerTotal, setCustomerTotal] = useState(0);
+  
+  // 搜索相关状态
+  const [searchField, setSearchField] = useState('company_name');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchForm] = Form.useForm();
 
   // 获取客户列表
-  const fetchCustomers = async (page = 1, size = 50) => {
+  const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
     setLoadingCustomers(true);
     try {
-      const response = await fetch(`/api/customers?page=${page}&pageSize=${size}&sortByUnread=true`, {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: size.toString(),
+        sortByUnread: 'true',
+        searchField: searchFieldParam || searchField,
+        searchValue: searchValueParam || searchValue
+      });
+      
+      const response = await fetch(`/api/customers?${params}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
@@ -151,6 +165,42 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSelectedCustomer(customer);
     setSelectedEmail(null);
     fetchCustomerEmails(customer); // 传递整个客户对象
+  };
+
+  // 处理搜索
+  const handleSearch = (values: { searchField: string; searchValue: string }) => {
+    // 只有当搜索值不为空时才执行搜索
+    if (values.searchValue && values.searchValue.trim()) {
+      setSearchField(values.searchField);
+      setSearchValue(values.searchValue.trim());
+      setCustomerCurrentPage(1);
+      fetchCustomers(1, customerPageSize, values.searchField, values.searchValue.trim());
+    }
+  };
+
+  // 处理搜索字段变化
+  const handleSearchFieldChange = (value: string) => {
+    setSearchField(value);
+    setSearchValue(''); // 清空搜索值
+    searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
+    // 不重新获取数据，只是清空搜索条件
+  };
+
+  // 处理搜索按钮点击
+  const handleSearchClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (searchValue && searchValue.trim()) {
+      setCustomerCurrentPage(1);
+      fetchCustomers(1, customerPageSize, searchField, searchValue.trim());
+    }
+  };
+
+  // 清空搜索
+  const handleClearSearch = () => {
+    setSearchField('company_name');
+    setSearchValue('');
+    setCustomerCurrentPage(1);
+    fetchCustomers(1, customerPageSize);
   };
 
   // 更新邮件已读/未读状态
@@ -530,7 +580,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
             </Tooltip>
             <Button
               icon={<ReloadOutlined />}
-              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize)}
+              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize, searchField, searchValue)}
               loading={loadingCustomers}
             >
               {t('email.refreshCustomers')}
@@ -548,6 +598,45 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
               <span className="text-xs text-gray-500">
                 {t('common.totalRecords', { total: customerTotal })}
               </span>
+            </div>
+          </div>
+          
+          {/* 搜索区域 */}
+          <div className="px-3 py-2 border-b bg-white">
+            <div className="flex items-center gap-1">
+              <Select
+                style={{ width: 80, fontSize: '13px' }}
+                size="small"
+                value={searchField}
+                onChange={handleSearchFieldChange}
+                options={[
+                  { label: '名称', value: 'company_name' },
+                  { label: '邮箱', value: 'email' },
+                  { label: '传真', value: 'fax' },
+                  { label: '地址', value: 'address' },
+                ]}
+              />
+              <Input
+                placeholder={t('common.searchPlaceholder')}
+                allowClear
+                size="small"
+                style={{ width: 140, fontSize: '13px' }}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onPressEnter={(e) => {
+                  e.preventDefault();
+                  if (searchValue && searchValue.trim()) {
+                    setCustomerCurrentPage(1);
+                    fetchCustomers(1, customerPageSize, searchField, searchValue.trim());
+                  }
+                }}
+              />
+              <Button type="primary" onClick={handleSearchClick} size="small" style={{ fontSize: '12px', height: '24px', padding: '0 8px' }}>
+                {t('common.search')}
+              </Button>
+              <Button onClick={handleClearSearch} size="small" style={{ fontSize: '12px', height: '24px', padding: '0 8px' }}>
+                清空
+              </Button>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto">
