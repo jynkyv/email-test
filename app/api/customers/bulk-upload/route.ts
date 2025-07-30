@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 查找邮箱列
+    // 查找邮箱列（可选）
     const emailHeaders = ['邮箱', 'e-mail', 'メール', 'email', 'mail'];
     let emailIndex = -1;
     for (const header of emailHeaders) {
@@ -121,14 +121,6 @@ export async function POST(request: NextRequest) {
         emailIndex = headerMap.get(header)!;
         break;
       }
-    }
-    
-    if (emailIndex === -1) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'MISSING_EMAIL_COLUMN',
-        details: emailHeaders.join(', ')
-      }, { status: 400 });
     }
 
     // 查找传真列（可选）
@@ -173,50 +165,55 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // 如果没有邮箱，跳过这一行
-      if (!email) {
+      // 如果没有邮箱和传真，跳过这一行
+      if (!email && !fax) {
         continue;
       }
 
-      // 检查是否包含邮箱地址
-      const emailMatch = email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      
-      if (!emailMatch) {
-        // 如果没有找到邮箱地址，检查是否包含非邮箱内容
-        const nonEmailContent = email.replace(/\s+/g, '').toLowerCase();
-        if (nonEmailContent.includes('email') || nonEmailContent.includes('メール') || nonEmailContent.includes('mail')) {
-          hasInvalidEmail = true;
-          errors.push(`第${i + 1}行: 包含邮箱相关词汇但格式不正确，请检查数据`);
-          break;
-        } else {
+      // 如果有邮箱，验证邮箱格式
+      if (email) {
+        // 检查是否包含邮箱地址
+        const emailMatch = email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        
+        if (!emailMatch) {
+          // 如果没有找到邮箱地址，检查是否包含非邮箱内容
+          const nonEmailContent = email.replace(/\s+/g, '').toLowerCase();
+          if (nonEmailContent.includes('email') || nonEmailContent.includes('メール') || nonEmailContent.includes('mail')) {
+            hasInvalidEmail = true;
+            errors.push(`第${i + 1}行: 包含邮箱相关词汇但格式不正确，请检查数据`);
+            break;
+          } else {
+            continue;
+          }
+        }
+
+        // 提取邮箱地址
+        email = emailMatch[0].toLowerCase();
+
+        // 验证邮箱格式
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errors.push(`第${i + 1}行: 邮箱格式不正确`);
           continue;
         }
       }
 
-      // 提取邮箱地址
-      email = emailMatch[0].toLowerCase();
+      // 如果有邮箱，检查文件内是否有重复邮箱
+      if (email) {
+        if (processedEmails.has(email)) {
+          // 记录重复的行号，但跳过这条数据
+          const firstRow = processedEmails.get(email)!;
+          duplicateRows.push({
+            row: i + 1,
+            email: email,
+            firstRow: firstRow + 1
+          });
+          continue; // 跳过重复的数据，保留第一条
+        }
 
-      // 验证邮箱格式
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        errors.push(`第${i + 1}行: 邮箱格式不正确`);
-        continue;
+        // 记录邮箱和行号
+        processedEmails.set(email, i);
       }
-
-      // 检查文件内是否有重复邮箱
-      if (processedEmails.has(email)) {
-        // 记录重复的行号，但跳过这条数据
-        const firstRow = processedEmails.get(email)!;
-        duplicateRows.push({
-          row: i + 1,
-          email: email,
-          firstRow: firstRow + 1
-        });
-        continue; // 跳过重复的数据，保留第一条
-      }
-
-      // 记录邮箱和行号
-      processedEmails.set(email, i);
       
       customers.push({
         company_name: companyName,
@@ -253,38 +250,43 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 分批检查邮箱是否已存在于数据库中
-    const batchSize = 100;
+    // 分批检查邮箱是否已存在于数据库中（只检查有邮箱的客户）
+    const customersWithEmail = customers.filter(c => c.email);
     const existingEmailSet = new Set<string>();
     
-    for (let i = 0; i < customers.length; i += batchSize) {
-      const batch = customers.slice(i, i + batchSize);
-      const batchEmails = batch.map(c => c.email);
+    if (customersWithEmail.length > 0) {
+      const batchSize = 100;
       
-      const { data: existingCustomers, error: checkError } = await supabase
-        .from('customers')
-        .select('email')
-        .in('email', batchEmails);
+      for (let i = 0; i < customersWithEmail.length; i += batchSize) {
+        const batch = customersWithEmail.slice(i, i + batchSize);
+        const batchEmails = batch.map(c => c.email);
+        
+        const { data: existingCustomers, error: checkError } = await supabase
+          .from('customers')
+          .select('email')
+          .in('email', batchEmails);
 
-      if (checkError) {
-        console.error('检查现有邮箱失败:', checkError);
-        return NextResponse.json({ 
-          success: false, 
-          error: 'CHECK_EXISTING_ERROR' 
-        }, { status: 500 });
+        if (checkError) {
+          console.error('检查现有邮箱失败:', checkError);
+          return NextResponse.json({ 
+            success: false, 
+            error: 'CHECK_EXISTING_ERROR' 
+          }, { status: 500 });
+        }
+
+        existingCustomers?.forEach((c: any) => existingEmailSet.add(c.email));
       }
-
-      existingCustomers?.forEach((c: any) => existingEmailSet.add(c.email));
     }
 
     // 过滤出新客户（排除已存在于数据库中的邮箱）
-    const newCustomers = customers.filter(c => !existingEmailSet.has(c.email));
+    const newCustomers = customers.filter(c => !c.email || !existingEmailSet.has(c.email));
     const dbDuplicateCount = customers.length - newCustomers.length;
 
     if (newCustomers.length === 0) {
       return NextResponse.json({ 
         success: false, 
-        error: 'ALL_EMAILS_EXIST' 
+        error: 'ALL_EMAILS_EXIST',
+        details: '所有客户都已存在或没有有效的联系信息'
       }, { status: 400 });
     }
 

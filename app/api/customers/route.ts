@@ -188,10 +188,18 @@ export async function POST(request: NextRequest) {
     
     const { company_name, email, fax, address } = body;
 
-    if (!company_name || !email) {
-      console.log('参数验证失败:', { company_name, email });
+    if (!company_name) {
+      console.log('参数验证失败: 企业名称为空');
       return NextResponse.json(
-        { error: '企业名称和邮箱不能为空' },
+        { error: '企业名称不能为空' },
+        { status: 400 }
+      );
+    }
+
+    if (!email && !fax) {
+      console.log('参数验证失败: email和fax都为空');
+      return NextResponse.json(
+        { error: '邮箱和传真至少需要填写一个' },
         { status: 400 }
       );
     }
@@ -229,21 +237,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 检查邮箱是否已存在
-    console.log('检查邮箱是否已存在:', email);
-    const { data: existingCustomer, error: existingError } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('email', email);
+    // 检查邮箱是否已存在（只在有邮箱时检查）
+    if (email) {
+      console.log('检查邮箱是否已存在:', email);
+      const { data: existingCustomer, error: existingError } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('email', email);
 
-    console.log('邮箱检查结果:', { existingCustomer, existingError });
+      console.log('邮箱检查结果:', { existingCustomer, existingError });
 
-    if (existingCustomer && existingCustomer.length > 0) {
-      console.log('邮箱已存在');
-      return NextResponse.json(
-        { error: '该邮箱已存在' },
-        { status: 400 }
-      );
+      if (existingCustomer && existingCustomer.length > 0) {
+        console.log('邮箱已存在');
+        return NextResponse.json(
+          { error: '该邮箱已存在' },
+          { status: 400 }
+        );
+      }
     }
 
     // 创建新客户

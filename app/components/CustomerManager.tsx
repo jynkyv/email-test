@@ -134,6 +134,12 @@ export default function CustomerManager() {
   };
 
   const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
+    // 自定义验证：email和fax至少需要填写一个
+    if (!values.email && !values.fax) {
+      message.error(t('customer.emailOrFaxRequired'));
+      return;
+    }
+
     setModalLoading(true);
     try {
       const response = await fetch('/api/customers', {
@@ -617,7 +623,6 @@ export default function CustomerManager() {
             name="email"
             label={t('customer.customerEmail')}
             rules={[
-              { required: true, message: t('customer.emailRequired') },
               { type: 'email', message: t('customer.invalidEmail') }
             ]}
           >
