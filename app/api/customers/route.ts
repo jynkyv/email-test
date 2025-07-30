@@ -122,13 +122,14 @@ export async function GET(request: NextRequest) {
 
     // 应用排序和分页
     let sortedQuery = query;
-    
+
     if (sortByUnread) {
       // 邮件管理页面：按创建时间倒序，然后在内存中处理未读邮件排序
       sortedQuery = sortedQuery.order('created_at', { ascending: false });
     } else {
-      // 其他页面：按创建时间倒序
-      sortedQuery = sortedQuery.order('created_at', { ascending: false });
+      // 其他页面：按创建时间倒序，添加ID作为第二排序字段确保稳定性
+      sortedQuery = sortedQuery.order('created_at', { ascending: false })
+                              .order('id', { ascending: false });
     }
 
     // 应用分页
