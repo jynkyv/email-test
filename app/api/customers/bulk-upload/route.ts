@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
       // 如果有邮箱，检查文件内是否有重复邮箱
       if (email) {
         if (fileProcessedEmails.has(email)) {
-          // 记录重复的行号，但保留这条数据（只是移除邮箱）
+          // 记录重复的行号
           const firstRow = fileProcessedEmails.get(email)!;
           duplicateRows.push({
             row: i + 1,
@@ -228,16 +228,20 @@ export async function POST(request: NextRequest) {
             firstRow: firstRow + 1
           });
           
-          // 保留重复记录，但移除邮箱
-          customers.push({
-            company_name: companyName,
-            email: null, // 移除重复的邮箱
-            fax: fax || null,
-            address: address || null,
-            fax_status: fax ? 'inactive' : null,
-            created_by: userId,
-            group_id: groupId || null
-          });
+          // 检查移除邮箱后是否还有有效联系信息
+          if (fax) {
+            // 有传真，保留记录但移除邮箱
+            customers.push({
+              company_name: companyName,
+              email: null, // 移除重复的邮箱
+              fax: fax,
+              address: address || null,
+              fax_status: 'inactive',
+              created_by: userId,
+              group_id: groupId || null
+            });
+          }
+          // 如果没有传真，跳过这条记录（不添加到customers数组中）
           continue;
         }
 
@@ -353,29 +357,29 @@ export async function POST(request: NextRequest) {
         });
         continue;
       } else if (hasEmailConflict && !hasFaxConflict) {
-        // 只有邮箱重复，保留记录但移除邮箱
-        processedCustomers.push({
-          company_name: customer.company_name,
-          email: null, // 移除重复的邮箱
-          fax: customer.fax || null,
-          address: customer.address || null,
-          fax_status: customer.fax ? 'inactive' : null,
-          created_by: userId,
-          group_id: groupId || null
-        });
-      } else if (!hasEmailConflict && hasFaxConflict) {
-        // 只有传真重复，保留记录但移除传真
-        processedCustomers.push({
-          company_name: customer.company_name,
-          email: customer.email || null,
-          fax: null, // 移除重复的传真
-          address: customer.address || null,
-          fax_status: null,
-          created_by: userId,
-          group_id: groupId || null
-        });
+        // 只有邮箱重复，检查移除邮箱后是否还有有效联系信息
+        if (customer.fax) {
+          // 有传真，保留记录但移除邮箱
+          processedCustomers.push({
+            company_name: customer.company_name,
+            email: null, // 移除重复的邮箱
+            fax: customer.fax,
+            address: customer.address || null,
+            fax_status: 'inactive',
+            created_by: userId,
+            group_id: groupId || null
+          });
+        } else {
+          // 没有传真，移除邮箱后就没有有效联系信息了，跳过这条记录
+          skippedCustomers.push({
+            ...customer,
+            reason: 'email_duplicate_no_fax',
+            details: `邮箱重复且没有传真，无法保留有效联系信息`
+          });
+          continue;
+        }
       } else {
-        // 没有冲突，保留完整记录
+        // 传真重复或没有冲突，都保留完整记录（传真重复时不移除传真）
         processedCustomers.push({
           company_name: customer.company_name,
           email: customer.email || null,
@@ -414,22 +418,25 @@ export async function POST(request: NextRequest) {
         });
         continue;
       } else if (emailConflict) {
-        // 文件内邮箱重复，移除邮箱
-        finalCustomers.push({
-          ...customer,
-          email: null
-        });
-        if (customer.fax) finalProcessedFaxes.add(customer.fax);
-      } else if (faxConflict) {
-        // 文件内传真重复，移除传真
-        finalCustomers.push({
-          ...customer,
-          fax: null,
-          fax_status: null
-        });
-        if (customer.email) finalProcessedEmails.add(customer.email);
+        // 文件内邮箱重复，检查移除邮箱后是否还有有效联系信息
+        if (customer.fax) {
+          // 有传真，移除邮箱但保留记录
+          finalCustomers.push({
+            ...customer,
+            email: null
+          });
+          finalProcessedFaxes.add(customer.fax);
+        } else {
+          // 没有传真，移除邮箱后就没有有效联系信息了，跳过这条记录
+          skippedCustomers.push({
+            ...customer,
+            reason: 'file_email_duplicate_no_fax',
+            details: `文件内邮箱重复且没有传真，无法保留有效联系信息`
+          });
+          continue;
+        }
       } else {
-        // 没有冲突
+        // 传真重复或没有冲突，都保留完整记录（传真重复时不移除传真）
         finalCustomers.push(customer);
         if (customer.email) finalProcessedEmails.add(customer.email);
         if (customer.fax) finalProcessedFaxes.add(customer.fax);
