@@ -107,6 +107,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         pageSize: size.toString(),
         sortByUnread: 'true',
         hasEmailOnly: 'true', // 只获取有邮箱的客户
+        subscriptionStatus: 'subscribed', // 只获取已订阅的客户（排除已退订的）
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });
