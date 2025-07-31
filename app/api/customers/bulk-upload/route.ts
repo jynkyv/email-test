@@ -621,10 +621,10 @@ export async function POST(request: NextRequest) {
     
     // 添加插入错误信息
     if (insertErrors.length > 0) {
-      const errorTypes = insertErrors.reduce((acc, error) => {
+      const errorTypes = insertErrors.reduce((acc: Record<string, number>, error) => {
         acc[error.type] = (acc[error.type] || 0) + 1;
         return acc;
-      }, {});
+      }, {} as Record<string, number>);
       
       const errorDetails = [];
       if (errorTypes.email_duplicate) {
