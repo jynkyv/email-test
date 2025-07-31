@@ -35,9 +35,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 验证文件大小（1MB限制）
-    if (file.size > 1024 * 1024) {
-      console.log(`❌ 文件过大: ${file.size} bytes > 1MB`);
+    // 验证文件大小（10MB限制）
+    if (file.size > 10 * 1024 * 1024) {
+      console.log(`❌ 文件过大: ${file.size} bytes > 10MB`);
       return NextResponse.json({ 
         success: false, 
         error: 'FILE_TOO_LARGE' 
