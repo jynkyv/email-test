@@ -220,14 +220,25 @@ export async function POST(request: NextRequest) {
       // 如果有邮箱，检查文件内是否有重复邮箱
       if (email) {
         if (processedEmails.has(email)) {
-          // 记录重复的行号，但跳过这条数据
+          // 记录重复的行号，但保留这条数据（只是移除邮箱）
           const firstRow = processedEmails.get(email)!;
           duplicateRows.push({
             row: i + 1,
             email: email,
             firstRow: firstRow + 1
           });
-          continue; // 跳过重复的数据，保留第一条
+          
+          // 保留重复记录，但移除邮箱
+          customers.push({
+            company_name: companyName,
+            email: null, // 移除重复的邮箱
+            fax: fax || null,
+            address: address || null,
+            fax_status: fax ? 'inactive' : null,
+            created_by: userId,
+            group_id: groupId || null
+          });
+          continue;
         }
 
         // 记录邮箱和行号
@@ -239,7 +250,7 @@ export async function POST(request: NextRequest) {
         email: email,
         fax: fax || null,
         address: address || null,
-        fax_status: fax ? 'inactive' : null, // 如果有传真号码，默认设置为未发送状态
+        fax_status: fax ? 'inactive' : null,
         created_by: userId,
         group_id: groupId || null
       });
@@ -309,23 +320,32 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 插入新客户
-    const { data: insertedCustomers, error: insertError } = await supabase
-      .from('customers')
-      .insert(newCustomers)
-      .select();
+    // 分批插入新客户（避免内存溢出）
+    const batchSize = 50; // 减小批次大小
+    let totalInserted = 0;
+    
+    for (let i = 0; i < newCustomers.length; i += batchSize) {
+      const batch = newCustomers.slice(i, i + batchSize);
+      
+      const { data: insertedBatch, error: insertError } = await supabase
+        .from('customers')
+        .insert(batch)
+        .select();
 
-    if (insertError) {
-      console.error('批量插入客户失败:', insertError);
-      return NextResponse.json({ 
-        success: false, 
-        error: 'INSERT_ERROR',
-        details: insertError.message
-      }, { status: 500 });
+      if (insertError) {
+        console.error('批量插入客户失败:', insertError);
+        return NextResponse.json({ 
+          success: false, 
+          error: 'INSERT_ERROR',
+          details: insertError.message
+        }, { status: 500 });
+      }
+
+      totalInserted += insertedBatch?.length || 0;
     }
 
     const fileDuplicateCount = duplicateRows.length;
-    const importedCount = insertedCustomers?.length || 0;
+    const importedCount = totalInserted;
     const totalSkipped = dbDuplicateCount + fileDuplicateCount;
 
     // 构建详细的结果信息
