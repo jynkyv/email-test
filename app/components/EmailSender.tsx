@@ -19,14 +19,16 @@ import {
   Avatar,
   Spin,
   DatePicker,
-  Select
+  Select,
+  Tooltip
 } from 'antd';
 import { 
   SendOutlined, 
   UserOutlined, 
   FileTextOutlined,
   TeamOutlined,
-  CloseOutlined
+  CloseOutlined,
+  CodeOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -358,7 +360,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     content: string;
   }) => {
     if (!values.subject.trim() || !values.content.trim()) {
-      message.error(t('email.subjectRequired') + ' ' + t('email.and') + ' ' + t('email.contentRequired'));
+      message.error(t('email.subjectRequired') + ' ' + t('email.subjectRequired') + ' ' + t('email.contentRequired'));
       return;
     }
 
@@ -379,8 +381,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
-    // 将纯文本内容转换为HTML格式，保持换行
-    const htmlContent = textToHtml(values.content);
+    // 智能处理内容：如果包含HTML标签，直接使用；否则转换为HTML
+    let htmlContent;
+    if (values.content.includes('<') && values.content.includes('>')) {
+      // 检测到HTML标签，直接使用
+      htmlContent = values.content;
+    } else {
+      // 纯文本，转换为HTML格式
+      htmlContent = textToHtml(values.content);
+    }
 
     try {
       // 提交审核申请
@@ -392,7 +401,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           },
           body: JSON.stringify({
             subject: values.subject,
-            content: htmlContent, // 使用转换后的HTML内容
+            content: htmlContent,
             recipients: recipients
           }),
         });
@@ -500,15 +509,27 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
           <Form.Item
             name="content"
-            label={t('email.emailContent')}
+            label={
+              <div className="flex items-center justify-between">
+                <span>{t('email.emailContent')}</span>
+                <div className="flex items-center gap-2">
+                  <Tooltip title={t('email.htmlSupported')}>
+                    <CodeOutlined className="text-blue-500" />
+                  </Tooltip>
+                  <span className="text-xs text-gray-500">
+                    HTML支持
+                  </span>
+                </div>
+              </div>
+            }
             rules={[{ required: true, message: t('email.contentRequired') }]}
             className="flex-1"
           >
             <TextArea
               rows={12}
-              placeholder={t('email.contentPlaceholder')}
+              placeholder={t('email.contentPlaceholderWithHtml')}
               showCount
-              maxLength={5000}
+              maxLength={10000}
             />
           </Form.Item>
         </div>
