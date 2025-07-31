@@ -235,7 +235,7 @@
     "invalidFax": "请输入有效的传真号码",
     "faxExists": "该传真号码已存在",
     "emailOrFaxRequired": "邮箱和传真至少需要填写一个",
-    "excelColumnFax": "传真/FAX/fax - 客户的传真号码",
+    "excelColumnFax": "FAX/FAX/fax - 客户的传真号码",
     "excelColumnAddress": "地址/Address/address - 客户的地址信息",
     "showFaxOnly": "只显示有传真的客户"
   },

@@ -3,9 +3,9 @@ import * as XLSX from 'xlsx';
 
 export async function GET() {
   try {
-    // 创建示例数据
+    // 创建示例数据 - 使用日语表头，传真改为FAX
     const templateData = [
-      ['会社名', 'E-Mail', '传真', '地址'],
+      ['会社名', 'E-Mail', 'FAX', '住所'],
       ['正仙法人乙仙会', 'Eメール isuro@micta.ocn.ne.jp', '03-1234-5678', '东京都新宿区西新宿2-8-1'],
       ['示例公司2', 'Eメール example2@company.com', '03-2345-6789', '大阪府大阪市北区梅田1-1-1'],
       ['示例公司3', '', '03-3456-7890', '神奈川县横滨市西区みなとみらい2-2-1'],
@@ -20,12 +20,12 @@ export async function GET() {
     worksheet['!cols'] = [
       { width: 20 }, // 公司名称列
       { width: 25 }, // 邮箱列
-      { width: 15 }, // 传真列
+      { width: 15 }, // FAX列
       { width: 30 }  // 地址列
     ];
 
-    // 添加工作表到工作簿
-    XLSX.utils.book_append_sheet(workbook, worksheet, '客户导入模板');
+    // 添加工作表到工作簿 - 使用日语工作表名称
+    XLSX.utils.book_append_sheet(workbook, worksheet, '顧客インポートテンプレート');
 
     // 生成Excel文件
     const excelBuffer = XLSX.write(workbook, { 
