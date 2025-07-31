@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function UnsubscribePage() {
+function UnsubscribeContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
@@ -166,5 +166,28 @@ export default function UnsubscribePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 加载状态组件
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-600">正在加载...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 主组件，使用 Suspense 包装
+export default function UnsubscribePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <UnsubscribeContent />
+    </Suspense>
   );
 } 
