@@ -167,7 +167,6 @@ export async function POST(request: NextRequest) {
           .replace(/^(fax|FAX|Fax|传真|ＦＡＸ|Ｆａｘ|fax\s*number|FAX\s*NUMBER|Fax\s*Number|传真号码|ＦＡＸ番号)\s*[:：]?\s*/gi, '') // 修复：添加可选的冒号
           .replace(/^(fax|FAX|Fax|传真|ＦＡＸ|Ｆａｘ)\s*/gi, '') // 修复：移除空格要求
           .replace(/^[+＋]\s*/, '') // 移除加号前缀
-          .replace(/^[0０]\s*/, '') // 移除0前缀
           .replace(/^[8８][1１][-－]\s*/, '') // 移除81-前缀
           .replace(/^[8８][1１]\s*/, '') // 移除81前缀
           .trim();
