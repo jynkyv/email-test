@@ -216,10 +216,10 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 如果有邮箱，检查文件内是否有重复邮箱
+      // 修复：移除第一层的重复处理逻辑，只记录重复信息
       if (email) {
         if (fileProcessedEmails.has(email)) {
-          // 记录重复的行号
+          // 记录重复的行号，但不创建新记录
           const firstRow = fileProcessedEmails.get(email)!;
           duplicateRows.push({
             row: i + 1,
@@ -227,20 +227,7 @@ export async function POST(request: NextRequest) {
             firstRow: firstRow + 1
           });
           
-          // 检查移除邮箱后是否还有有效联系信息
-          if (fax) {
-            // 有传真，保留记录但移除邮箱
-            customers.push({
-              company_name: companyName,
-              email: null, // 移除重复的邮箱
-              fax: fax,
-              address: address || null,
-              fax_status: 'inactive',
-              created_by: userId,
-              group_id: groupId || null
-            });
-          }
-          // 如果没有传真，跳过这条记录（不添加到customers数组中）
+          // 跳过重复记录，不添加到customers数组
           continue;
         }
 
@@ -248,6 +235,7 @@ export async function POST(request: NextRequest) {
         fileProcessedEmails.set(email, i);
       }
       
+      // 正常添加记录
       customers.push({
         company_name: companyName,
         email: email,
