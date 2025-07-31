@@ -512,13 +512,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             label={
               <div className="flex items-center justify-between">
                 <span>{t('email.emailContent')}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-2">
                   <Tooltip title={t('email.htmlSupported')}>
                     <CodeOutlined className="text-blue-500" />
                   </Tooltip>
-                  <span className="text-xs text-gray-500">
-                    HTML支持
-                  </span>
                 </div>
               </div>
             }

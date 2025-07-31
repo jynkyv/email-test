@@ -650,7 +650,7 @@ export default function ApprovalsPage() {
                           <CodeOutlined className="text-blue-500" />
                         </Tooltip>
                         <span className="text-xs text-gray-500">
-                          HTML支持
+                          {t('email.htmlSupportText')}
                         </span>
                       </div>
                     </div>
