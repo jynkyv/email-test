@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     const customers = [];
     const errors = [];
     let hasInvalidEmail = false;
-    const processedEmails = new Map<string, number>(); // 邮箱 -> 行号，用于记录重复
+    const fileProcessedEmails = new Map<string, number>(); // 邮箱 -> 行号，用于记录文件内重复
     const duplicateRows = []; // 记录重复的行号
     
     for (let i = 1; i < jsonData.length; i++) {
@@ -219,9 +219,9 @@ export async function POST(request: NextRequest) {
 
       // 如果有邮箱，检查文件内是否有重复邮箱
       if (email) {
-        if (processedEmails.has(email)) {
+        if (fileProcessedEmails.has(email)) {
           // 记录重复的行号，但保留这条数据（只是移除邮箱）
-          const firstRow = processedEmails.get(email)!;
+          const firstRow = fileProcessedEmails.get(email)!;
           duplicateRows.push({
             row: i + 1,
             email: email,
@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 记录邮箱和行号
-        processedEmails.set(email, i);
+        fileProcessedEmails.set(email, i);
       }
       
       customers.push({
@@ -280,10 +280,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 分批检查邮箱是否已存在于数据库中（只检查有邮箱的客户）
+    // 分批检查邮箱和传真是否已存在于数据库中
     const customersWithEmail = customers.filter(c => c.email);
+    const customersWithFax = customers.filter(c => c.fax);
     const existingEmailSet = new Set<string>();
+    const existingFaxSet = new Set<string>();
     
+    // 检查现有邮箱
     if (customersWithEmail.length > 0) {
       const batchSize = 100;
       
@@ -308,11 +311,84 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 过滤出新客户（排除已存在于数据库中的邮箱）
-    const newCustomers = customers.filter(c => !c.email || !existingEmailSet.has(c.email));
-    const dbDuplicateCount = customers.length - newCustomers.length;
+    // 检查现有传真
+    if (customersWithFax.length > 0) {
+      const batchSize = 100;
+      
+      for (let i = 0; i < customersWithFax.length; i += batchSize) {
+        const batch = customersWithFax.slice(i, i + batchSize);
+        const batchFaxes = batch.map(c => c.fax);
+        
+        const { data: existingCustomers, error: checkError } = await supabase
+          .from('customers')
+          .select('fax')
+          .in('fax', batchFaxes);
 
-    if (newCustomers.length === 0) {
+        if (checkError) {
+          console.error('检查现有传真失败:', checkError);
+          return NextResponse.json({ 
+            success: false, 
+            error: 'CHECK_EXISTING_ERROR' 
+          }, { status: 500 });
+        }
+
+        existingCustomers?.forEach((c: any) => existingFaxSet.add(c.fax));
+      }
+    }
+
+    // 智能处理重复数据
+    const processedCustomers = [];
+    const skippedCustomers = [];
+    
+    for (const customer of customers) {
+      const hasEmailConflict = customer.email && existingEmailSet.has(customer.email);
+      const hasFaxConflict = customer.fax && existingFaxSet.has(customer.fax);
+      
+      if (hasEmailConflict && hasFaxConflict) {
+        // 邮箱和传真都重复，完全跳过这条记录
+        skippedCustomers.push({
+          ...customer,
+          reason: 'email_and_fax_duplicate',
+          details: `邮箱和传真都已存在`
+        });
+        continue;
+      } else if (hasEmailConflict && !hasFaxConflict) {
+        // 只有邮箱重复，保留记录但移除邮箱
+        processedCustomers.push({
+          company_name: customer.company_name,
+          email: null, // 移除重复的邮箱
+          fax: customer.fax || null,
+          address: customer.address || null,
+          fax_status: customer.fax ? 'inactive' : null,
+          created_by: userId,
+          group_id: groupId || null
+        });
+      } else if (!hasEmailConflict && hasFaxConflict) {
+        // 只有传真重复，保留记录但移除传真
+        processedCustomers.push({
+          company_name: customer.company_name,
+          email: customer.email || null,
+          fax: null, // 移除重复的传真
+          address: customer.address || null,
+          fax_status: null,
+          created_by: userId,
+          group_id: groupId || null
+        });
+      } else {
+        // 没有冲突，保留完整记录
+        processedCustomers.push({
+          company_name: customer.company_name,
+          email: customer.email || null,
+          fax: customer.fax || null,
+          address: customer.address || null,
+          fax_status: customer.fax ? 'inactive' : null,
+          created_by: userId,
+          group_id: groupId || null
+        });
+      }
+    }
+
+    if (processedCustomers.length === 0) {
       return NextResponse.json({ 
         success: false, 
         error: 'ALL_EMAILS_EXIST',
@@ -320,12 +396,60 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 分批插入新客户（避免内存溢出）
-    const batchSize = 50; // 减小批次大小
+    // 再次检查处理后的客户是否有重复（防止文件内重复）
+    const finalCustomers = [];
+    const finalProcessedEmails = new Set<string>();
+    const finalProcessedFaxes = new Set<string>();
+    
+    for (const customer of processedCustomers) {
+      const emailConflict = customer.email && finalProcessedEmails.has(customer.email);
+      const faxConflict = customer.fax && finalProcessedFaxes.has(customer.fax);
+      
+      if (emailConflict && faxConflict) {
+        // 文件内邮箱和传真都重复，跳过
+        skippedCustomers.push({
+          ...customer,
+          reason: 'file_internal_duplicate',
+          details: `文件内邮箱和传真重复`
+        });
+        continue;
+      } else if (emailConflict) {
+        // 文件内邮箱重复，移除邮箱
+        finalCustomers.push({
+          ...customer,
+          email: null
+        });
+        if (customer.fax) finalProcessedFaxes.add(customer.fax);
+      } else if (faxConflict) {
+        // 文件内传真重复，移除传真
+        finalCustomers.push({
+          ...customer,
+          fax: null,
+          fax_status: null
+        });
+        if (customer.email) finalProcessedEmails.add(customer.email);
+      } else {
+        // 没有冲突
+        finalCustomers.push(customer);
+        if (customer.email) finalProcessedEmails.add(customer.email);
+        if (customer.fax) finalProcessedFaxes.add(customer.fax);
+      }
+    }
+
+    if (finalCustomers.length === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'NO_VALID_DATA',
+        details: '处理后没有有效的客户数据'
+      }, { status: 400 });
+    }
+
+    // 分批插入最终处理后的客户
+    const batchSize = 50;
     let totalInserted = 0;
     
-    for (let i = 0; i < newCustomers.length; i += batchSize) {
-      const batch = newCustomers.slice(i, i + batchSize);
+    for (let i = 0; i < finalCustomers.length; i += batchSize) {
+      const batch = finalCustomers.slice(i, i + batchSize);
       
       const { data: insertedBatch, error: insertError } = await supabase
         .from('customers')
@@ -345,6 +469,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileDuplicateCount = duplicateRows.length;
+    const dbDuplicateCount = skippedCustomers.length;
     const importedCount = totalInserted;
     const totalSkipped = dbDuplicateCount + fileDuplicateCount;
 
@@ -357,11 +482,11 @@ export async function POST(request: NextRequest) {
     }
     
     if (dbDuplicateCount > 0) {
-      skipDetails.push(`数据库已存在: ${dbDuplicateCount} 个`);
+      skipDetails.push(`数据库重复: ${dbDuplicateCount} 个`);
     }
     
     if (skipDetails.length > 0) {
-      resultMessage += `，跳过 ${totalSkipped} 个重复邮箱 (${skipDetails.join(', ')})`;
+      resultMessage += `，跳过 ${totalSkipped} 个重复记录 (${skipDetails.join(', ')})`;
     }
 
     return NextResponse.json({
@@ -371,6 +496,7 @@ export async function POST(request: NextRequest) {
       dbDuplicateCount,
       totalSkipped,
       duplicateRows, // 返回重复行的详细信息
+      skippedCustomers, // 返回被跳过的客户信息
       message: resultMessage
     });
 
