@@ -16,7 +16,7 @@ function UnsubscribeContent() {
       handleUnsubscribe(emailParam);
     } else {
       setStatus('error');
-      setMessage('缺少邮箱参数');
+      setMessage('メールアドレスパラメータが不足しています');
     }
   }, [searchParams]);
 
@@ -29,7 +29,7 @@ function UnsubscribeContent() {
         },
         body: JSON.stringify({
           email: emailAddress,
-          reason: '通过邮件链接退订'
+          reason: 'メールリンクから配信停止'
         }),
       });
 
@@ -38,17 +38,17 @@ function UnsubscribeContent() {
       if (data.success) {
         setStatus('success');
         if (data.alreadyUnsubscribed) {
-          setMessage('该邮箱已经退订');
+          setMessage('このメールアドレスは既に配信停止されています');
         } else {
-          setMessage('退订成功');
+          setMessage('配信停止が完了しました');
         }
       } else {
         setStatus('error');
-        setMessage(data.message || '退订失败');
+        setMessage(data.message || '配信停止に失敗しました');
       }
     } catch (error) {
       setStatus('error');
-      setMessage('退订处理失败');
+      setMessage('配信停止の処理に失敗しました');
     }
   };
 
@@ -70,14 +70,14 @@ function UnsubscribeContent() {
 
       if (data.success) {
         setStatus('success');
-        setMessage('重新订阅成功');
+        setMessage('再購読が完了しました');
       } else {
         setStatus('error');
-        setMessage(data.message || '重新订阅失败');
+        setMessage(data.message || '再購読に失敗しました');
       }
     } catch (error) {
       setStatus('error');
-      setMessage('重新订阅处理失败');
+      setMessage('再購読の処理に失敗しました');
     }
   };
 
@@ -86,14 +86,14 @@ function UnsubscribeContent() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            {status === 'loading' && '处理中...'}
-            {status === 'success' && '退订成功'}
-            {status === 'error' && '处理失败'}
+            {status === 'loading' && '処理中...'}
+            {status === 'success' && '配信停止完了'}
+            {status === 'error' && '処理失敗'}
           </h2>
           
           {email && (
             <p className="mt-2 text-sm text-gray-600">
-              邮箱地址: {email}
+              メールアドレス: {email}
             </p>
           )}
         </div>
@@ -102,7 +102,7 @@ function UnsubscribeContent() {
           {status === 'loading' && (
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-600">正在处理您的退订请求...</p>
+              <p className="mt-2 text-sm text-gray-600">配信停止リクエストを処理中...</p>
             </div>
           )}
 
@@ -118,14 +118,14 @@ function UnsubscribeContent() {
                   {message}
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">
-                  您将不再收到我们的邮件。如果您改变主意，可以随时重新订阅。
+                  今後、当社からのメールは配信されません。ご希望がございましたら、いつでも再購読いただけます。
                 </p>
                 <div className="mt-6">
                   <button
                     onClick={handleResubscribe}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    重新订阅
+                    再購読する
                   </button>
                 </div>
               </div>
@@ -141,7 +141,7 @@ function UnsubscribeContent() {
                   </svg>
                 </div>
                 <h3 className="mt-4 text-lg font-medium text-gray-900">
-                  处理失败
+                  処理失敗
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">
                   {message}
@@ -151,7 +151,7 @@ function UnsubscribeContent() {
                     onClick={() => window.location.reload()}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    重试
+                    再試行
                   </button>
                 </div>
               </div>
@@ -161,7 +161,7 @@ function UnsubscribeContent() {
 
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            如有问题，请联系我们的客服团队
+            ご不明な点がございましたら、カスタマーサポートまでお問い合わせください
           </p>
         </div>
       </div>
@@ -169,21 +169,21 @@ function UnsubscribeContent() {
   );
 }
 
-// 加载状态组件
+// ローディング状態コンポーネント
 function LoadingFallback() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">正在加载...</p>
+          <p className="mt-2 text-sm text-gray-600">読み込み中...</p>
         </div>
       </div>
     </div>
   );
 }
 
-// 主组件，使用 Suspense 包装
+// メインコンポーネント、Suspenseでラップ
 export default function UnsubscribePage() {
   return (
     <Suspense fallback={<LoadingFallback />}>
