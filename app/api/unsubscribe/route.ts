@@ -133,6 +133,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 同时更新客户表的unsubscribe字段
+    const { error: updateError } = await supabaseAdmin
+      .from('customers')
+      .update({
+        unsubscribe: true,
+        unsubscribe_at: new Date().toISOString()
+      })
+      .eq('email', email.toLowerCase());
+
+    if (updateError) {
+      console.error('❌ 更新客户退订状态失败:', updateError);
+      // 不返回错误，因为退订记录已经成功创建
+    }
+
     console.log('✅ 退订记录成功:', unsubscription.id);
 
     return NextResponse.json({
@@ -308,6 +322,20 @@ export async function GET(request: NextRequest) {
         { success: false, message: '退订处理失败' },
         { status: 500 }
       );
+    }
+
+    // 同时更新客户表的unsubscribe字段
+    const { error: updateError } = await supabaseAdmin
+      .from('customers')
+      .update({
+        unsubscribe: true,
+        unsubscribe_at: new Date().toISOString()
+      })
+      .eq('email', email.toLowerCase());
+
+    if (updateError) {
+      console.error('❌ 更新客户退订状态失败:', updateError);
+      // 不返回错误，因为退订记录已经成功创建
     }
 
     console.log('✅ 退订记录成功:', unsubscription.id);

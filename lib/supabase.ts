@@ -25,6 +25,8 @@ export interface Customer {
   fax?: string;
   address?: string;
   fax_status?: 'active' | 'inactive';
+  unsubscribe?: boolean;
+  unsubscribe_at?: string;
   created_by: string;
   created_at: string;
   updated_at: string;

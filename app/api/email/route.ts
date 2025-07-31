@@ -51,11 +51,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 检查收件人是否已退订
+    const { data: unsubscribedEmails, error: unsubscribeError } = await supabase
+      .from('customers')
+      .select('email')
+      .in('email', recipients)
+      .eq('unsubscribe', true);
+
+    if (unsubscribeError) {
+      console.error('检查退订状态失败:', unsubscribeError);
+      return NextResponse.json(
+        { error: '检查退订状态失败' },
+        { status: 500 }
+      );
+    }
+
+    // 过滤掉已退订的邮箱
+    const unsubscribedEmailList = unsubscribedEmails?.map(c => c.email) || [];
+    const validRecipients = recipients.filter(email => !unsubscribedEmailList.includes(email));
+
+    if (validRecipients.length === 0) {
+      return NextResponse.json(
+        { error: '所有收件人都已退订' },
+        { status: 400 }
+      );
+    }
+
+    // 如果有退订的邮箱，记录日志
+    if (unsubscribedEmailList.length > 0) {
+      console.log('跳过已退订的邮箱:', unsubscribedEmailList);
+    }
+
     // 如果是群发模式，逐个发送给每个收件人
-    if (isBulk && recipients.length > 1) {
+    if (isBulk && validRecipients.length > 1) {
       const results = [];
       
-      for (const recipient of recipients) {
+      for (const recipient of validRecipients) {
         try {
           const result = await sendSingleEmail(recipient, subject, html);
           results.push({
@@ -85,7 +116,7 @@ export async function POST(request: NextRequest) {
         await supabase
           .from('email_logs')
           .insert({
-            to: recipients.join(', '),
+            to: validRecipients.join(', '),
             subject,
             content: html,
             sent_by: userData.id,
@@ -123,7 +154,7 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // 单发模式
-      const recipient = recipients[0];
+      const recipient = validRecipients[0];
       const result = await sendSingleEmail(recipient, subject, html);
       
       // 记录发送的邮件到customer_emails表

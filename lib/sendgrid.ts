@@ -18,9 +18,26 @@ function getFromName(): string {
   return process.env.SENDGRID_FROM_NAME || 'Email System';
 }
 
+// 获取应用基础URL
+function getBaseUrl(): string {
+  // 优先使用环境变量
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+  
+  // 如果是开发环境
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000';
+  }
+  
+  // 生产环境默认使用Vercel域名
+  return 'https://email-test-phi.vercel.app';
+}
+
 // 生成邮件页脚（包含退订链接）
 function generateEmailFooter(email: string): string {
-  const unsubscribeUrl = 'https://www.familyorjp.com/'
+  const baseUrl = getBaseUrl();
+  const unsubscribeUrl = `${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}`
   
   return `
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
@@ -98,7 +115,7 @@ export async function sendSingleEmail(to: string, subject: string, html: string)
       },
       subject: subject,
       html: fullHtml,
-      text: text + '\n\n---\nIf you no longer wish to receive our emails, please visit the following link to unsubscribe:\n' + 'https://www.familyorjp.com/' + '\nThis email was sent to: ' + to, // 添加纯文本版本的退订信息
+      text: text + '\n\n---\nIf you no longer wish to receive our emails, please visit the following link to unsubscribe:\n' + `${getBaseUrl()}/unsubscribe?email=${encodeURIComponent(to)}` + '\nThis email was sent to: ' + to, // 添加纯文本版本的退订信息
       trackingSettings: {
         clickTracking: {
           enable: false,

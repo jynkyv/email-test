@@ -30,6 +30,8 @@ interface Customer {
   fax?: string;
   address?: string;
   fax_status?: 'active' | 'inactive';
+  unsubscribe?: boolean; // 订阅状态：true表示已退订，false表示订阅中
+  unsubscribe_at?: string; // 退订时间
   created_at: string;
   has_unread_emails?: boolean; // 添加未读邮件标记
 }
@@ -93,6 +95,9 @@ export default function CustomerManager() {
   // 新增：传真筛选状态
   const [showFaxOnly, setShowFaxOnly] = useState(false);
   
+  // 新增：订阅状态筛选
+  const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'unsubscribed'>('all');
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -106,8 +111,8 @@ export default function CustomerManager() {
     fetchCustomers();
   }, []);
 
-  // 新增：带传真筛选的获取客户函数
-  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, searchFieldParam?: string, searchValueParam?: string) => {
+  // 新增：带筛选的获取客户函数
+  const fetchCustomersWithFilters = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, subscriptionFilterParam = subscriptionFilter, searchFieldParam?: string, searchValueParam?: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -117,12 +122,17 @@ export default function CustomerManager() {
         searchValue: searchValueParam || searchValue
       });
       
-      // 添加传真筛选参数 - 使用传入的 faxOnly 参数，而不是状态
+      // 添加传真筛选参数
       if (faxOnly) {
         params.append('hasFaxOnly', 'true');
       }
       
-      console.log('Fetch customers with fax filter:', { faxOnly, params: params.toString() });
+      // 添加订阅状态筛选参数
+      if (subscriptionFilterParam !== 'all') {
+        params.append('subscriptionStatus', subscriptionFilterParam);
+      }
+      
+      console.log('Fetch customers with filters:', { faxOnly, subscriptionFilterParam, params: params.toString() });
       
       const response = await fetch(`/api/customers?${params}`, {
         headers: {
@@ -147,7 +157,7 @@ export default function CustomerManager() {
 
   // 修改原有的fetchCustomers函数，使用新的函数
   const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
-    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, searchFieldParam, searchValueParam);
+    return fetchCustomersWithFilters(page, size, showFaxOnly, subscriptionFilter, searchFieldParam, searchValueParam);
   };
 
   const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
@@ -355,7 +365,7 @@ export default function CustomerManager() {
     setShowFaxOnly(checked);
     setCurrentPage(1);
     // 直接传递checked参数，而不是依赖状态
-    fetchCustomersWithFaxFilter(1, pageSize, checked);
+    fetchCustomersWithFilters(1, pageSize, checked, subscriptionFilter);
   };
 
 
@@ -372,15 +382,16 @@ export default function CustomerManager() {
     // 当搜索状态发生变化时，自动获取数据
     // 注意：移除 searchField 依赖，避免切换搜索字段时自动刷新
     if (!loading) {
-      fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, searchField, searchValue);
+      fetchCustomersWithFilters(currentPage, pageSize, showFaxOnly, subscriptionFilter, searchField, searchValue);
     }
-  }, [searchValue, showFaxOnly, currentPage, pageSize]); // 移除 searchField 依赖
+  }, [searchValue, showFaxOnly, subscriptionFilter, currentPage, pageSize]); // 移除 searchField 依赖
 
   // 简化清空搜索函数
   const handleClearSearch = () => {
     setSearchField('company_name');
     setSearchValue('');
     setShowFaxOnly(false);
+    setSubscriptionFilter('all');
     searchForm.resetFields();
     setCurrentPage(1);
     // 不需要手动调用 fetchCustomers，useEffect 会自动处理
@@ -462,6 +473,35 @@ export default function CustomerManager() {
         return (
           <span className="text-green-600 font-medium">{t('customer.faxStatusActive')}</span>
         );
+      },
+    },
+    {
+      title: t('customer.subscriptionStatus'),
+      dataIndex: 'unsubscribe',
+      key: 'unsubscribe',
+      render: (unsubscribe: boolean, record: Customer) => {
+        if (unsubscribe) {
+          return (
+            <Space>
+              <Badge status="error" />
+              <span className="text-red-600 font-medium">{t('customer.unsubscribed')}</span>
+              {record.unsubscribe_at && (
+                <Tooltip title={new Date(record.unsubscribe_at).toLocaleString()}>
+                  <span className="text-xs text-gray-500">
+                    ({new Date(record.unsubscribe_at).toLocaleDateString()})
+                  </span>
+                </Tooltip>
+              )}
+            </Space>
+          );
+        } else {
+          return (
+            <Space>
+              <Badge status="success" />
+              <span className="text-green-600 font-medium">{t('customer.subscribed')}</span>
+            </Space>
+          );
+        }
       },
     },
     {
@@ -584,13 +624,32 @@ export default function CustomerManager() {
           </Form>
           
           {/* 新增：传真筛选复选框 */}
-          <div className="mt-4">
+          <div className="mt-4 flex items-center gap-6">
             <Checkbox
               checked={showFaxOnly}
               onChange={(e) => handleFaxOnlyChange(e.target.checked)}
             >
               {t('customer.showFaxOnly')}
             </Checkbox>
+            
+            {/* 新增：订阅状态筛选 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{t('customer.subscriptionStatus')}:</span>
+              <Select
+                value={subscriptionFilter}
+                onChange={(value) => {
+                  setSubscriptionFilter(value);
+                  setCurrentPage(1);
+                  fetchCustomersWithFilters(1, pageSize, showFaxOnly, value);
+                }}
+                style={{ width: 120 }}
+                options={[
+                  { label: t('common.all'), value: 'all' },
+                  { label: t('customer.subscribed'), value: 'subscribed' },
+                  { label: t('customer.unsubscribed'), value: 'unsubscribed' },
+                ]}
+              />
+            </div>
           </div>
         </div>
 
