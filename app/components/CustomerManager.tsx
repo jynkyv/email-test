@@ -446,7 +446,7 @@ export default function CustomerManager() {
         if (!record.fax) return '-';
         
         if (status === 'inactive' || !status) {
-          return userRole === 'admin' ? (
+          return (userRole === 'admin' || userRole === 'employee') ? (
             <Button
               type="primary"
               size="small"

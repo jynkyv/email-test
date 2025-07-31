@@ -41,10 +41,10 @@ export async function PUT(
       );
     }
 
-    // 只有管理员可以修改传真状态
-    if (userData.role !== 'admin') {
+    // 管理员和员工都可以修改传真状态
+    if (userData.role !== 'admin' && userData.role !== 'employee') {
       return NextResponse.json(
-        { error: '权限不足，只有管理员可以修改传真状态' },
+        { error: '权限不足，只有管理员和员工可以修改传真状态' },
         { status: 403 }
       );
     }
