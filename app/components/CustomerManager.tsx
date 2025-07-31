@@ -367,13 +367,14 @@ export default function CustomerManager() {
     // 不重新获取数据，只是清空搜索条件
   };
 
-  // 添加一个 useEffect 来监听搜索状态变化
+  // 修改 useEffect，移除 searchField 依赖，避免切换搜索字段时自动刷新
   useEffect(() => {
     // 当搜索状态发生变化时，自动获取数据
+    // 注意：移除 searchField 依赖，避免切换搜索字段时自动刷新
     if (!loading) {
       fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, searchField, searchValue);
     }
-  }, [searchField, searchValue, showFaxOnly, currentPage, pageSize]);
+  }, [searchValue, showFaxOnly, currentPage, pageSize]); // 移除 searchField 依赖
 
   // 简化清空搜索函数
   const handleClearSearch = () => {
@@ -394,6 +395,7 @@ export default function CustomerManager() {
       setSearchField(values.searchField);
       setSearchValue(values.searchValue.trim());
       setCurrentPage(1);
+      // 手动调用搜索，因为 useEffect 不会监听 searchField 变化
       fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
     }
   };
