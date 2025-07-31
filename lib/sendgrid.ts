@@ -18,15 +18,9 @@ function getFromName(): string {
   return process.env.SENDGRID_FROM_NAME || 'Email System';
 }
 
-// 生成退订链接
-function generateUnsubscribeLink(email: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://email-test-gamma.vercel.app';
-  return `${baseUrl}/api/unsubscribe`;
-}
-
 // 生成邮件页脚（包含退订链接）
 function generateEmailFooter(email: string): string {
-  const unsubscribeUrl = generateUnsubscribeLink(email);
+  const unsubscribeUrl = 'https://www.familyorjp.com/'
   
   return `
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
@@ -38,15 +32,12 @@ function generateEmailFooter(email: string): string {
           Unsubscribe
         </a>
       </p>
-      <p style="margin: 10px 0 0 0; font-size: 11px; color: #999;">
-        This email was sent to: ${email}
-      </p>
     </div>
   `;
 }
 
 // 发送单封邮件
-export async function sendSingleEmail(to: string, subject: string, html: string) {
+export async function sendSingleEmail(to: string, subject: string, html: string) {  
   try {
     // 将HTML内容转换为纯文本，保持换行格式
     const text = htmlToText(html);
@@ -107,7 +98,16 @@ export async function sendSingleEmail(to: string, subject: string, html: string)
       },
       subject: subject,
       html: fullHtml,
-      text: text + '\n\n---\nIf you no longer wish to receive our emails, please visit the following link to unsubscribe:\n' + generateUnsubscribeLink(to) + '\nThis email was sent to: ' + to, // 添加纯文本版本的退订信息
+      text: text + '\n\n---\nIf you no longer wish to receive our emails, please visit the following link to unsubscribe:\n' + 'https://www.familyorjp.com/' + '\nThis email was sent to: ' + to, // 添加纯文本版本的退订信息
+      trackingSettings: {
+        clickTracking: {
+          enable: false,
+          enableText: false
+        },
+        openTracking: {
+          enable: false
+        }
+      }
     };
 
     const response = await sgMail.send(msg);

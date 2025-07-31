@@ -164,86 +164,165 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// 获取退订列表（仅管理员可访问）
+// 处理退订请求（GET和POST都支持）
 export async function GET(request: NextRequest) {
+  console.log('📧 收到邮件退订GET请求');
+  console.log('请求时间:', new Date().toISOString());
+
   try {
-    // 验证管理员权限
+    // 获取URL参数
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
     const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
+
+    // 如果有Authorization头，说明是管理员请求退订列表
+    if (authHeader) {
+      const userId = authHeader.replace('Bearer ', '');
+      
+      // 获取用户信息
+      const { data: userData, error: userError } = await supabaseAdmin
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData || userData.role !== 'admin') {
+        return NextResponse.json(
+          { error: '权限不足' },
+          { status: 403 }
+        );
+      }
+
+      // 获取查询参数
+      const page = parseInt(searchParams.get('page') || '1');
+      const pageSize = parseInt(searchParams.get('pageSize') || '50');
+      const emailFilter = searchParams.get('email');
+      const startDate = searchParams.get('startDate');
+      const endDate = searchParams.get('endDate');
+
+      // 构建查询
+      let query = supabaseAdmin
+        .from('email_unsubscriptions')
+        .select('*', { count: 'exact' });
+
+      // 添加筛选条件
+      if (emailFilter) {
+        query = query.ilike('email', `%${emailFilter}%`);
+      }
+      if (startDate) {
+        query = query.gte('created_at', startDate);
+      }
+      if (endDate) {
+        query = query.lte('created_at', endDate);
+      }
+
+      // 添加排序和分页
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data: unsubscriptions, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) {
+        console.error('获取退订列表失败:', error);
+        return NextResponse.json(
+          { error: '获取退订列表失败' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        unsubscriptions,
+        total: count,
+        page,
+        pageSize
+      });
+    }
+
+    // 普通用户退订请求
+    if (!email) {
       return NextResponse.json(
-        { error: '未授权访问' },
-        { status: 401 }
+        { success: false, message: '邮箱地址不能为空' },
+        { status: 400 }
       );
     }
 
-    const userId = authHeader.replace('Bearer ', '');
-    
-    // 获取用户信息
-    const { data: userData, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('role')
-      .eq('id', userId)
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: '邮箱格式不正确' },
+        { status: 400 }
+      );
+    }
+
+    // 获取客户端信息
+    const ipAddress = request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+
+    console.log('退订信息:', { 
+      email, 
+      ipAddress,
+      userAgent
+    });
+
+    // 检查是否已经退订
+    const { data: existingUnsubscription } = await supabaseAdmin
+      .from('email_unsubscriptions')
+      .select('id, created_at')
+      .eq('email', email.toLowerCase())
       .single();
 
-    if (userError || !userData || userData.role !== 'admin') {
+    if (existingUnsubscription) {
+      console.log('⚠️ 该邮箱已经退订:', email);
       return NextResponse.json(
-        { error: '权限不足' },
-        { status: 403 }
+        { 
+          success: true, 
+          message: '该邮箱已经退订',
+          alreadyUnsubscribed: true,
+          unsubscribedAt: existingUnsubscription.created_at
+        }
       );
     }
 
-    // 获取查询参数
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const pageSize = parseInt(searchParams.get('pageSize') || '50');
-    const email = searchParams.get('email');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-
-    // 构建查询
-    let query = supabaseAdmin
+    // 记录退订信息
+    const { data: unsubscription, error: insertError } = await supabaseAdmin
       .from('email_unsubscriptions')
-      .select('*', { count: 'exact' });
+      .insert({
+        email: email.toLowerCase(),
+        company_name: null,
+        unsubscribe_reason: '通过邮件链接退订',
+        ip_address: ipAddress,
+        user_agent: userAgent
+      })
+      .select()
+      .single();
 
-    // 添加筛选条件
-    if (email) {
-      query = query.ilike('email', `%${email}%`);
-    }
-    if (startDate) {
-      query = query.gte('created_at', startDate);
-    }
-    if (endDate) {
-      query = query.lte('created_at', endDate);
-    }
-
-    // 添加排序和分页
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-
-    const { data: unsubscriptions, error, count } = await query
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (error) {
-      console.error('获取退订列表失败:', error);
+    if (insertError) {
+      console.error('❌ 记录退订失败:', insertError);
       return NextResponse.json(
-        { error: '获取退订列表失败' },
+        { success: false, message: '退订处理失败' },
         { status: 500 }
       );
     }
 
+    console.log('✅ 退订记录成功:', unsubscription.id);
+
     return NextResponse.json({
       success: true,
-      unsubscriptions,
-      total: count,
-      page,
-      pageSize
+      message: '退订成功',
+      unsubscriptionId: unsubscription.id,
+      unsubscribedAt: unsubscription.created_at
     });
 
   } catch (error) {
-    console.error('获取退订列表异常:', error);
+    console.error('❌ 退订处理异常:', error);
     return NextResponse.json(
-      { error: '获取退订列表失败' },
+      { success: false, message: '退订处理失败' },
       { status: 500 }
     );
   }
