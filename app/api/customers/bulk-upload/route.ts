@@ -123,6 +123,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 添加调试信息
+    console.log('邮箱列查找结果:', {
+      headers: headers,
+      headerMap: Object.fromEntries(headerMap),
+      emailIndex: emailIndex,
+      emailHeaders: emailHeaders
+    });
+
     // 查找传真列（可选）
     const faxHeaders = ['传真', 'FAX', 'fax', 'fax number'];
     let faxIndex = -1;
@@ -150,14 +158,26 @@ export async function POST(request: NextRequest) {
     const fileProcessedEmails = new Map<string, number>(); // 邮箱 -> 行号，用于记录文件内重复
     const duplicateRows = []; // 记录重复的行号
     
+    // 添加调试信息
+    let processedCount = 0;
+    let emailFoundCount = 0;
+    let emailValidCount = 0;
+    
     for (let i = 1; i < jsonData.length; i++) {
       const row = jsonData[i] as any[];
       if (!row || row.length === 0) continue;
 
+      processedCount++;
       const companyName = row[companyNameIndex]?.toString().trim();
       let email = row[emailIndex]?.toString().trim();
       let fax = faxIndex !== -1 ? row[faxIndex]?.toString().trim() : '';
       const address = addressIndex !== -1 ? row[addressIndex]?.toString().trim() : '';
+
+      // 添加调试信息
+      if (email) {
+        emailFoundCount++;
+        console.log(`第${i + 1}行邮箱: "${email}"`);
+      }
 
       // 处理fax列：保留数组和-符号，删除其他前缀
       if (fax) {
@@ -201,12 +221,15 @@ export async function POST(request: NextRequest) {
             errors.push(`第${i + 1}行: 包含邮箱相关词汇但格式不正确，请检查数据`);
             break;
           } else {
+            // 添加调试信息
+            console.log(`第${i + 1}行邮箱格式无效: "${email}"`);
             continue;
           }
         }
 
         // 提取邮箱地址
         email = emailMatch[0].toLowerCase();
+        emailValidCount++;
 
         // 验证邮箱格式
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -216,16 +239,19 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 修复：移除第一层的重复处理逻辑，只记录重复信息
+      // 修复：简化重复处理逻辑，确保不重复保留
       if (email) {
         if (fileProcessedEmails.has(email)) {
-          // 记录重复的行号，但不创建新记录
+          // 记录重复的行号
           const firstRow = fileProcessedEmails.get(email)!;
           duplicateRows.push({
             row: i + 1,
             email: email,
             firstRow: firstRow + 1
           });
+          
+          // 添加调试信息
+          console.log(`第${i + 1}行邮箱重复，跳过: "${email}" (第一次出现在第${firstRow + 1}行)`);
           
           // 跳过重复记录，不添加到customers数组
           continue;
@@ -235,7 +261,7 @@ export async function POST(request: NextRequest) {
         fileProcessedEmails.set(email, i);
       }
       
-      // 正常添加记录
+      // 正常添加记录（包括没有邮箱但有传真的记录）
       customers.push({
         company_name: companyName,
         email: email,
@@ -246,6 +272,18 @@ export async function POST(request: NextRequest) {
         group_id: groupId || null
       });
     }
+
+    // 添加调试信息
+    console.log('处理统计:', {
+      processedCount,
+      emailFoundCount,
+      emailValidCount,
+      customersCount: customers.length,
+      customersWithEmail: customers.filter(c => c.email).length,
+      customersWithFax: customers.filter(c => c.fax).length,
+      duplicateRowsCount: duplicateRows.length,
+      skippedDueToDuplicates: emailValidCount - customers.filter(c => c.email).length
+    });
 
     // 如果发现无效邮箱格式，终止操作
     if (hasInvalidEmail) {
@@ -441,6 +479,7 @@ export async function POST(request: NextRequest) {
     // 分批插入最终处理后的客户
     const batchSize = 50;
     let totalInserted = 0;
+    const insertErrors = []; // 记录插入错误
     
     for (let i = 0; i < finalCustomers.length; i += batchSize) {
       const batch = finalCustomers.slice(i, i + batchSize);
@@ -452,14 +491,61 @@ export async function POST(request: NextRequest) {
 
       if (insertError) {
         console.error('批量插入客户失败:', insertError);
-        return NextResponse.json({ 
-          success: false, 
-          error: 'INSERT_ERROR',
-          details: insertError.message
-        }, { status: 500 });
+        
+        // 检查是否是唯一约束错误
+        if (insertError.code === '23505' && insertError.message.includes('customers_email_key')) {
+          // 邮箱重复错误，记录但不终止上传
+          insertErrors.push({
+            type: 'email_duplicate',
+            message: '部分邮箱已存在于数据库中',
+            count: batch.length
+          });
+          
+          // 尝试逐个插入，跳过重复的邮箱
+          for (const customer of batch) {
+            try {
+              const { data: singleInsert, error: singleError } = await supabase
+                .from('customers')
+                .insert(customer)
+                .select();
+              
+              if (!singleError) {
+                totalInserted += 1;
+              } else if (singleError.code === '23505' && singleError.message.includes('customers_email_key')) {
+                // 单个邮箱重复，跳过
+                skippedCustomers.push({
+                  ...customer,
+                  reason: 'database_email_duplicate',
+                  details: `邮箱 ${customer.email} 已存在于数据库中`
+                });
+              } else {
+                // 其他错误，记录但不终止
+                insertErrors.push({
+                  type: 'insert_error',
+                  message: singleError.message,
+                  customer: customer.company_name
+                });
+              }
+            } catch (singleError) {
+              // 捕获其他错误，记录但不终止
+              insertErrors.push({
+                type: 'insert_error',
+                message: singleError instanceof Error ? singleError.message : '未知错误',
+                customer: customer.company_name
+              });
+            }
+          }
+        } else {
+          // 其他类型的错误，记录但不终止上传
+          insertErrors.push({
+            type: 'insert_error',
+            message: insertError.message,
+            count: batch.length
+          });
+        }
+      } else {
+        totalInserted += insertedBatch?.length || 0;
       }
-
-      totalInserted += insertedBatch?.length || 0;
     }
 
     const fileDuplicateCount = duplicateRows.length;
@@ -482,6 +568,24 @@ export async function POST(request: NextRequest) {
     if (skipDetails.length > 0) {
       resultMessage += `，跳过 ${totalSkipped} 个重复记录 (${skipDetails.join(', ')})`;
     }
+    
+    // 添加插入错误信息
+    if (insertErrors.length > 0) {
+      const errorTypes = insertErrors.reduce((acc, error) => {
+        acc[error.type] = (acc[error.type] || 0) + 1;
+        return acc;
+      }, {});
+      
+      const errorDetails = [];
+      if (errorTypes.email_duplicate) {
+        errorDetails.push(`邮箱重复: ${errorTypes.email_duplicate} 个批次`);
+      }
+      if (errorTypes.insert_error) {
+        errorDetails.push(`插入错误: ${errorTypes.insert_error} 个`);
+      }
+      
+      resultMessage += `，插入过程中遇到问题: ${errorDetails.join(', ')}`;
+    }
 
     return NextResponse.json({
       success: true,
@@ -489,6 +593,7 @@ export async function POST(request: NextRequest) {
       fileDuplicateCount,
       dbDuplicateCount,
       totalSkipped,
+      insertErrors, // 返回插入错误信息
       duplicateRows, // 返回重复行的详细信息
       skippedCustomers, // 返回被跳过的客户信息
       message: resultMessage
