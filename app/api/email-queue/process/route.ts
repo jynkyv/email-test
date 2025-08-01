@@ -80,9 +80,36 @@ export async function POST(request: NextRequest) {
     // 用于统计每个申请人的发送情况
     const applicantStats = new Map<string, { sendCount: number, recipientCount: number }>();
 
-    // 处理每个邮件
+    // 在处理邮件前，先检查是否已经发送过
     for (const email of pendingEmails) {
       try {
+        // 检查是否已经发送过相同的邮件
+        const contentHash = require('crypto').createHash('md5').update(email.content).digest('hex');
+        
+        const { data: existingEmail } = await supabase
+          .from('customer_emails')
+          .select('id')
+          .eq('to_email', email.recipient)
+          .eq('subject', email.subject)
+          .eq('content_hash', contentHash)
+          .gte('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString())
+          .single();
+
+        if (existingEmail) {
+          console.log('邮件已发送过，跳过重复发送:', { recipient: email.recipient, subject: email.subject });
+          
+          // 更新队列状态为已发送
+          await supabase
+            .from('email_queue')
+            .update({ 
+              status: 'sent',
+              processed_at: new Date().toISOString()
+            })
+            .eq('id', email.id);
+          
+          continue; // 跳过这个邮件
+        }
+
         // 更新状态为处理中
         await supabase
           .from('email_queue')
@@ -228,6 +255,24 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
       return null;
     }
 
+    // 修改重复检查逻辑：基于客户ID、收件人、主题和内容哈希
+    const contentHash = require('crypto').createHash('md5').update(content).digest('hex');
+    
+    const { data: existingRecord } = await supabase
+      .from('customer_emails')
+      .select('id')
+      .eq('customer_id', customer.id)
+      .eq('to_email', toEmail)
+      .eq('subject', subject)
+      .eq('content_hash', contentHash) // 新增内容哈希字段
+      .gte('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()) // 5分钟内的记录
+      .single();
+
+    if (existingRecord) {
+      console.log('邮件记录已存在，跳过重复插入:', { customerId: customer.id, toEmail, subject });
+      return null;
+    }
+
     // 获取审核申请信息以获取申请人ID
     const { data: approval, error: approvalError } = await supabase
       .from('email_approvals')
@@ -240,7 +285,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
       return null;
     }
 
-    // 获取发送者的邮箱（从用户表或环境变量）
+    // 获取发送者的邮箱
     const { data: senderUser } = await supabase
       .from('users')
       .select('email')
@@ -258,9 +303,10 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
         to_email: toEmail,
         subject: subject || '无主题',
         content: content || '',
+        content_hash: contentHash, // 新增内容哈希
         message_id: messageId,
-        is_read: true, // 发送的邮件默认标记为已读
-        direction: 'outbound' // 标记为发出的邮件
+        is_read: true,
+        direction: 'outbound'
       });
 
     if (insertError) {

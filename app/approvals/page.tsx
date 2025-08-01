@@ -587,6 +587,9 @@ export default function ApprovalsPage() {
         footer={null}
         width={800}
         destroyOnClose
+        closable={false}
+        maskClosable={false}
+        keyboard={false}
       >
         <div className="space-y-6">
           {/* 审核状态信息 */}
@@ -747,9 +750,6 @@ export default function ApprovalsPage() {
                 )}
               </>
             )}
-            <Button onClick={() => setDetailModalVisible(false)}>
-              {t('common.close')}
-            </Button>
           </div>
         </div>
       </Modal>
