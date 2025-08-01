@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { textToHtml, debounce } from '@/lib/utils';
+import { EMAIL_TEMPLATES, EmailTemplate } from '@/lib/emailTemplates';
 import { 
   Form, 
   Input, 
@@ -20,7 +21,8 @@ import {
   Spin,
   DatePicker,
   Select,
-  Tooltip
+  Tooltip,
+  Tabs
 } from 'antd';
 import { 
   SendOutlined, 
@@ -28,11 +30,15 @@ import {
   FileTextOutlined,
   TeamOutlined,
   CloseOutlined,
-  CodeOutlined
+  CodeOutlined,
+  EditOutlined,
+  FileTextOutlined as TemplateOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
+const { TabPane } = Tabs;
 
 interface ReplyData {
   to: string;
@@ -74,6 +80,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   
   // HTML内容相关状态
   const [isHtmlContent, setIsHtmlContent] = useState(false);
+  
+  // 模板相关状态
+  const [activeTab, setActiveTab] = useState('html');
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  
+  // 模板预览相关状态
+  const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
@@ -189,6 +203,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       form.resetFields();
       setSelectedCustomers([]);
       setIsHtmlContent(false);
+      setSelectedTemplate(null);
     }
     // 当replyData为undefined时，不执行任何操作，保持当前状态
   }, [replyData, form]); // 移除customers依赖，避免客户列表更新时重置表单
@@ -342,8 +357,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setCurrentPage(1);
   };
 
-
-
   // 处理搜索按钮点击
   const handleSearchClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -372,6 +385,41 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     searchForm.resetFields();
     setCurrentPage(1);
     fetchCustomers(1, pageSize);
+  };
+
+  // 处理模板选择
+  const handleTemplateSelect = (template: EmailTemplate) => {
+    setSelectedTemplate(template);
+    form.setFieldsValue({
+      subject: template.subject,
+      content: template.content,
+    });
+    setIsHtmlContent(true);
+    message.success(`已选择模板：${template.name}`);
+  };
+
+  // 处理模板预览
+  const handleTemplatePreview = (template: EmailTemplate, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPreviewTemplate(template);
+    setShowPreviewModal(true);
+  };
+
+  // 应用模板
+  const handleApplyTemplate = () => {
+    if (previewTemplate) {
+      handleTemplateSelect(previewTemplate);
+      setShowPreviewModal(false);
+      setPreviewTemplate(null);
+    }
+  };
+
+  // 处理Tab切换
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    if (key === 'html') {
+      setSelectedTemplate(null);
+    }
   };
 
   const handleSubmit = async (values: {
@@ -433,6 +481,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 清空表单
     form.resetFields();
     setSelectedCustomers([]);
+    setSelectedTemplate(null);
     // 通知父组件发送完成
     onSendComplete?.();
       } else {
@@ -481,6 +530,58 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 渲染模板卡片
+  const renderTemplateCards = () => {
+    return (
+      <div className="max-h-[272px] overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {EMAIL_TEMPLATES.map((template) => (
+            <Card
+              key={template.id}
+              hoverable
+              className={`cursor-pointer transition-all duration-200 ${
+                selectedTemplate?.id === template.id 
+                  ? 'ring-2 ring-blue-500 bg-blue-50' 
+                  : 'hover:shadow-md'
+              }`}
+              onClick={() => handleTemplateSelect(template)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {template.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {template.description}
+                  </p>
+                  <div className="text-xs text-gray-500">
+                    <p><strong>主题：</strong>{template.subject}</p>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <TemplateOutlined className="text-blue-500 text-xl" />
+                </div>
+              </div>
+              
+              {selectedTemplate?.id === template.id && (
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <Button 
+                    type="primary" 
+                    size="small" 
+                    icon={<EyeOutlined />}
+                    onClick={(e) => handleTemplatePreview(template, e)}
+                  >
+                    预览
+                  </Button>
+                </div>
+              )}
+            </Card>
+          ))}
         </div>
       </div>
     );
@@ -549,20 +650,53 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             rules={[{ required: true, message: t('email.contentRequired') }]}
             className="flex-1"
           >
-            <TextArea
-              rows={12}
-              placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
-              showCount
-              maxLength={10000}
-              onChange={(e) => {
-                // 检测用户输入的内容是否包含HTML标签
-                const content = e.target.value;
-                const hasHtmlTags = content.includes('<') && content.includes('>');
-                if (hasHtmlTags && !isHtmlContent) {
-                  setIsHtmlContent(true);
-                }
-              }}
-            />
+            <Tabs 
+              activeKey={activeTab} 
+              onChange={handleTabChange}
+              className="w-full"
+            >
+              <TabPane 
+                tab={
+                  <span>
+                    <EditOutlined />
+                    HTML编辑
+                  </span>
+                } 
+                key="html"
+              >
+                <TextArea
+                  rows={12}
+                  placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
+                  showCount
+                  maxLength={10000}
+                  onChange={(e) => {
+                    // 检测用户输入的内容是否包含HTML标签
+                    const content = e.target.value;
+                    const hasHtmlTags = content.includes('<') && content.includes('>');
+                    if (hasHtmlTags && !isHtmlContent) {
+                      setIsHtmlContent(true);
+                    }
+                  }}
+                />
+              </TabPane>
+              
+              <TabPane 
+                tab={
+                  <span>
+                    <TemplateOutlined />
+                    邮件模板
+                  </span>
+                } 
+                key="template"
+              >
+                <div className="space-y-4">
+                  <div className="text-sm text-gray-600">
+                    选择以下模板之一，点击卡片即可应用模板内容。选择后可以预览模板效果。
+                  </div>
+                  {renderTemplateCards()}
+                </div>
+              </TabPane>
+            </Tabs>
           </Form.Item>
         </div>
 
@@ -576,11 +710,53 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
             icon={<SendOutlined />}
             size="large"
             block
+            disabled={activeTab === 'template' && !selectedTemplate}
           >
             {isSending ? t('email.submitting') : t('email.submitForApproval')}
           </Button>
         </Form.Item>
       </Form>
+
+      {/* 模板预览模态框 */}
+      <Modal
+        title={`模板预览 - ${previewTemplate?.name}`}
+        open={showPreviewModal}
+        onOk={handleApplyTemplate}
+        onCancel={() => {
+          setShowPreviewModal(false);
+          setPreviewTemplate(null);
+        }}
+        width={800}
+        okText="应用此模板"
+        cancelText="关闭"
+        okButtonProps={{
+          type: 'primary'
+        }}
+      >
+        {previewTemplate && (
+          <div className="space-y-4">
+            <div className="border-b pb-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">模板信息</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><strong>模板名称：</strong>{previewTemplate.name}</p>
+                <p><strong>模板分类：</strong>{previewTemplate.category}</p>
+                <p><strong>邮件主题：</strong>{previewTemplate.subject}</p>
+                <p><strong>模板描述：</strong>{previewTemplate.description}</p>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">邮件内容预览</h3>
+              <div className="border rounded-lg p-4 bg-gray-50 max-h-96 overflow-y-auto">
+                <div 
+                  className="email-preview"
+                  dangerouslySetInnerHTML={{ __html: previewTemplate.content }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* 客户选择模态框 */}
       <Modal
