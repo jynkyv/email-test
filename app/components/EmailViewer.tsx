@@ -66,12 +66,14 @@ interface Customer {
   id: string;
   company_name: string;
   email: string;
+  unsubscribe?: boolean; // 订阅状态
+  unsubscribe_at?: string; // 退订时间
   created_at: string;
   has_unread_emails?: boolean; // 添加未读邮件标记
 }
 
 interface EmailViewerProps {
-  onReply?: (emailData: { to: string; subject: string; content: string }) => void;
+  onReply?: (emailData: { to: string; subject: string; content: string; isHtml?: boolean }) => void;
 }
 
 export default function EmailViewer({ onReply }: EmailViewerProps) {
@@ -99,13 +101,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
-  // 创建防抖的搜索函数
-  const debouncedSearch = debounce((field: string, value: string) => {
-    if (value && value.trim()) {
-      setCustomerCurrentPage(1);
-      fetchCustomers(1, customerPageSize, field, value.trim());
-    }
-  }, 500);
+  // 移除防抖搜索函数，改为手动搜索
   
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
@@ -503,16 +499,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     const replyPrefix = t('email.replyPrefix');
     const replySubject = subject.startsWith(replyPrefix) ? subject : `${replyPrefix} ${subject}`;
     
-    // 如果原始内容是HTML，转换为纯文本用于回复
-    const replyContent = htmlContent 
-      ? `\n\n--- ${t('email.originalEmail')} ---\n${htmlToText(htmlContent)}`
-      : `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
+    // 如果原始内容是HTML，保留HTML格式用于回复
+    let replyContent: string;
+    if (htmlContent) {
+      // 保留HTML格式，添加回复前缀
+      replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${htmlContent}`;
+    } else {
+      // 纯文本内容
+      replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
+    }
     
     if (onReply) {
       onReply({
         to: emailAddress,
         subject: replySubject,
-        content: replyContent
+        content: replyContent,
+        isHtml: !!htmlContent // 如果有HTML内容，则标记为HTML格式
       });
     }
   };
@@ -644,8 +646,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 onChange={(e) => {
                   const value = e.target.value;
                   setSearchValue(value);
-                  // 使用防抖搜索
-                  debouncedSearch(searchField, value);
+                  // 移除自动搜索，只在点击搜索按钮时搜索
                 }}
                 onPressEnter={(e) => {
                   e.preventDefault();
@@ -714,9 +715,16 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             }`}>
                               {customer.email}
                             </p>
-                            <p className="text-xs text-gray-500">
-                              {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-gray-500">
+                                {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
+                              </p>
+                              {customer.unsubscribe && (
+                                <span className="text-xs px-1 py-0.5 bg-red-100 text-red-600 rounded">
+                                  {t('customer.unsubscribed')}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -48,7 +48,8 @@
     "actions": "操作",
     "page": "页码",
     "pageInfo": "第 {current} 页，共 {total} 页",
-    "clearFilter": "清空筛选"
+    "clearFilter": "清空筛选",
+    "all": "全部"
   },
   "auth": {
     "login": "登录",
@@ -237,7 +238,10 @@
     "emailOrFaxRequired": "邮箱和传真至少需要填写一个",
     "excelColumnFax": "FAX/FAX/fax - 客户的传真号码",
     "excelColumnAddress": "地址/Address/address - 客户的地址信息",
-    "showFaxOnly": "只显示有传真的客户"
+    "showFaxOnly": "只显示有传真的客户",
+    "subscriptionStatus": "订阅状态",
+    "subscribed": "订阅中",
+    "unsubscribed": "已退订"
   },
   "approval": {
     "approvalManagement": "审核管理",

@@ -14,9 +14,10 @@ export async function GET(request: NextRequest) {
     const searchValue = searchParams.get('searchValue') || ''; // 搜索值
     const hasEmailOnly = searchParams.get('hasEmailOnly') === 'true'; // 新增参数：只返回有邮箱的客户
     const hasFaxOnly = searchParams.get('hasFaxOnly') === 'true'; // 新增参数：只返回有传真的客户
+    const subscriptionStatus = searchParams.get('subscriptionStatus'); // 新增参数：订阅状态筛选
     const authHeader = request.headers.get('authorization');
     
-    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue, hasEmailOnly, hasFaxOnly });
+    console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue, hasEmailOnly, hasFaxOnly, subscriptionStatus });
     
     if (!authHeader) {
       return NextResponse.json(
@@ -75,6 +76,14 @@ export async function GET(request: NextRequest) {
       // 选项B：显示只有传真但没有邮箱的客户
       // query = query.not('fax', 'is', null).neq('fax', '').or('email.is.null,email.eq.');
     }
+
+    // 添加订阅状态筛选
+    if (subscriptionStatus === 'subscribed') {
+      query = query.eq('unsubscribe', false);
+    } else if (subscriptionStatus === 'unsubscribed') {
+      query = query.eq('unsubscribe', true);
+    }
+    // 如果 subscriptionStatus 是 'all' 或未设置，则不添加筛选条件
 
     // 添加时间筛选
     if (startDate) {

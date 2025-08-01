@@ -38,6 +38,7 @@ interface ReplyData {
   to: string;
   subject: string;
   content: string;
+  isHtml?: boolean; // 标识内容是否为HTML格式
 }
 
 interface Customer {
@@ -71,6 +72,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   
+  // HTML内容相关状态
+  const [isHtmlContent, setIsHtmlContent] = useState(false);
+  
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
@@ -82,6 +86,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
+<<<<<<< HEAD
   // 创建防抖的搜索函数
   const debouncedSearch = debounce((field: string, value: string) => {
     if (value && value.trim()) {
@@ -89,6 +94,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       fetchCustomers(1, pageSize, field, value.trim());
     }
   }, 500);
+=======
+  // 移除防抖搜索函数，改为手动搜索
+>>>>>>> feat-fax
   
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
@@ -96,7 +104,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setCurrentPage(page);
       fetchCustomers(page, pageSize);
     }
+<<<<<<< HEAD
   }, 1000);
+=======
+  }, 500);
+>>>>>>> feat-fax
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
@@ -164,6 +176,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         content: replyData.content,
       });
 
+      // 设置HTML内容标识
+      setIsHtmlContent(replyData.isHtml || false);
+
       // 检查回信人是否在客户列表中
       const existingCustomer = customers.find(customer => customer.email === replyData.to);
       
@@ -187,6 +202,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       // 只有当replyData明确为null时，才清空表单和选择
       form.resetFields();
       setSelectedCustomers([]);
+      setIsHtmlContent(false);
     }
     // 当replyData为undefined时，不执行任何操作，保持当前状态
   }, [replyData, form]); // 移除customers依赖，避免客户列表更新时重置表单
@@ -399,10 +415,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
-    // 智能处理内容：如果包含HTML标签，直接使用；否则转换为HTML
+    // 智能处理内容：如果包含HTML标签或标记为HTML内容，直接使用；否则转换为HTML
     let htmlContent;
-    if (values.content.includes('<') && values.content.includes('>')) {
-      // 检测到HTML标签，直接使用
+    if (isHtmlContent || (values.content.includes('<') && values.content.includes('>'))) {
+      // 检测到HTML标签或标记为HTML内容，直接使用
       htmlContent = values.content;
     } else {
       // 纯文本，转换为HTML格式
@@ -531,6 +547,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               <div className="flex items-center justify-between">
                 <span>{t('email.emailContent')}</span>
                 <div className="flex items-center gap-2 ml-2">
+                  {isHtmlContent && (
+                    <Tooltip title={t('email.htmlContentDetected')}>
+                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        HTML
+                      </span>
+                    </Tooltip>
+                  )}
                   <Tooltip title={t('email.htmlSupported')}>
                     <CodeOutlined className="text-blue-500" />
                   </Tooltip>
@@ -542,9 +565,17 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           >
             <TextArea
               rows={12}
-              placeholder={t('email.contentPlaceholderWithHtml')}
+              placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
               showCount
               maxLength={10000}
+              onChange={(e) => {
+                // 检测用户输入的内容是否包含HTML标签
+                const content = e.target.value;
+                const hasHtmlTags = content.includes('<') && content.includes('>');
+                if (hasHtmlTags && !isHtmlContent) {
+                  setIsHtmlContent(true);
+                }
+              }}
             />
           </Form.Item>
         </div>
@@ -659,8 +690,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   style={{ width: 200 }}
                   onChange={(e) => {
                     const value = e.target.value;
+<<<<<<< HEAD
                     // 使用防抖搜索
                     debouncedSearch(searchField, value);
+=======
+                    // 移除自动搜索，只在点击搜索按钮时搜索
+>>>>>>> feat-fax
                   }}
                   onPressEnter={(e) => {
                     e.preventDefault();

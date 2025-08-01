@@ -48,7 +48,8 @@
     "actions": "操作",
     "page": "ページ",
     "pageInfo": "第 {current} ページ，共 {total} ページ",
-    "clearFilter": "フィルターをクリア"
+    "clearFilter": "フィルターをクリア",
+    "all": "すべて"
   },
   "auth": {
     "login": "ログイン",
@@ -240,7 +241,10 @@
     "emailOrFaxRequired": "メールアドレスとFAXのいずれかは必須です",
     "excelColumnFax": "FAX/FAX/fax - 顧客のFAX番号",
     "excelColumnAddress": "住所/Address/address - 顧客の住所情報",
-    "showFaxOnly": "FAXのみの顧客を表示"
+    "showFaxOnly": "FAXのみの顧客を表示",
+    "subscriptionStatus": "購読ステータス",
+    "subscribed": "購読中",
+    "unsubscribed": "購読解除済み"
   },
   "approval": {
     "approvalManagement": "承認管理",
