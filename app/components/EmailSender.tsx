@@ -86,13 +86,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
-  // 创建防抖的搜索函数
-  const debouncedSearch = debounce((field: string, value: string) => {
-    if (value && value.trim()) {
-      setCurrentPage(1);
-      fetchCustomers(1, pageSize, field, value.trim());
-    }
-  }, 500);
+  // 移除防抖搜索函数，改为手动搜索
   
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
@@ -682,8 +676,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   style={{ width: 200 }}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // 使用防抖搜索
-                    debouncedSearch(searchField, value);
+                    // 移除自动搜索，只在点击搜索按钮时搜索
                   }}
                   onPressEnter={(e) => {
                     e.preventDefault();

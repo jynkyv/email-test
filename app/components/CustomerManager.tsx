@@ -91,13 +91,7 @@ export default function CustomerManager() {
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
-  // 创建防抖的搜索函数
-  const debouncedSearch = debounce((field: string, value: string) => {
-    if (value && value.trim()) {
-      setCurrentPage(1);
-      fetchCustomers(1, pageSize, field, value.trim());
-    }
-  }, 500);
+  // 移除防抖搜索函数，改为手动搜索
   
   // 新增：传真筛选状态
   const [showFaxOnly, setShowFaxOnly] = useState(false);
@@ -569,8 +563,7 @@ export default function CustomerManager() {
                 style={{ width: 300 }}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // 使用防抖搜索
-                  debouncedSearch(searchField, value);
+                  // 移除自动搜索，只在点击搜索按钮时搜索
                 }}
                 onPressEnter={(e) => {
                   e.preventDefault();
