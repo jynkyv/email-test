@@ -36,10 +36,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 获取所有用户
+    // 获取所有用户基本信息
     const { data: users, error } = await supabase
       .from('users')
-      .select('*')
+      .select('id, username, role, created_at, fax_send_count')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -49,9 +49,41 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // 为每个用户计算实时统计数据
+    const usersWithStats = await Promise.all(
+      users.map(async (user) => {
+        // 计算邮件发送次数（审核通过的申请数量）
+        const { count: sendCount } = await supabase
+          .from('email_approvals')
+          .select('*', { count: 'exact', head: true })
+          .eq('applicant_id', user.id)
+          .eq('status', 'approved');
+
+        // 计算收件人数（审核通过申请的实际收件人总数）
+        const { data: approvals } = await supabase
+          .from('email_approvals')
+          .select('recipients')
+          .eq('applicant_id', user.id)
+          .eq('status', 'approved');
+
+        let recipientCount = 0;
+        if (approvals) {
+          recipientCount = approvals.reduce((total, approval) => {
+            return total + (approval.recipients ? approval.recipients.length : 0);
+          }, 0);
+        }
+
+        return {
+          ...user,
+          email_send_count: sendCount || 0,
+          email_recipient_count: recipientCount,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      users,
+      users: usersWithStats,
     });
 
   } catch (error) {

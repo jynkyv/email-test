@@ -38,3 +38,77 @@
   border-left: 4px solid #3b82f6 !important;
   border-left-style: solid !important;
 }
+
+/* 用户管理表格样式 */
+.user-management-table .ant-table-thead > tr > th {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.user-management-table .ant-table-tbody > tr:hover > td {
+  background-color: #f1f5f9;
+}
+
+.user-management-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 16px;
+}
+
+/* 图标样式 */
+.user-management-table .anticon {
+  font-size: 14px;
+}
+
+/* 统计卡片样式 */
+.stats-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.stats-card .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.stats-card .ant-statistic-content {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* 角色标签样式 */
+.role-tag-admin {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.role-tag-employee {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+/* 统计数字样式 */
+.stat-number {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.stat-number.send-count {
+  color: #3b82f6;
+}
+
+.stat-number.recipient-count {
+  color: #10b981;
+}
+
+.stat-number.fax-count {
+  color: #8b5cf6;
+}

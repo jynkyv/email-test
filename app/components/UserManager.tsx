@@ -18,7 +18,17 @@ import {
   Popconfirm,
   Tooltip
 } from 'antd';
-import { PlusOutlined, UserOutlined, TeamOutlined, SendOutlined, MailOutlined } from '@ant-design/icons';
+import { 
+  PlusOutlined, 
+  UserOutlined, 
+  TeamOutlined, 
+  SendOutlined, 
+  MailOutlined, 
+  ReloadOutlined,
+  UserAddOutlined,
+  FileTextOutlined,
+  ClockCircleOutlined
+} from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -29,7 +39,7 @@ interface User {
   created_at: string;
   email_send_count?: number;
   email_recipient_count?: number;
-  fax_send_count?: number; // 新增：已发送传真数量
+  fax_send_count?: number;
 }
 
 export default function UserManager() {
@@ -50,6 +60,7 @@ export default function UserManager() {
   }, [userRole]);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/users', {
         headers: {
@@ -60,6 +71,8 @@ export default function UserManager() {
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);
+      } else {
+        message.error(data.error || t('user.fetchUsersFailed'));
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -98,11 +111,6 @@ export default function UserManager() {
     }
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-    form.resetFields();
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -110,186 +118,213 @@ export default function UserManager() {
 
   const columns = [
     {
-      title: t('user.username'),
+      title: (
+        <div className="flex items-center gap-2">
+          <UserOutlined className="text-blue-500" />
+          <span>{t('user.username')}</span>
+        </div>
+      ),
       dataIndex: 'username',
       key: 'username',
       render: (text: string) => (
-        <Space>
-          <UserOutlined />
-          {text}
-        </Space>
+        <div className="flex items-center gap-2">
+          <UserOutlined className="text-gray-400" />
+          <span className="font-medium">{text}</span>
+        </div>
       ),
     },
     {
-      title: t('user.role'),
+      title: (
+        <div className="flex items-center gap-2">
+          <TeamOutlined className="text-green-500" />
+          <span>{t('user.role')}</span>
+        </div>
+      ),
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => (
-        <Tag color={role === 'admin' ? 'red' : 'blue'}>
+        <Tag color={role === 'admin' ? 'red' : 'blue'} icon={role === 'admin' ? <UserOutlined /> : <TeamOutlined />}>
           {role === 'admin' ? t('auth.admin') : t('auth.employee')}
         </Tag>
       ),
     },
     {
-      title: t('user.emailSendCount'),
+      title: (
+        <div className="flex items-center gap-2">
+          <SendOutlined className="text-blue-500" />
+          <span>{t('user.sendCount')}</span>
+        </div>
+      ),
       dataIndex: 'email_send_count',
       key: 'email_send_count',
       render: (count: number) => (
-        <Space>
-          <SendOutlined style={{ color: '#1890ff' }} />
-          <span className="font-medium">{count || 0}</span>
-        </Space>
+        <div className="flex items-center gap-2">
+          <SendOutlined className="text-blue-500" />
+          <span className="text-blue-600 font-medium">
+            {count || 0}
+          </span>
+        </div>
       ),
     },
     {
-      title: t('user.emailRecipientCount'),
+      title: (
+        <div className="flex items-center gap-2">
+          <MailOutlined className="text-green-500" />
+          <span>{t('user.recipientCount')}</span>
+        </div>
+      ),
       dataIndex: 'email_recipient_count',
       key: 'email_recipient_count',
       render: (count: number) => (
-        <Space>
-          <MailOutlined style={{ color: '#52c41a' }} />
-          <span className="font-medium">{count || 0}</span>
-        </Space>
+        <div className="flex items-center gap-2">
+          <MailOutlined className="text-green-500" />
+          <span className="text-green-600 font-medium">
+            {count || 0}
+          </span>
+        </div>
       ),
     },
     {
-      title: t('user.faxSendCount'), // 新增列
+      title: (
+        <div className="flex items-center gap-2">
+          <FileTextOutlined className="text-purple-500" />
+          <span>{t('user.faxSendCount')}</span>
+        </div>
+      ),
       dataIndex: 'fax_send_count',
       key: 'fax_send_count',
       render: (count: number) => (
-        <Space>
-          <SendOutlined style={{ color: '#fa8c16' }} />
-          <span className="font-medium">{count || 0}</span>
-        </Space>
+        <div className="flex items-center gap-2">
+          <FileTextOutlined className="text-purple-500" />
+          <span className="text-purple-600 font-medium">
+            {count || 0}
+          </span>
+        </div>
       ),
     },
     {
-      title: t('customer.creationTime'),
+      title: (
+        <div className="flex items-center gap-2">
+          <ClockCircleOutlined className="text-gray-500" />
+          <span>{t('user.createdAt')}</span>
+        </div>
+      ),
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (date: string) => (
+        <div className="flex items-center gap-2">
+          <ClockCircleOutlined className="text-gray-400" />
+          <span className="text-gray-500">
+            {new Date(date).toLocaleDateString()}
+          </span>
+        </div>
+      ),
     },
-    // 移除了 actions 列，不再显示删除按钮
   ];
 
-  // 如果不是管理员，显示权限不足信息
-  if (userRole !== 'admin') {
-    return (
-      <div className="text-center py-8">
-        <div className="text-gray-500">
-          <TeamOutlined className="text-4xl mb-4" />
-          <p className="text-lg">{t('user.insufficientPermissions')}</p>
-          <p className="text-sm mt-2">{t('user.onlyAdminCanManageUsers')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="text-center py-8">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <Card title={t('navigation.userManagement')} className="shadow-lg">
-        <div className="flex justify-between items-center mb-6">
+    <Card 
+      title={
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TeamOutlined className="text-xl" />
-            <span className="text-lg font-medium">{t('user.userList')}</span>
+            <TeamOutlined className="text-blue-500 text-xl" />
+            <span className="text-lg font-medium">{t('user.userManagement')}</span>
           </div>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={showModal}
-            size="large"
-          >
-            {t('user.createUser')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Tooltip title={t('common.refresh')}>
+              <Button 
+                icon={<ReloadOutlined />} 
+                onClick={fetchUsers}
+                loading={loading}
+                type="text"
+              />
+            </Tooltip>
+            <Button 
+              type="primary" 
+              icon={<UserAddOutlined />} 
+              onClick={() => setIsModalVisible(true)}
+            >
+              {t('user.createUser')}
+            </Button>
+          </div>
         </div>
+      }
+    >
+      <Table
+        columns={columns}
+        dataSource={users}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) => 
+            `${range[0]}-${range[1]} / ${total} ${t('user.users')}`,
+        }}
+      />
 
-        <Table
-          dataSource={users}
-          columns={columns}
-          rowKey="id"
-          pagination={false}
-          locale={{
-            emptyText: t('user.noUsers'),
-          }}
-        />
-      </Card>
-
-      {/* 创建员工 Modal */}
       <Modal
-        title={t('user.createUser')}
+        title={
+          <div className="flex items-center gap-2">
+            <UserAddOutlined className="text-blue-500" />
+            <span>{t('user.createUser')}</span>
+          </div>
+        }
         open={isModalVisible}
+        onOk={() => form.submit()}
         onCancel={handleCancel}
-        footer={null}
-        width={500}
-        destroyOnClose
+        confirmLoading={modalLoading}
+        okText={t('common.confirm')}
+        cancelText={t('common.cancel')}
       >
         <Form
           form={form}
           onFinish={handleSubmit}
           layout="vertical"
-          className="mt-4"
         >
           <Form.Item
             name="username"
-            label={t('user.username')}
+            label={
+              <div className="flex items-center gap-2">
+                <UserOutlined className="text-gray-500" />
+                <span>{t('user.username')}</span>
+              </div>
+            }
             rules={[{ required: true, message: t('user.usernameRequired') }]}
           >
-            <Input 
-              placeholder={t('user.username')}
-              size="large"
-            />
+            <Input placeholder={t('user.usernamePlaceholder')} />
           </Form.Item>
-          
+
           <Form.Item
             name="password"
-            label={t('user.password')}
+            label={
+              <div className="flex items-center gap-2">
+                <UserOutlined className="text-gray-500" />
+                <span>{t('user.password')}</span>
+              </div>
+            }
             rules={[{ required: true, message: t('user.passwordRequired') }]}
           >
-            <Input.Password 
-              placeholder={t('user.password')}
-              size="large"
-            />
+            <Input.Password placeholder={t('user.passwordPlaceholder')} />
           </Form.Item>
-          
+
           <Form.Item
             name="role"
-            label={t('user.role')}
-            rules={[{ required: true, message: t('user.roleRequired') }]}
+            label={
+              <div className="flex items-center gap-2">
+                <TeamOutlined className="text-gray-500" />
+                <span>{t('user.role')}</span>
+              </div>
+            }
+            initialValue="employee"
           >
-            <Select 
-              placeholder={t('user.role')}
-              size="large"
-            >
+            <Select>
               <Option value="employee">{t('auth.employee')}</Option>
               <Option value="admin">{t('auth.admin')}</Option>
             </Select>
           </Form.Item>
-          
-          <Form.Item className="mb-0">
-            <div className="flex justify-end gap-3">
-              <Button onClick={handleCancel} size="large">
-                {t('common.cancel')}
-              </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={modalLoading}
-                size="large"
-              >
-                {t('user.createUser')}
-              </Button>
-            </div>
-          </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Card>
   );
 }
