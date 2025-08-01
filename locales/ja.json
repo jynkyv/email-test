@@ -244,7 +244,14 @@
     "showFaxOnly": "FAXのみの顧客を表示",
     "subscriptionStatus": "購読ステータス",
     "subscribed": "購読中",
-    "unsubscribed": "購読解除済み"
+    "unsubscribed": "購読解除済み",
+    "batchSendFax": "FAX一括送信",
+    "batchFaxConfirm": "{count}件の顧客にFAXを一括送信してもよろしいですか？この操作は取り消せません。",
+    "batchFaxSuccess": "FAX一括送信が成功しました！{success}件送信成功、合計{total}件の顧客。",
+    "batchFaxPartial": "FAX一括送信が部分的に成功しました：成功{success}件、失敗{fail}件。",
+    "batchFaxFailed": "FAX一括送信に失敗しました",
+    "pleaseSelectCustomers": "FAXを送信する顧客を選択してください",
+    "noValidFaxCustomers": "選択された顧客に有効なFAX番号がないか、既に送信済みです"
   },
   "approval": {
     "approvalManagement": "承認管理",

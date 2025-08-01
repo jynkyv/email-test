@@ -22,7 +22,7 @@ import {
   Checkbox
 } from 'antd';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined, SendOutlined } from '@ant-design/icons';
 
 interface Customer {
   id: string;
@@ -48,6 +48,11 @@ export default function CustomerManager() {
   const [form] = Form.useForm();
   const { user, userRole } = useAuth();
   const { t } = useI18n();
+  
+  // 新增：多选相关状态
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
+  const [batchFaxLoading, setBatchFaxLoading] = useState(false);
   
   // 错误消息国际化处理函数
   const getErrorMessage = (errorCode: string, details?: string) => {
@@ -160,6 +165,88 @@ export default function CustomerManager() {
   // 修改原有的fetchCustomers函数，使用新的函数
   const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
     return fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchFieldParam, searchValueParam);
+  };
+
+  // 新增：处理多选变化
+  const handleSelectionChange = (selectedKeys: React.Key[], selectedRows: Customer[]) => {
+    setSelectedRowKeys(selectedKeys);
+    setSelectedCustomers(selectedRows);
+  };
+
+  // 新增：批量发送传真
+  const handleBatchSendFax = async () => {
+    if (selectedCustomers.length === 0) {
+      message.warning(t('customer.pleaseSelectCustomers'));
+      return;
+    }
+
+    // 过滤出有传真号码且未发送的客户
+    const validCustomers = selectedCustomers.filter(customer => 
+      customer.fax && customer.fax_status !== 'active'
+    );
+
+    if (validCustomers.length === 0) {
+      message.warning(t('customer.noValidFaxCustomers'));
+      return;
+    }
+
+    Modal.confirm({
+      title: t('customer.batchSendFax'),
+      content: t('customer.batchFaxConfirm', { count: validCustomers.length }),
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
+      onOk: async () => {
+        setBatchFaxLoading(true);
+        try {
+          const promises = validCustomers.map(customer => 
+            fetch(`/api/customers/${customer.id}/fax-status`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user?.id}`,
+              },
+              body: JSON.stringify({ status: 'active' }),
+            })
+          );
+
+          const results = await Promise.allSettled(promises);
+          
+          let successCount = 0;
+          let failCount = 0;
+          
+          results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+              const response = result.value;
+              if (response.ok) {
+                successCount++;
+              } else {
+                failCount++;
+              }
+            } else {
+              failCount++;
+            }
+          });
+
+          if (successCount > 0) {
+            message.success(t('customer.batchFaxSuccess', { success: successCount, total: validCustomers.length }));
+            // 清空选择
+            setSelectedRowKeys([]);
+            setSelectedCustomers([]);
+            // 刷新数据
+            fetchCustomers();
+          }
+          
+          if (failCount > 0) {
+            message.warning(t('customer.batchFaxPartial', { success: successCount, fail: failCount }));
+          }
+        } catch (error) {
+          console.error('Batch fax sending failed:', error);
+          message.error(t('customer.batchFaxFailed'));
+        } finally {
+          setBatchFaxLoading(false);
+        }
+      }
+    });
   };
 
   const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
@@ -551,6 +638,18 @@ export default function CustomerManager() {
             <span className="text-lg font-medium">{t('customer.customerList')}</span>
           </div>
           <Space>
+            {/* 新增：批量发送传真按钮 */}
+            {selectedCustomers.length > 0 && (userRole === 'admin' || userRole === 'employee') && (
+              <Button
+                type="primary"
+                icon={<SendOutlined />}
+                onClick={handleBatchSendFax}
+                loading={batchFaxLoading}
+                size="large"
+              >
+                {t('customer.batchSendFax')} ({selectedCustomers.length})
+              </Button>
+            )}
             <Button
               type="primary"
               icon={<UploadOutlined />}
@@ -657,6 +756,15 @@ export default function CustomerManager() {
           columns={columns}
           rowKey="id"
           loading={loading}
+          // 新增：多选配置
+          rowSelection={{
+            selectedRowKeys: selectedRowKeys,
+            onChange: handleSelectionChange,
+            getCheckboxProps: (record: Customer) => ({
+              // 只有有传真号码且未发送的客户才能被选择
+              disabled: !record.fax || record.fax_status === 'active',
+            }),
+          }}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
