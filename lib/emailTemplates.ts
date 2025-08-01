@@ -23,11 +23,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <body style="margin: 0; padding: 0;">
   <div style="max-width: 750px; margin: 0 auto;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/header.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
     </a>
-    <img src="/hero.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/web-button.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
     </a>
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <a href="" target="_blank" style="display: inline-block;">
@@ -64,11 +64,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <body style="margin: 0; padding: 0;">
   <div style="max-width: 750px; margin: 0 auto;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/header.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
     </a>
-    <img src="/hero.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/web-button.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
     </a>
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <a href="" target="_blank" style="display: inline-block;">
@@ -105,11 +105,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <body style="margin: 0; padding: 0;">
   <div style="max-width: 750px; margin: 0 auto;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/header.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
     </a>
-    <img src="/hero.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
     <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="/web-button.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
     </a>
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <a href="" target="_blank" style="display: inline-block;">
