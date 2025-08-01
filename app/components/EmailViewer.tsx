@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { htmlToText } from '@/lib/utils';
+import { htmlToText, debounce } from '@/lib/utils';
 import { 
   Card, 
   List, 
@@ -71,7 +71,7 @@ interface Customer {
 }
 
 interface EmailViewerProps {
-  onReply?: (emailData: { to: string; subject: string; content: string }) => void;
+  onReply?: (emailData: { to: string; subject: string; content: string; isHtml?: boolean }) => void;
 }
 
 export default function EmailViewer({ onReply }: EmailViewerProps) {
@@ -92,11 +92,28 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
   const [customerPageSize, setCustomerPageSize] = useState(50);
   const [customerTotal, setCustomerTotal] = useState(0);
+  const [tempCustomerPageInput, setTempCustomerPageInput] = useState('1'); // 临时页码输入状态
   
   // 搜索相关状态
   const [searchField, setSearchField] = useState('company_name');
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
+  
+  // 创建防抖的搜索函数
+  const debouncedSearch = debounce((field: string, value: string) => {
+    if (value && value.trim()) {
+      setCustomerCurrentPage(1);
+      fetchCustomers(1, customerPageSize, field, value.trim());
+    }
+  }, 500);
+  
+  // 创建防抖的页码跳转函数
+  const debouncedPageChange = debounce((page: number) => {
+    if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
+      setCustomerCurrentPage(page);
+      fetchCustomers(page, customerPageSize);
+    }
+  }, 500);
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
@@ -107,7 +124,6 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         pageSize: size.toString(),
         sortByUnread: 'true',
         hasEmailOnly: 'true', // 只获取有邮箱的客户
-        subscriptionStatus: 'subscribed', // 只获取已订阅的客户（排除已退订的）
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });
@@ -124,6 +140,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         setCustomerTotal(data.total || 0);
         setCustomerCurrentPage(page);
         setCustomerPageSize(size);
+        setTempCustomerPageInput(page.toString());
       }
     } catch (error) {
       console.error('Failed to fetch customers:', error);
@@ -486,16 +503,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     const replyPrefix = t('email.replyPrefix');
     const replySubject = subject.startsWith(replyPrefix) ? subject : `${replyPrefix} ${subject}`;
     
-    // 如果原始内容是HTML，转换为纯文本用于回复
-    const replyContent = htmlContent 
-      ? `\n\n--- ${t('email.originalEmail')} ---\n${htmlToText(htmlContent)}`
-      : `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
+    // 如果原始内容是HTML，保留HTML格式用于回复
+    let replyContent: string;
+    if (htmlContent) {
+      // 保留HTML格式，添加回复前缀
+      replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${htmlContent}`;
+    } else {
+      // 纯文本内容
+      replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
+    }
     
     if (onReply) {
       onReply({
         to: emailAddress,
         subject: replySubject,
-        content: replyContent
+        content: replyContent,
+        isHtml: !!htmlContent // 如果有HTML内容，则标记为HTML格式
       });
     }
   };
@@ -624,7 +647,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                 size="small"
                 style={{ width: 140, fontSize: '13px' }}
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchValue(value);
+                  // 使用防抖搜索
+                  debouncedSearch(searchField, value);
+                }}
                 onPressEnter={(e) => {
                   e.preventDefault();
                   if (searchValue && searchValue.trim()) {
@@ -724,19 +752,34 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                   {/* 页码输入 */}
                   <div className="flex items-center gap-1">
                     <span className="text-sm text-gray-600">{t('common.page')}:</span>
-                    <Input
+                                        <Input
                       size="small"
                       style={{ width: 60 }}
-                      value={customerCurrentPage}
+                      value={tempCustomerPageInput}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const page = parseInt(e.target.value);
+                        const value = e.target.value;
+                        setTempCustomerPageInput(value);
+                        
+                        // 允许空值，这样用户可以删除个位数
+                        if (value === '') {
+                          return;
+                        }
+                        
+                        const page = parseInt(value);
                         if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
-                          fetchCustomers(page, customerPageSize);
+                          // 使用防抖函数延迟执行跳转
+                          debouncedPageChange(page);
                         }
                       }}
                       onPressEnter={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                        const page = parseInt((e.target as HTMLInputElement).value);
+                        const value = (e.target as HTMLInputElement).value;
+                        if (value === '') {
+                          return;
+                        }
+                        const page = parseInt(value);
                         if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
+                          setCustomerCurrentPage(page);
+                          setTempCustomerPageInput(page.toString());
                           fetchCustomers(page, customerPageSize);
                         }
                       }}

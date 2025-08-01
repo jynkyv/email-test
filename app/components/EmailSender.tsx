@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { textToHtml } from '@/lib/utils';
+import { textToHtml, debounce } from '@/lib/utils';
 import { 
   Form, 
   Input, 
@@ -38,6 +38,7 @@ interface ReplyData {
   to: string;
   subject: string;
   content: string;
+  isHtml?: boolean; // 标识内容是否为HTML格式
 }
 
 interface Customer {
@@ -71,15 +72,35 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   
+  // HTML内容相关状态
+  const [isHtmlContent, setIsHtmlContent] = useState(false);
+  
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
+  const [tempPageInput, setTempPageInput] = useState('1'); // 临时页码输入状态
   
   // 搜索相关状态
   const [searchField, setSearchField] = useState('company_name');
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
+  
+  // 创建防抖的搜索函数
+  const debouncedSearch = debounce((field: string, value: string) => {
+    if (value && value.trim()) {
+      setCurrentPage(1);
+      fetchCustomers(1, pageSize, field, value.trim());
+    }
+  }, 500);
+  
+  // 创建防抖的页码跳转函数
+  const debouncedPageChange = debounce((page: number) => {
+    if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+      setCurrentPage(page);
+      fetchCustomers(page, pageSize);
+    }
+  }, 500);
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
@@ -89,7 +110,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         page: page.toString(),
         pageSize: size.toString(),
         hasEmailOnly: 'true', // 只获取有邮箱的客户
-        subscriptionStatus: 'subscribed', // 只获取已订阅的客户（排除已退订的）
         searchField: searchFieldParam || searchField,
         searchValue: searchValueParam || searchValue
       });
@@ -115,6 +135,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setTotal(data.total || 0);
         setCurrentPage(page);
         setPageSize(size);
+        setTempPageInput(page.toString());
         console.log('Customers fetched successfully:', { 
           customers: data.customers?.length, 
           total: data.total, 
@@ -147,6 +168,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         content: replyData.content,
       });
 
+      // 设置HTML内容标识
+      setIsHtmlContent(replyData.isHtml || false);
+
       // 检查回信人是否在客户列表中
       const existingCustomer = customers.find(customer => customer.email === replyData.to);
       
@@ -170,6 +194,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       // 只有当replyData明确为null时，才清空表单和选择
       form.resetFields();
       setSelectedCustomers([]);
+      setIsHtmlContent(false);
     }
     // 当replyData为undefined时，不执行任何操作，保持当前状态
   }, [replyData, form]); // 移除customers依赖，避免客户列表更新时重置表单
@@ -382,10 +407,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
 
-    // 智能处理内容：如果包含HTML标签，直接使用；否则转换为HTML
+    // 智能处理内容：如果包含HTML标签或标记为HTML内容，直接使用；否则转换为HTML
     let htmlContent;
-    if (values.content.includes('<') && values.content.includes('>')) {
-      // 检测到HTML标签，直接使用
+    if (isHtmlContent || (values.content.includes('<') && values.content.includes('>'))) {
+      // 检测到HTML标签或标记为HTML内容，直接使用
       htmlContent = values.content;
     } else {
       // 纯文本，转换为HTML格式
@@ -514,6 +539,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               <div className="flex items-center justify-between">
                 <span>{t('email.emailContent')}</span>
                 <div className="flex items-center gap-2 ml-2">
+                  {isHtmlContent && (
+                    <Tooltip title={t('email.htmlContentDetected')}>
+                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        HTML
+                      </span>
+                    </Tooltip>
+                  )}
                   <Tooltip title={t('email.htmlSupported')}>
                     <CodeOutlined className="text-blue-500" />
                   </Tooltip>
@@ -525,9 +557,17 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           >
             <TextArea
               rows={12}
-              placeholder={t('email.contentPlaceholderWithHtml')}
+              placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
               showCount
               maxLength={10000}
+              onChange={(e) => {
+                // 检测用户输入的内容是否包含HTML标签
+                const content = e.target.value;
+                const hasHtmlTags = content.includes('<') && content.includes('>');
+                if (hasHtmlTags && !isHtmlContent) {
+                  setIsHtmlContent(true);
+                }
+              }}
             />
           </Form.Item>
         </div>
@@ -640,6 +680,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   allowClear
                   size="small"
                   style={{ width: 200 }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // 使用防抖搜索
+                    debouncedSearch(searchField, value);
+                  }}
                   onPressEnter={(e) => {
                     e.preventDefault();
                     const values = searchForm.getFieldsValue();
@@ -742,16 +787,31 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                       <Input
                         size="small"
                         style={{ width: 60 }}
-                        value={currentPage}
+                        value={tempPageInput}
                         onChange={(e) => {
-                          const page = parseInt(e.target.value);
+                          const value = e.target.value;
+                          setTempPageInput(value);
+                          
+                          // 允许空值，这样用户可以删除个位数
+                          if (value === '') {
+                            return;
+                          }
+                          
+                          const page = parseInt(value);
                           if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
-                            fetchCustomers(page, pageSize);
+                            // 使用防抖函数延迟执行跳转
+                            debouncedPageChange(page);
                           }
                         }}
                         onPressEnter={(e) => {
-                          const page = parseInt((e.target as HTMLInputElement).value);
+                          const value = (e.target as HTMLInputElement).value;
+                          if (value === '') {
+                            return;
+                          }
+                          const page = parseInt(value);
                           if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+                            setCurrentPage(page);
+                            setTempPageInput(page.toString());
                             fetchCustomers(page, pageSize);
                           }
                         }}
