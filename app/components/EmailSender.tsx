@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { textToHtml } from '@/lib/utils';
+import { textToHtml, debounce } from '@/lib/utils';
 import { 
   Form, 
   Input, 
@@ -75,11 +75,28 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
+  const [tempPageInput, setTempPageInput] = useState('1'); // 临时页码输入状态
   
   // 搜索相关状态
   const [searchField, setSearchField] = useState('company_name');
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
+  
+  // 创建防抖的搜索函数
+  const debouncedSearch = debounce((field: string, value: string) => {
+    if (value && value.trim()) {
+      setCurrentPage(1);
+      fetchCustomers(1, pageSize, field, value.trim());
+    }
+  }, 500);
+  
+  // 创建防抖的页码跳转函数
+  const debouncedPageChange = debounce((page: number) => {
+    if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+      setCurrentPage(page);
+      fetchCustomers(page, pageSize);
+    }
+  }, 500);
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
@@ -114,6 +131,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setTotal(data.total || 0);
         setCurrentPage(page);
         setPageSize(size);
+        setTempPageInput(page.toString());
         console.log('Customers fetched successfully:', { 
           customers: data.customers?.length, 
           total: data.total, 
@@ -639,6 +657,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   allowClear
                   size="small"
                   style={{ width: 200 }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // 使用防抖搜索
+                    debouncedSearch(searchField, value);
+                  }}
                   onPressEnter={(e) => {
                     e.preventDefault();
                     const values = searchForm.getFieldsValue();
@@ -741,16 +764,31 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                       <Input
                         size="small"
                         style={{ width: 60 }}
-                        value={currentPage}
+                        value={tempPageInput}
                         onChange={(e) => {
-                          const page = parseInt(e.target.value);
+                          const value = e.target.value;
+                          setTempPageInput(value);
+                          
+                          // 允许空值，这样用户可以删除个位数
+                          if (value === '') {
+                            return;
+                          }
+                          
+                          const page = parseInt(value);
                           if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
-                            fetchCustomers(page, pageSize);
+                            // 使用防抖函数延迟执行跳转
+                            debouncedPageChange(page);
                           }
                         }}
                         onPressEnter={(e) => {
-                          const page = parseInt((e.target as HTMLInputElement).value);
+                          const value = (e.target as HTMLInputElement).value;
+                          if (value === '') {
+                            return;
+                          }
+                          const page = parseInt(value);
                           if (page && page > 0 && page <= Math.ceil(total / pageSize)) {
+                            setCurrentPage(page);
+                            setTempPageInput(page.toString());
                             fetchCustomers(page, pageSize);
                           }
                         }}

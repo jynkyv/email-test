@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { debounce } from '@/lib/utils';
 import { 
   Form, 
   Input, 
@@ -89,6 +90,14 @@ export default function CustomerManager() {
   const [searchField, setSearchField] = useState('company_name');
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
+  
+  // 创建防抖的搜索函数
+  const debouncedSearch = debounce((field: string, value: string) => {
+    if (value && value.trim()) {
+      setCurrentPage(1);
+      fetchCustomers(1, pageSize, field, value.trim());
+    }
+  }, 500);
   
   // 新增：传真筛选状态
   const [showFaxOnly, setShowFaxOnly] = useState(false);
@@ -558,6 +567,11 @@ export default function CustomerManager() {
               <Input
                 placeholder={t('common.search')}
                 style={{ width: 300 }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // 使用防抖搜索
+                  debouncedSearch(searchField, value);
+                }}
                 onPressEnter={(e) => {
                   e.preventDefault();
                   const values = searchForm.getFieldsValue();
