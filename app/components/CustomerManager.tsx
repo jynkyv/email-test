@@ -31,6 +31,8 @@ interface Customer {
   fax?: string;
   address?: string;
   fax_status?: 'active' | 'inactive';
+  unsubscribe?: boolean; // 订阅状态
+  unsubscribe_at?: string; // 退订时间
   created_at: string;
   has_unread_emails?: boolean; // 添加未读邮件标记
 }
@@ -95,6 +97,8 @@ export default function CustomerManager() {
   
   // 新增：传真筛选状态
   const [showFaxOnly, setShowFaxOnly] = useState(false);
+  // 新增：订阅状态筛选
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'all' | 'subscribed' | 'unsubscribed'>('all');
   
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -110,7 +114,7 @@ export default function CustomerManager() {
   }, []);
 
   // 新增：带传真筛选的获取客户函数
-  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, searchFieldParam?: string, searchValueParam?: string) => {
+  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, subscriptionStatusParam = subscriptionStatus, searchFieldParam?: string, searchValueParam?: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -123,6 +127,11 @@ export default function CustomerManager() {
       // 添加传真筛选参数 - 使用传入的 faxOnly 参数，而不是状态
       if (faxOnly) {
         params.append('hasFaxOnly', 'true');
+      }
+      
+      // 添加订阅状态筛选参数
+      if (subscriptionStatusParam !== 'all') {
+        params.append('subscriptionStatus', subscriptionStatusParam);
       }
       
       console.log('Fetch customers with fax filter:', { faxOnly, params: params.toString() });
@@ -150,7 +159,7 @@ export default function CustomerManager() {
 
   // 修改原有的fetchCustomers函数，使用新的函数
   const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
-    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, searchFieldParam, searchValueParam);
+    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchFieldParam, searchValueParam);
   };
 
   const handleSubmit = async (values: { company_name: string; email: string; fax?: string; address?: string }) => {
@@ -375,15 +384,16 @@ export default function CustomerManager() {
     // 当搜索状态发生变化时，自动获取数据
     // 注意：移除 searchField 依赖，避免切换搜索字段时自动刷新
     if (!loading) {
-      fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, searchField, searchValue);
+      fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue);
     }
-  }, [searchValue, showFaxOnly, currentPage, pageSize]); // 移除 searchField 依赖
+  }, [searchValue, showFaxOnly, subscriptionStatus, currentPage, pageSize]); // 移除 searchField 依赖
 
   // 简化清空搜索函数
   const handleClearSearch = () => {
     setSearchField('company_name');
     setSearchValue('');
     setShowFaxOnly(false);
+    setSubscriptionStatus('all');
     searchForm.resetFields();
     setCurrentPage(1);
     // 不需要手动调用 fetchCustomers，useEffect 会自动处理
@@ -464,6 +474,28 @@ export default function CustomerManager() {
         
         return (
           <span className="text-green-600 font-medium">{t('customer.faxStatusActive')}</span>
+        );
+      },
+    },
+    {
+      title: t('customer.subscriptionStatus'),
+      dataIndex: 'unsubscribe',
+      key: 'unsubscribe',
+      render: (unsubscribe: boolean, record: Customer) => {
+        if (!record.email) return '-';
+        
+        if (unsubscribe) {
+          return (
+            <span className="text-red-600 font-medium">
+              {t('customer.unsubscribed')}
+            </span>
+          );
+        }
+        
+        return (
+          <span className="text-green-600 font-medium">
+            {t('customer.subscribed')}
+          </span>
         );
       },
     },
@@ -591,13 +623,32 @@ export default function CustomerManager() {
           </Form>
           
           {/* 新增：传真筛选复选框 */}
-          <div className="mt-4">
+          <div className="mt-4 flex items-center gap-4">
             <Checkbox
               checked={showFaxOnly}
               onChange={(e) => handleFaxOnlyChange(e.target.checked)}
             >
               {t('customer.showFaxOnly')}
             </Checkbox>
+            
+            {/* 新增：订阅状态筛选 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{t('customer.subscriptionStatus')}:</span>
+              <Select
+                value={subscriptionStatus}
+                onChange={(value) => {
+                  setSubscriptionStatus(value);
+                  setCurrentPage(1);
+                }}
+                style={{ width: 120 }}
+                size="small"
+                options={[
+                  { label: t('common.all'), value: 'all' },
+                  { label: t('customer.subscribed'), value: 'subscribed' },
+                  { label: t('customer.unsubscribed'), value: 'unsubscribed' },
+                ]}
+              />
+            </div>
           </div>
         </div>
 

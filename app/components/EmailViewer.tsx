@@ -66,6 +66,8 @@ interface Customer {
   id: string;
   company_name: string;
   email: string;
+  unsubscribe?: boolean; // 订阅状态
+  unsubscribe_at?: string; // 退订时间
   created_at: string;
   has_unread_emails?: boolean; // 添加未读邮件标记
 }
@@ -713,9 +715,16 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                             }`}>
                               {customer.email}
                             </p>
-                            <p className="text-xs text-gray-500">
-                              {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-gray-500">
+                                {t('customer.creationTime')}: {new Date(customer.created_at).toLocaleDateString()}
+                              </p>
+                              {customer.unsubscribe && (
+                                <span className="text-xs px-1 py-0.5 bg-red-100 text-red-600 rounded">
+                                  {t('customer.unsubscribed')}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
