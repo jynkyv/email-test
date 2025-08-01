@@ -538,13 +538,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 渲染模板卡片
   const renderTemplateCards = () => {
     return (
-      <div className="max-h-[272px] overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="max-h-[272px] overflow-y-auto p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {EMAIL_TEMPLATES.map((template) => (
             <Card
               key={template.id}
               hoverable
-              className={`cursor-pointer transition-all duration-200 ${
+              size="small"
+              className={`cursor-pointer transition-all duration-200 m-1 ${
                 selectedTemplate?.id === template.id 
                   ? 'ring-2 ring-blue-500 bg-blue-50' 
                   : 'hover:shadow-md'
@@ -552,29 +553,30 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               onClick={() => handleTemplateSelect(template)}
             >
               <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-gray-900 mb-1 truncate">
                     {template.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">
                     {template.description}
                   </p>
                   <div className="text-xs text-gray-500">
-                    <p><strong>主题：</strong>{template.subject}</p>
+                    <p className="truncate"><strong>主题：</strong>{template.subject}</p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <TemplateOutlined className="text-blue-500 text-xl" />
+                <div className="ml-2 flex-shrink-0">
+                  <TemplateOutlined className="text-blue-500 text-lg" />
                 </div>
               </div>
               
               {selectedTemplate?.id === template.id && (
-                <div className="mt-3 pt-3 border-t border-blue-200">
+                <div className="mt-2 pt-2 border-t border-blue-200">
                   <Button 
                     type="primary" 
                     size="small" 
                     icon={<EyeOutlined />}
                     onClick={(e) => handleTemplatePreview(template, e)}
+                    className="text-xs"
                   >
                     预览
                   </Button>
