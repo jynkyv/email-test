@@ -86,17 +86,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
   
-<<<<<<< HEAD
-  // 创建防抖的搜索函数
-  const debouncedSearch = debounce((field: string, value: string) => {
-    if (value && value.trim()) {
-      setCurrentPage(1);
-      fetchCustomers(1, pageSize, field, value.trim());
-    }
-  }, 500);
-=======
   // 移除防抖搜索函数，改为手动搜索
->>>>>>> feat-fax
   
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
@@ -104,11 +94,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setCurrentPage(page);
       fetchCustomers(page, pageSize);
     }
-<<<<<<< HEAD
   }, 1000);
-=======
-  }, 500);
->>>>>>> feat-fax
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
@@ -690,12 +676,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   style={{ width: 200 }}
                   onChange={(e) => {
                     const value = e.target.value;
-<<<<<<< HEAD
-                    // 使用防抖搜索
-                    debouncedSearch(searchField, value);
-=======
                     // 移除自动搜索，只在点击搜索按钮时搜索
->>>>>>> feat-fax
                   }}
                   onPressEnter={(e) => {
                     e.preventDefault();
