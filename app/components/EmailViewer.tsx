@@ -113,7 +113,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
       setCustomerCurrentPage(page);
       fetchCustomers(page, customerPageSize);
     }
-  }, 500);
+  }, 1000);
 
   // 获取客户列表
   const fetchCustomers = async (page = 1, size = 50, searchFieldParam?: string, searchValueParam?: string) => {
