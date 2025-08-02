@@ -121,10 +121,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { subject, content, recipients } = body;
+    const { subject, content, recipients, attachments } = body;
     const authHeader = request.headers.get('authorization');
     
-    console.log('审核申请请求数据:', { subject, content: content?.substring(0, 50), recipients_count: recipients?.length });
+    console.log('审核申请请求数据:', { 
+      subject, 
+      content: content?.substring(0, 50), 
+      recipients_count: recipients?.length,
+      attachments_count: attachments?.length || 0
+    });
     
     if (!authHeader) {
       return NextResponse.json(
@@ -178,6 +183,7 @@ export async function POST(request: NextRequest) {
         subject,
         content,
         recipients: recipients,
+        attachments: attachments || [],
         status: 'pending',
         created_at: new Date().toISOString()
       })

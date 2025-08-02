@@ -25,10 +25,26 @@ import {
   EditOutlined, 
   EyeOutlined,
   ClockCircleOutlined,
-  CodeOutlined
+  CodeOutlined,
+  PaperClipOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
+
+// 格式化文件大小
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+interface Attachment {
+  name: string;
+  size: number;
+  type: string;
+}
 
 interface Approval {
   id: string;
@@ -37,6 +53,7 @@ interface Approval {
   subject: string;
   content: string;
   recipients: string[];
+  attachments?: Attachment[];
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   approved_at?: string;
@@ -697,6 +714,26 @@ export default function ApprovalsPage() {
                     })()}
                   </div>
                 </div>
+                
+                {/* 附件显示 */}
+                {selectedApproval?.attachments && selectedApproval.attachments.length > 0 && (
+                  <div>
+                    <div className="font-medium text-gray-700">附件:</div>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="space-y-2">
+                        {selectedApproval.attachments.map((attachment, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <PaperClipOutlined className="text-blue-500" />
+                            <span className="text-sm text-gray-900">{attachment.name}</span>
+                            <span className="text-xs text-gray-500">
+                              ({formatFileSize(attachment.size)})
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

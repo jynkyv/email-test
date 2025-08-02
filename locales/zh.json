@@ -156,7 +156,16 @@
     "queueAddFailed": "添加邮件到队列失败",
     "fetchApprovalDetailFailed": "获取审核申请详情失败",
     "operationFailed": "操作失败",
-    "sendComplete": "发送完成。成功: {sent}, 失败: {failed}"
+    "sendComplete": "发送完成。成功: {sent}, 失败: {failed}",
+    "attachments": "附件",
+    "addAttachment": "添加PDF附件",
+    "attachmentLimit": "支持PDF文件，单个文件最大10MB，最多5个附件",
+    "attachmentUploaded": "附件已上传",
+    "attachmentDeleted": "附件已删除",
+    "attachmentUploadFailed": "附件上传失败",
+    "attachmentSizeLimit": "文件大小不能超过10MB",
+    "attachmentTypeLimit": "只能上传PDF文件",
+    "attachmentCountLimit": "最多只能上传5个附件"
   },
   "customer": {
     "customer": "客户",

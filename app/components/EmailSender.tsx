@@ -22,7 +22,8 @@ import {
   DatePicker,
   Select,
   Tooltip,
-  Tabs
+  Tabs,
+  Upload
 } from 'antd';
 import { 
   SendOutlined, 
@@ -33,7 +34,9 @@ import {
   CodeOutlined,
   EditOutlined,
   FileTextOutlined as TemplateOutlined,
-  EyeOutlined
+  EyeOutlined,
+  PaperClipOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -52,6 +55,16 @@ interface Customer {
   company_name: string;
   email: string;
   created_at: string;
+}
+
+interface Attachment {
+  uid: string;
+  name: string;
+  size: number;
+  type: string;
+  status: 'uploading' | 'done' | 'error';
+  url?: string;
+  path?: string;
 }
 
 interface EmailSenderProps {
@@ -88,6 +101,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 模板预览相关状态
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  
+  // 附件相关状态
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,6 +186,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       // 重置表单和选择
       form.resetFields();
       setSelectedCustomers([]);
+      setAttachments([]); // 清空附件
       
       // 设置回信内容 - 使用setTimeout确保表单字段已初始化
       setTimeout(() => {
@@ -213,6 +230,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setSelectedCustomers([]);
       setIsHtmlContent(false);
       setSelectedTemplate(null);
+      setAttachments([]); // 清空附件
     }
     // 当replyData为undefined时，不执行任何操作，保持当前状态
   }, [replyData, form]); // 移除customers依赖，避免客户列表更新时重置表单
@@ -435,6 +453,100 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 移除清空模板的逻辑，保持用户选择的内容
   };
 
+  // 处理文件上传
+  const handleFileUpload = async (file: File) => {
+    // 检查文件类型
+    if (!file.type.includes('pdf')) {
+      message.error(t('email.attachmentTypeLimit'));
+      return false;
+    }
+    
+    // 检查文件大小 (10MB限制)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      message.error(t('email.attachmentSizeLimit'));
+      return false;
+    }
+    
+    // 检查附件数量限制
+    if (attachments.length >= 5) {
+      message.error(t('email.attachmentCountLimit'));
+      return false;
+    }
+    
+    // 创建附件对象
+    const attachment: Attachment = {
+      uid: `${Date.now()}-${Math.random()}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      status: 'uploading'
+    };
+    
+    // 添加到附件列表
+    setAttachments(prev => [...prev, attachment]);
+    
+    try {
+      // 创建FormData
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // 上传文件
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // 更新附件状态
+        setAttachments(prev => 
+          prev.map(att => 
+            att.uid === attachment.uid 
+              ? { 
+                  ...att, 
+                  status: 'done' as const,
+                  url: result.file.url,
+                  path: result.file.path
+                }
+              : att
+          )
+        );
+        message.success(t('email.attachmentUploaded'));
+      } else {
+        // 上传失败，移除附件
+        setAttachments(prev => prev.filter(att => att.uid !== attachment.uid));
+        message.error(result.error || t('email.attachmentUploadFailed'));
+      }
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      // 上传失败，移除附件
+      setAttachments(prev => prev.filter(att => att.uid !== attachment.uid));
+      message.error(t('email.attachmentUploadFailed'));
+    }
+    
+    return false; // 阻止默认上传行为
+  };
+
+  // 删除附件
+  const handleRemoveAttachment = (uid: string) => {
+    setAttachments(prev => prev.filter(att => att.uid !== uid));
+    message.success(t('email.attachmentDeleted'));
+  };
+
+  // 格式化文件大小
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleSubmit = async (values: {
     to: string;
     subject: string;
@@ -483,7 +595,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           body: JSON.stringify({
             subject: values.subject,
             content: htmlContent,
-            recipients: recipients
+            recipients: recipients,
+            attachments: attachments.filter(att => att.status === 'done').map(att => ({
+              name: att.name,
+              size: att.size,
+              type: att.type,
+              url: att.url,
+              path: att.path
+            }))
           }),
         });
 
@@ -495,6 +614,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     form.resetFields();
     setSelectedCustomers([]);
     setSelectedTemplate(null);
+    setAttachments([]); // 清空附件
     // 通知父组件发送完成
     onSendComplete?.();
       } else {
@@ -540,6 +660,58 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   onClick={() => handleRemoveRecipient(customer.email)}
                   className="text-blue-700 hover:text-blue-900"
                 />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 渲染附件列表
+  const renderAttachments = () => {
+    if (attachments.length === 0) return null;
+    
+    return (
+      <div className="mt-2">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-gray-600">{t('email.attachments')} ({attachments.length}/5):</span>
+        </div>
+        <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-2">
+          <div className="space-y-2">
+            {attachments.map((attachment) => (
+              <div
+                key={attachment.uid}
+                className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded"
+              >
+                <div className="flex items-center gap-2">
+                  <PaperClipOutlined className="text-blue-500" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {attachment.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatFileSize(attachment.size)}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {attachment.status === 'uploading' && (
+                    <Spin size="small" />
+                  )}
+                                     {attachment.status === 'done' && (
+                     <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                       {t('email.attachmentUploaded')}
+                     </span>
+                   )}
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleRemoveAttachment(attachment.uid)}
+                    className="text-red-600 hover:text-red-800"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -714,6 +886,26 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 </div>
               </TabPane>
             </Tabs>
+          </Form.Item>
+
+          {/* 附件上传 */}
+          <Form.Item label={t('email.attachments')}>
+            <div className="space-y-2">
+              <Upload
+                beforeUpload={handleFileUpload}
+                showUploadList={false}
+                accept=".pdf"
+                multiple
+              >
+                <Button icon={<PaperClipOutlined />}>
+                  {t('email.addAttachment')}
+                </Button>
+              </Upload>
+              <div className="text-xs text-gray-500">
+                {t('email.attachmentLimit')}
+              </div>
+              {renderAttachments()}
+            </div>
           </Form.Item>
         </div>
 
