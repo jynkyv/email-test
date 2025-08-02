@@ -104,8 +104,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         page: page.toString(),
         pageSize: size.toString(),
         hasEmailOnly: 'true', // 只获取有邮箱的客户
-        searchField: searchFieldParam || searchField,
-        searchValue: searchValueParam || searchValue
+        searchField: searchFieldParam !== undefined ? searchFieldParam : searchField,
+        searchValue: searchValueParam !== undefined ? searchValueParam : searchValue
       });
       
       // 添加时间筛选参数
@@ -340,6 +340,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setEndDate(null);
     // 清空筛选时重置到第一页
     setCurrentPage(1);
+    // 立即获取数据，确保状态同步
+    fetchCustomers(1, pageSize);
   };
 
 
@@ -353,6 +355,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setSearchField(values.searchField);
       setSearchValue(values.searchValue.trim());
       setCurrentPage(1);
+      // 立即获取数据，确保状态同步
       fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
     }
   };
@@ -362,7 +365,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setSearchField(value);
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
-    // 不重新获取数据，只是清空搜索条件
+    setCurrentPage(1);
+    // 重新获取数据，确保状态同步
+    fetchCustomers(1, pageSize, value, '');
   };
 
   // 清空搜索
@@ -371,7 +376,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setSearchValue('');
     searchForm.resetFields();
     setCurrentPage(1);
-    fetchCustomers(1, pageSize);
+    // 立即获取数据，确保状态同步
+    fetchCustomers(1, pageSize, 'company_name', '');
   };
 
   const handleSubmit = async (values: {

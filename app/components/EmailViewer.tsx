@@ -120,8 +120,8 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
         pageSize: size.toString(),
         sortByUnread: 'true',
         hasEmailOnly: 'true', // 只获取有邮箱的客户
-        searchField: searchFieldParam || searchField,
-        searchValue: searchValueParam || searchValue
+        searchField: searchFieldParam !== undefined ? searchFieldParam : searchField,
+        searchValue: searchValueParam !== undefined ? searchValueParam : searchValue
       });
       
       const response = await fetch(`/api/customers?${params}`, {
@@ -198,7 +198,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSearchField(value);
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
-    // 不重新获取数据，只是清空搜索条件
+    // 清空选中的客户和邮件列表
+    setSelectedCustomer(null);
+    setSelectedEmail(null);
+    setEmails([]);
+    // 重新获取数据，确保状态同步
+    fetchCustomers(1, customerPageSize, value, '');
   };
 
   // 处理搜索按钮点击
@@ -206,6 +211,10 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     e.preventDefault();
     if (searchValue && searchValue.trim()) {
       setCustomerCurrentPage(1);
+      // 清空选中的客户和邮件列表
+      setSelectedCustomer(null);
+      setSelectedEmail(null);
+      setEmails([]);
       fetchCustomers(1, customerPageSize, searchField, searchValue.trim());
     }
   };
@@ -215,7 +224,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSearchField('company_name');
     setSearchValue('');
     setCustomerCurrentPage(1);
-    fetchCustomers(1, customerPageSize);
+    // 清空选中的客户和邮件列表
+    setSelectedCustomer(null);
+    setSelectedEmail(null);
+    setEmails([]);
+    // 立即获取数据，确保状态同步
+    fetchCustomers(1, customerPageSize, 'company_name', '');
   };
 
   // 更新邮件已读/未读状态

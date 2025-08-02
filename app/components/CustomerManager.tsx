@@ -125,8 +125,8 @@ export default function CustomerManager() {
       const params = new URLSearchParams({
         page: page.toString(),
         pageSize: size.toString(),
-        searchField: searchFieldParam || searchField,
-        searchValue: searchValueParam || searchValue
+        searchField: searchFieldParam !== undefined ? searchFieldParam : searchField,
+        searchValue: searchValueParam !== undefined ? searchValueParam : searchValue
       });
       
       // 添加传真筛选参数 - 使用传入的 faxOnly 参数，而不是状态
@@ -463,17 +463,19 @@ export default function CustomerManager() {
     setSearchField(value);
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
-    // 不重新获取数据，只是清空搜索条件
+    setCurrentPage(1);
+    // 重新获取数据，确保状态同步
+    fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, value, '');
   };
 
-  // 修改 useEffect，移除 searchField 依赖，避免切换搜索字段时自动刷新
-  useEffect(() => {
-    // 当搜索状态发生变化时，自动获取数据
-    // 注意：移除 searchField 依赖，避免切换搜索字段时自动刷新
-    if (!loading) {
-      fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue);
-    }
-  }, [searchValue, showFaxOnly, subscriptionStatus, currentPage, pageSize]); // 移除 searchField 依赖
+  // 移除这个useEffect，因为它会干扰手动调用
+  // useEffect(() => {
+  //   // 当搜索状态发生变化时，自动获取数据
+  //   // 注意：移除 searchField 依赖，避免切换搜索字段时自动刷新
+  //   if (!loading) {
+  //     fetchCustomersWithFaxFilter(currentPage, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue);
+  //   }
+  // }, [searchValue, showFaxOnly, subscriptionStatus, currentPage, pageSize]); // 移除 searchField 依赖
 
   // 简化清空搜索函数
   const handleClearSearch = () => {
@@ -483,7 +485,8 @@ export default function CustomerManager() {
     setSubscriptionStatus('all');
     searchForm.resetFields();
     setCurrentPage(1);
-    // 不需要手动调用 fetchCustomers，useEffect 会自动处理
+    // 立即调用获取数据，确保状态同步
+    fetchCustomersWithFaxFilter(1, pageSize, false, 'all', 'company_name', '');
   };
 
   // 处理搜索按钮点击
@@ -495,8 +498,8 @@ export default function CustomerManager() {
       setSearchField(values.searchField);
       setSearchValue(values.searchValue.trim());
       setCurrentPage(1);
-      // 手动调用搜索，因为 useEffect 不会监听 searchField 变化
-      fetchCustomers(1, pageSize, values.searchField, values.searchValue.trim());
+      // 立即调用搜索，确保状态同步
+      fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, values.searchField, values.searchValue.trim());
     }
   };
 
