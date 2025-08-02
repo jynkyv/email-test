@@ -587,9 +587,9 @@ export default function ApprovalsPage() {
         footer={null}
         width={800}
         destroyOnClose
-        closable={false}
-        maskClosable={false}
-        keyboard={false}
+        closable={true}
+        maskClosable={true}
+        keyboard={true}
       >
         <div className="space-y-6">
           {/* 审核状态信息 */}
@@ -723,33 +723,13 @@ export default function ApprovalsPage() {
                     <Button icon={<EditOutlined />} onClick={handleStartEdit}>
                       {t('common.edit')}
                     </Button>
-                    <Popconfirm
-                      title={t('approval.approveConfirmTitle')}
-                      description={t('approval.approveConfirmDescription')}
-                      onConfirm={() => handleApproveWithProgress(selectedApproval.id)}
-                      okText={t('common.confirm')}
-                      cancelText={t('common.cancel')}
-                    >
-                      <Button type="primary" icon={<CheckOutlined />}>
-                        {t('approval.approve')}
-                      </Button>
-                    </Popconfirm>
-                    <Popconfirm
-                      title={t('approval.rejectConfirmTitle')}
-                      description={t('approval.rejectConfirmDescription')}
-                      onConfirm={() => handleApprovalAction(selectedApproval.id, 'reject')}
-                      okText={t('common.confirm')}
-                      cancelText={t('common.cancel')}
-                      okType="danger"
-                    >
-                      <Button danger icon={<CloseOutlined />}>
-                        {t('approval.reject')}
-                      </Button>
-                    </Popconfirm>
                   </>
                 )}
               </>
             )}
+            <Button onClick={() => setDetailModalVisible(false)}>
+              {t('common.close')}
+            </Button>
           </div>
         </div>
       </Modal>
