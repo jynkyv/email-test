@@ -454,7 +454,7 @@ export default function CustomerManager() {
     setShowFaxOnly(checked);
     setCurrentPage(1);
     // 直接传递checked参数，而不是依赖状态
-    fetchCustomersWithFaxFilter(1, pageSize, checked);
+    fetchCustomersWithFaxFilter(1, pageSize, checked, subscriptionStatus, searchField, searchValue);
   };
 
 
@@ -741,6 +741,8 @@ export default function CustomerManager() {
                 onChange={(value) => {
                   setSubscriptionStatus(value);
                   setCurrentPage(1);
+                  // 立即获取数据，确保状态同步
+                  fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, value, searchField, searchValue);
                 }}
                 style={{ width: 120 }}
                 size="small"
@@ -778,10 +780,10 @@ export default function CustomerManager() {
             },
             showTotal: (total) => t('common.totalRecords', { total }),
             onChange: (page, size) => {
-              fetchCustomers(page, size);
+              fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchField, searchValue);
             },
             onShowSizeChange: (current, size) => {
-              fetchCustomers(1, size);
+              fetchCustomersWithFaxFilter(1, size, showFaxOnly, subscriptionStatus, searchField, searchValue);
             },
             itemRender: (page, type, originalElement) => {
               if (type === 'page') {
@@ -789,7 +791,7 @@ export default function CustomerManager() {
                   <Button
                     type={page === currentPage ? 'primary' : 'default'}
                     size="small"
-                    onClick={() => fetchCustomers(page, pageSize)}
+                    onClick={() => fetchCustomersWithFaxFilter(page, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue)}
                   >
                     {page}
                   </Button>
