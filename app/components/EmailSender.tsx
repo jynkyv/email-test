@@ -165,16 +165,25 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 当replyData为null时，清空表单和选择
   useEffect(() => {
     if (replyData) {
+      console.log('收到回复数据:', replyData);
+      
       // 重置表单和选择
       form.resetFields();
       setSelectedCustomers([]);
       
-      // 设置回信内容
-      form.setFieldsValue({
-        to: replyData.to,
-        subject: replyData.subject,
-        content: replyData.content,
-      });
+      // 设置回信内容 - 使用setTimeout确保表单字段已初始化
+      setTimeout(() => {
+        form.setFieldsValue({
+          to: replyData.to,
+          subject: replyData.subject,
+          content: replyData.content,
+        });
+        console.log('表单字段已设置:', {
+          to: replyData.to,
+          subject: replyData.subject,
+          content: replyData.content,
+        });
+      }, 0);
 
       // 设置HTML内容标识
       setIsHtmlContent(replyData.isHtml || false);
@@ -423,9 +432,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 处理Tab切换
   const handleTabChange = (key: string) => {
     setActiveTab(key);
-    if (key === 'html') {
-      setSelectedTemplate(null);
-    }
+    // 移除清空模板的逻辑，保持用户选择的内容
   };
 
   const handleSubmit = async (values: {
@@ -672,20 +679,22 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 } 
                 key="html"
               >
-                <TextArea
-                  rows={12}
-                  placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
-                  showCount
-                  maxLength={10000}
-                  onChange={(e) => {
-                    // 检测用户输入的内容是否包含HTML标签
-                    const content = e.target.value;
-                    const hasHtmlTags = content.includes('<') && content.includes('>');
-                    if (hasHtmlTags && !isHtmlContent) {
-                      setIsHtmlContent(true);
-                    }
-                  }}
-                />
+                <Form.Item name="content" noStyle>
+                  <TextArea
+                    rows={12}
+                    placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
+                    showCount
+                    maxLength={10000}
+                    onChange={(e) => {
+                      // 检测用户输入的内容是否包含HTML标签
+                      const content = e.target.value;
+                      const hasHtmlTags = content.includes('<') && content.includes('>');
+                      if (hasHtmlTags && !isHtmlContent) {
+                        setIsHtmlContent(true);
+                      }
+                    }}
+                  />
+                </Form.Item>
               </TabPane>
               
               <TabPane 

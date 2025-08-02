@@ -99,6 +99,7 @@
     "subjectPlaceholder": "邮件主题 ",
     "contentPlaceholder": "请输入邮件内容...",
     "contentPlaceholderWithHtml": "请输入邮件内容...支持HTML标签",
+    "htmlContentPlaceholder": "请输入HTML内容...支持HTML标签",
     "htmlSupported": "支持HTML格式",
     "htmlSupportText": "HTML支持",
     "subjectRequired": "请输入邮件主题",

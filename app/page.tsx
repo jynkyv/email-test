@@ -25,6 +25,7 @@ interface ReplyData {
   to: string;
   subject: string;
   content: string;
+  isHtml?: boolean; // 标识内容是否为HTML格式
 }
 
 export default function Home() {

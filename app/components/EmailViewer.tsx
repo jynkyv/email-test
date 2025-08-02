@@ -517,7 +517,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     let replyContent: string;
     if (htmlContent) {
       // 保留HTML格式，添加回复前缀
-      replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${htmlContent}`;
+      replyContent = `\n\n<br>\n--- ${t('email.originalEmail')} ---\n${htmlContent}`;
     } else {
       // 纯文本内容
       replyContent = `\n\n--- ${t('email.originalEmail')} ---\n${textContent}`;
