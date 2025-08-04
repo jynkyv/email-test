@@ -257,7 +257,14 @@
     "batchFaxPartial": "FAX一括送信が部分的に成功しました：成功{success}件、失敗{fail}件。",
     "batchFaxFailed": "FAX一括送信に失敗しました",
     "pleaseSelectCustomers": "FAXを送信する顧客を選択してください",
-    "noValidFaxCustomers": "選択された顧客に有効なFAX番号がないか、既に送信済みです"
+    "noValidFaxCustomers": "選択された顧客に有効なFAX番号がないか、既に送信済みです",
+    "exportFaxNumbers": "FAX番号エクスポート",
+    "exportedFaxNumbers": "エクスポートされたFAX番号",
+    "exportDescription": "以下は選択された顧客のFAX番号です。カンマ区切り形式で、Fax Plusに直接コピーして使用できます：",
+    "copyToClipboard": "クリップボードにコピー",
+    "faxNumbersCopied": "FAX番号がクリップボードにコピーされました",
+    "copyFailed": "コピーに失敗しました。手動でコピーしてください",
+    "selectionHint": "注意：FAX番号があり、まだ送信されていない顧客のみ選択できます"
   },
   "approval": {
     "approvalManagement": "承認管理",
