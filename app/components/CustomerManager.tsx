@@ -24,7 +24,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined, SendOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined, SendOutlined, CopyOutlined } from '@ant-design/icons';
 
 interface Customer {
   id: string;
@@ -110,6 +110,10 @@ export default function CustomerManager() {
   // 新增：创建时间筛选状态
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  
+  // 新增：导出传真相关状态
+  const [exportModalVisible, setExportModalVisible] = useState(false);
+  const [exportedFaxNumbers, setExportedFaxNumbers] = useState<string>('');
   
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -504,6 +508,38 @@ export default function CustomerManager() {
     fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, null, null);
   };
 
+  // 导出传真号码
+  const handleExportFaxNumbers = () => {
+    if (selectedCustomers.length === 0) {
+      message.warning(t('customer.pleaseSelectCustomers'));
+      return;
+    }
+
+    // 过滤出有传真号码的客户
+    const customersWithFax = selectedCustomers.filter(customer => customer.fax && customer.fax.trim());
+    
+    if (customersWithFax.length === 0) {
+      message.warning(t('customer.noValidFaxCustomers'));
+      return;
+    }
+
+    // 提取传真号码并格式化为指定格式
+    const faxNumbers = customersWithFax.map(customer => customer.fax).join(',');
+    setExportedFaxNumbers(faxNumbers);
+    setExportModalVisible(true);
+  };
+
+  // 复制传真号码到剪贴板
+  const handleCopyFaxNumbers = async () => {
+    try {
+      await navigator.clipboard.writeText(exportedFaxNumbers);
+      message.success(t('customer.faxNumbersCopied'));
+    } catch (error) {
+      console.error('复制失败:', error);
+      message.error(t('customer.copyFailed'));
+    }
+  };
+
 
   // 处理搜索字段变化
   const handleSearchFieldChange = (value: string) => {
@@ -690,17 +726,32 @@ export default function CustomerManager() {
             <span className="text-lg font-medium">{t('customer.customerList')}</span>
           </div>
           <Space>
-            {/* 新增：批量发送传真按钮 */}
-            {selectedCustomers.length > 0 && (userRole === 'admin' || userRole === 'employee') && (
-              <Button
-                type="primary"
-                icon={<SendOutlined />}
-                onClick={handleBatchSendFax}
-                loading={batchFaxLoading}
-                size="large"
-              >
-                {t('customer.batchSendFax')} ({selectedCustomers.length})
-              </Button>
+            {/* 新增：批量操作按钮 */}
+            {selectedCustomers.length > 0 && (
+              <Space>
+                {/* 导出传真号码按钮 */}
+                <Button
+                  type="default"
+                  icon={<CopyOutlined />}
+                  onClick={handleExportFaxNumbers}
+                  size="large"
+                >
+                  {t('customer.exportFaxNumbers')} ({selectedCustomers.length})
+                </Button>
+                
+                {/* 批量发送传真按钮 */}
+                {(userRole === 'admin' || userRole === 'employee') && (
+                  <Button
+                    type="primary"
+                    icon={<SendOutlined />}
+                    onClick={handleBatchSendFax}
+                    loading={batchFaxLoading}
+                    size="large"
+                  >
+                    {t('customer.batchSendFax')} ({selectedCustomers.length})
+                  </Button>
+                )}
+              </Space>
             )}
             <Button
               type="primary"
@@ -835,8 +886,8 @@ export default function CustomerManager() {
             selectedRowKeys: selectedRowKeys,
             onChange: handleSelectionChange,
             getCheckboxProps: (record: Customer) => ({
-              // 只有有传真号码且未发送的客户才能被选择
-              disabled: !record.fax || record.fax_status === 'active',
+              // 只有有传真号码的客户才能被选择
+              disabled: !record.fax,
             }),
           }}
           pagination={{
@@ -874,6 +925,35 @@ export default function CustomerManager() {
           }}
         />
       </Card>
+
+      {/* 导出传真号码 Modal */}
+      <Modal
+        title={t('customer.exportFaxNumbers')}
+        open={exportModalVisible}
+        onCancel={() => setExportModalVisible(false)}
+        footer={[
+          <Button key="copy" type="primary" icon={<CopyOutlined />} onClick={handleCopyFaxNumbers}>
+            {t('customer.copyToClipboard')}
+          </Button>,
+          <Button key="close" onClick={() => setExportModalVisible(false)}>
+            {t('common.close')}
+          </Button>
+        ]}
+        width={600}
+        destroyOnClose
+      >
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('customer.exportedFaxNumbers')}</h3>
+            <p className="text-sm text-gray-600 mb-4">{t('customer.exportDescription')}</p>
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono">
+                {exportedFaxNumbers}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       {/* 创建客户 Modal */}
       <Modal
