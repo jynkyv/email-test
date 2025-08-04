@@ -22,114 +22,23 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [{
 <body style="margin: 0; padding: 0;">
 <div style="max-width: 750px; margin: 0 auto;">
   <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
-  </a>
-  <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
-  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/hero-1.png" style="width: 100%; display: block;">
   </a>
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <a href="" target="_blank" style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/qr-code-detail.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/footer-left-1.png" style="width: 100%; display: block;">
     </a>
     <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank" style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/qr-code-appstore.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/footer-middle-1.png" style="width: 100%; display: block;">
     </a>
     <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank" style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/qr-code-googleplay.png" style="width: 100%; display: block;">
+      <img src="https://email-test-gamma.vercel.app/footer-right-1.png" style="width: 100%; display: block;">
     </a>
   </div>
-  <img src="https://email-test-gamma.vercel.app/detail.png" style="width: 100%; display: block;">
-  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/footer-db.png" style="width: 100%; display: block; position: relative; top: -37px;">
-  </a>
 </div>
 </body>
 </html>`,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
-},
-  {
-    id: 'zb',
-    name: '営業部2初期費用0円',
-    subject: '【初期費用0円】技能実習生受け入れキャンペーン!',
-    content: `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>【初期費用0円】技能実習生受け入れキャンペーン!</title>
-</head>
-<body style="margin: 0; padding: 0;">
-  <div style="max-width: 750px; margin: 0 auto;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
-    </a>
-    <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
-    </a>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <a href="" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-detail.png" style="width: 100%; display: block;">
-      </a>
-      <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-appstore.png" style="width: 100%; display: block;">
-      </a>
-      <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-googleplay.png" style="width: 100%; display: block;">
-      </a>
-    </div>
-    <img src="https://email-test-gamma.vercel.app/detail.png" style="width: 100%; display: block;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/footer-zb.png" style="width: 100%; display: block; position: relative; top: -37px;">
-    </a>
-  </div>
-</body>
-</html>`,
-    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-    category: 'default'
-  },
-  {
-    id: 'jz',
-    name: '営業部3初期費用0円',
-    subject: '【初期費用0円】技能実習生受け入れキャンペーン!',
-    content: `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>【初期費用0円】技能実習生受け入れキャンペーン!</title>
-</head>
-<body style="margin: 0; padding: 0;">
-  <div style="max-width: 750px; margin: 0 auto;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/header.png" style="width: 100%; display: block;">
-    </a>
-    <img src="https://email-test-gamma.vercel.app/hero.png" style="width: 100%; display: block;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/web-button.png" style="width: 100%; display: block;">
-    </a>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <a href="" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-detail.png" style="width: 100%; display: block;">
-      </a>
-      <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-appstore.png" style="width: 100%; display: block;">
-      </a>
-      <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank" style="display: inline-block;">
-        <img src="https://email-test-gamma.vercel.app/qr-code-googleplay.png" style="width: 100%; display: block;">
-      </a>
-    </div>
-    <img src="https://email-test-gamma.vercel.app/detail.png" style="width: 100%; display: block;">
-    <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
-      <img src="https://email-test-gamma.vercel.app/footer-jz.png" style="width: 100%; display: block; position: relative; top: -37px;">
-    </a>
-  </div>
-</body>
-</html>`,
-    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-    category: 'default'
-  },
-  
+}
 ]; 
