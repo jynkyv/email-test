@@ -103,7 +103,6 @@
     "insertTemplate": "插入模板",
     "selectTemplate": "选择邮件模板",
     "templateSelectionDescription": "选择以下模板之一，点击卡片即可将模板内容插入到编辑框中。",
-    "insertedContent": "插入到编辑框的内容",
     "htmlSupported": "支持HTML格式",
     "htmlSupportText": "HTML支持",
     "subjectRequired": "请输入邮件主题",

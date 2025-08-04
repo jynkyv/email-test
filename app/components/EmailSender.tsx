@@ -763,27 +763,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 />
               </div>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">{t('email.insertedContent')}</h3>
-              <div className="border rounded-lg p-4 bg-gray-50 max-h-96 overflow-y-auto">
-                <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono">
-                  {(() => {
-                    let templateContent = previewTemplate.content;
-                    
-                    // 如果模板包含完整的HTML文档结构，只提取body内的内容
-                    if (templateContent.includes('<body') && templateContent.includes('</body>')) {
-                      const bodyMatch = templateContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-                      if (bodyMatch) {
-                        templateContent = bodyMatch[1].trim();
-                      }
-                    }
-                    
-                    return templateContent;
-                  })()}
-                </pre>
-              </div>
-            </div>
           </div>
         )}
       </Modal>
