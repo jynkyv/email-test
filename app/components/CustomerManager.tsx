@@ -515,8 +515,10 @@ export default function CustomerManager() {
       return;
     }
 
-    // 过滤出有传真号码的客户
-    const customersWithFax = selectedCustomers.filter(customer => customer.fax && customer.fax.trim());
+    // 过滤出有传真号码且未发送的客户
+    const customersWithFax = selectedCustomers.filter(customer => 
+      customer.fax && customer.fax.trim() && customer.fax_status !== 'active'
+    );
     
     if (customersWithFax.length === 0) {
       message.warning(t('customer.noValidFaxCustomers'));
@@ -524,7 +526,14 @@ export default function CustomerManager() {
     }
 
     // 提取传真号码并格式化为指定格式
-    const faxNumbers = customersWithFax.map(customer => customer.fax).join(',');
+    const faxNumbers = customersWithFax.map(customer => {
+      let fax = customer.fax;
+      // 去掉第一个0并添加+81区号
+      if (fax && fax.startsWith('0')) {
+        fax = '+81' + fax.substring(1);
+      }
+      return fax;
+    }).join(',');
     setExportedFaxNumbers(faxNumbers);
     setExportModalVisible(true);
   };
@@ -753,6 +762,11 @@ export default function CustomerManager() {
                 )}
               </Space>
             )}
+            
+            {/* 添加选择提示 */}
+            <div className="text-sm text-gray-500 mt-2">
+              {t('customer.selectionHint')}
+            </div>
             <Button
               type="primary"
               icon={<UploadOutlined />}
@@ -886,9 +900,25 @@ export default function CustomerManager() {
             selectedRowKeys: selectedRowKeys,
             onChange: handleSelectionChange,
             getCheckboxProps: (record: Customer) => ({
-              // 只有有传真号码的客户才能被选择
-              disabled: !record.fax,
+              // 只有有传真号码且未发送的客户才能被选择
+              disabled: !record.fax || record.fax_status === 'active',
             }),
+            // 自定义全选逻辑，只选择符合条件的客户
+            onSelectAll: (selected, selectedRows, changeRows) => {
+              if (selected) {
+                // 全选时只选择有传真且未发送的客户
+                const validCustomers = changeRows.filter(record => 
+                  record.fax && record.fax.trim() && record.fax_status !== 'active'
+                );
+                const validKeys = validCustomers.map(record => record.id);
+                setSelectedRowKeys(validKeys);
+                setSelectedCustomers(validCustomers);
+              } else {
+                // 取消全选
+                setSelectedRowKeys([]);
+                setSelectedCustomers([]);
+              }
+            },
           }}
           pagination={{
             current: currentPage,
@@ -900,10 +930,16 @@ export default function CustomerManager() {
             },
             showTotal: (total) => t('common.totalRecords', { total }),
             onChange: (page, size) => {
+              // 切换分页时重置全选状态
+              setSelectedRowKeys([]);
+              setSelectedCustomers([]);
               fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
             },
             onShowSizeChange: (current, size) => {
-                              fetchCustomersWithFaxFilter(1, size, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
+              // 切换页面大小时重置全选状态
+              setSelectedRowKeys([]);
+              setSelectedCustomers([]);
+              fetchCustomersWithFaxFilter(1, size, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
             },
             itemRender: (page, type, originalElement) => {
               if (type === 'page') {
@@ -911,7 +947,12 @@ export default function CustomerManager() {
                   <Button
                     type={page === currentPage ? 'primary' : 'default'}
                     size="small"
-                    onClick={() => fetchCustomersWithFaxFilter(page, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate)}
+                    onClick={() => {
+                      // 切换分页时重置全选状态
+                      setSelectedRowKeys([]);
+                      setSelectedCustomers([]);
+                      fetchCustomersWithFaxFilter(page, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
+                    }}
                   >
                     {page}
                   </Button>
