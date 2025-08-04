@@ -246,6 +246,7 @@
     "subscriptionStatus": "订阅状态",
     "subscribed": "订阅中",
     "unsubscribed": "已退订",
+    "createdAt": "创建时间",
     "batchSendFax": "批量发送传真",
     "batchFaxConfirm": "确定要批量发送传真给 {count} 个客户吗？此操作不可撤销。",
     "batchFaxSuccess": "批量传真发送成功！成功发送 {success} 个，共 {total} 个客户。",

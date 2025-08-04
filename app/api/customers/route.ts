@@ -87,11 +87,13 @@ export async function GET(request: NextRequest) {
 
     // 添加时间筛选
     if (startDate) {
+      console.log('应用开始时间筛选:', startDate);
       query = query.gte('created_at', startDate);
     }
     if (endDate) {
       const endDateTime = new Date(endDate);
       endDateTime.setHours(23, 59, 59, 999);
+      console.log('应用结束时间筛选:', endDateTime.toISOString());
       query = query.lte('created_at', endDateTime.toISOString());
     }
 

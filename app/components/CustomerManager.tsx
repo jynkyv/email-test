@@ -19,8 +19,10 @@ import {
   Upload,
   Badge,
   Select,
-  Checkbox
+  Checkbox,
+  DatePicker
 } from 'antd';
+import dayjs from 'dayjs';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { PlusOutlined, UserOutlined, TeamOutlined, DeleteOutlined, UploadOutlined, DownloadOutlined, SendOutlined } from '@ant-design/icons';
 
@@ -105,6 +107,10 @@ export default function CustomerManager() {
   // 新增：订阅状态筛选
   const [subscriptionStatus, setSubscriptionStatus] = useState<'all' | 'subscribed' | 'unsubscribed'>('all');
   
+  // 新增：创建时间筛选状态
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  
   // Modal 相关状态
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -119,7 +125,7 @@ export default function CustomerManager() {
   }, []);
 
   // 新增：带传真筛选的获取客户函数
-  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, subscriptionStatusParam = subscriptionStatus, searchFieldParam?: string, searchValueParam?: string) => {
+  const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, subscriptionStatusParam = subscriptionStatus, searchFieldParam?: string, searchValueParam?: string, startDateParam?: Date | null, endDateParam?: Date | null) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -139,7 +145,18 @@ export default function CustomerManager() {
         params.append('subscriptionStatus', subscriptionStatusParam);
       }
       
-      console.log('Fetch customers with fax filter:', { faxOnly, params: params.toString() });
+      // 添加创建时间筛选参数
+      const startDateToUse = startDateParam !== undefined ? startDateParam : startDate;
+      const endDateToUse = endDateParam !== undefined ? endDateParam : endDate;
+      
+      if (startDateToUse) {
+        params.append('startDate', startDateToUse.toISOString());
+      }
+      if (endDateToUse) {
+        params.append('endDate', endDateToUse.toISOString());
+      }
+      
+      console.log('Fetch customers with fax filter:', { faxOnly, startDateToUse, endDateToUse, params: params.toString() });
       
       const response = await fetch(`/api/customers?${params}`, {
         headers: {
@@ -164,7 +181,7 @@ export default function CustomerManager() {
 
   // 修改原有的fetchCustomers函数，使用新的函数
   const fetchCustomers = async (page = currentPage, size = pageSize, searchFieldParam?: string, searchValueParam?: string) => {
-    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchFieldParam, searchValueParam);
+    return fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchFieldParam, searchValueParam, startDate, endDate);
   };
 
   // 新增：处理多选变化
@@ -454,7 +471,37 @@ export default function CustomerManager() {
     setShowFaxOnly(checked);
     setCurrentPage(1);
     // 直接传递checked参数，而不是依赖状态
-    fetchCustomersWithFaxFilter(1, pageSize, checked, subscriptionStatus, searchField, searchValue);
+    fetchCustomersWithFaxFilter(1, pageSize, checked, subscriptionStatus, searchField, searchValue, startDate, endDate);
+  };
+
+  // 处理创建时间筛选变化
+  const handleDateRangeChange = (dates: any) => {
+    let newStartDate: Date | null = null;
+    let newEndDate: Date | null = null;
+    
+    if (dates && dates.length === 2) {
+      newStartDate = dates[0].toDate();
+      newEndDate = dates[1].toDate();
+      setStartDate(newStartDate);
+      setEndDate(newEndDate);
+    } else {
+      setStartDate(null);
+      setEndDate(null);
+    }
+    // 时间筛选变化时重置到第一页
+    setCurrentPage(1);
+    // 立即获取数据，使用新的时间值
+    fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, newStartDate, newEndDate);
+  };
+
+  // 清空时间筛选
+  const handleClearDateFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
+    // 清空筛选时重置到第一页
+    setCurrentPage(1);
+    // 立即获取数据，使用清空后的时间值
+    fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, null, null);
   };
 
 
@@ -483,10 +530,12 @@ export default function CustomerManager() {
     setSearchValue('');
     setShowFaxOnly(false);
     setSubscriptionStatus('all');
+    setStartDate(null);
+    setEndDate(null);
     searchForm.resetFields();
     setCurrentPage(1);
     // 立即调用获取数据，确保状态同步
-    fetchCustomersWithFaxFilter(1, pageSize, false, 'all', 'company_name', '');
+    fetchCustomersWithFaxFilter(1, pageSize, false, 'all', 'company_name', '', null, null);
   };
 
   // 处理搜索按钮点击
@@ -499,7 +548,7 @@ export default function CustomerManager() {
       setSearchValue(values.searchValue.trim());
       setCurrentPage(1);
       // 立即调用搜索，确保状态同步
-      fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, values.searchField, values.searchValue.trim());
+      fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, values.searchField, values.searchValue.trim(), startDate, endDate);
     }
   };
 
@@ -742,7 +791,7 @@ export default function CustomerManager() {
                   setSubscriptionStatus(value);
                   setCurrentPage(1);
                   // 立即获取数据，确保状态同步
-                  fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, value, searchField, searchValue);
+                  fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, value, searchField, searchValue, startDate, endDate);
                 }}
                 style={{ width: 120 }}
                 size="small"
@@ -752,6 +801,26 @@ export default function CustomerManager() {
                   { label: t('customer.unsubscribed'), value: 'unsubscribed' },
                 ]}
               />
+            </div>
+            
+            {/* 新增：创建时间筛选 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{t('customer.createdAt')}:</span>
+              <DatePicker.RangePicker
+                value={startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null}
+                onChange={handleDateRangeChange}
+                size="small"
+                style={{ width: 240 }}
+                placeholder={[t('customer.startDate'), t('customer.endDate')]}
+                format="YYYY-MM-DD"
+              />
+              <Button 
+                size="small" 
+                onClick={handleClearDateFilter}
+                disabled={!startDate && !endDate}
+              >
+                {t('common.clear')}
+              </Button>
             </div>
           </div>
         </div>
@@ -780,10 +849,10 @@ export default function CustomerManager() {
             },
             showTotal: (total) => t('common.totalRecords', { total }),
             onChange: (page, size) => {
-              fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchField, searchValue);
+              fetchCustomersWithFaxFilter(page, size, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
             },
             onShowSizeChange: (current, size) => {
-              fetchCustomersWithFaxFilter(1, size, showFaxOnly, subscriptionStatus, searchField, searchValue);
+                              fetchCustomersWithFaxFilter(1, size, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate);
             },
             itemRender: (page, type, originalElement) => {
               if (type === 'page') {
@@ -791,7 +860,7 @@ export default function CustomerManager() {
                   <Button
                     type={page === currentPage ? 'primary' : 'default'}
                     size="small"
-                    onClick={() => fetchCustomersWithFaxFilter(page, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue)}
+                    onClick={() => fetchCustomersWithFaxFilter(page, pageSize, showFaxOnly, subscriptionStatus, searchField, searchValue, startDate, endDate)}
                   >
                     {page}
                   </Button>
