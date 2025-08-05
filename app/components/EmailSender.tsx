@@ -117,6 +117,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         page: page.toString(),
         pageSize: size.toString(),
         hasEmailOnly: 'true', // 只获取有邮箱的客户
+        subscriptionStatus: 'subscribed', // 只获取未退订的客户
         searchField: searchFieldParam !== undefined ? searchFieldParam : searchField,
         searchValue: searchValueParam !== undefined ? searchValueParam : searchValue
       });
