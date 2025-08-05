@@ -934,7 +934,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                       if (displayMode === 'html' && htmlContent) {
                         return (
                           <div 
-                            className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800"
+                            className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800 prose-img:my-0 prose-img:mx-0"
                             dangerouslySetInnerHTML={{ 
                               __html: sanitizeHtml(htmlContent) 
                             }}
