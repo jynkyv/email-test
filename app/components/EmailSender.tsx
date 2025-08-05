@@ -417,13 +417,37 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       }
     }
     
+    // 检查是否已经应用过这个模板
+    const templateSignature = template.id + '_' + template.name;
+    const appliedTemplates = currentContent.match(/<!-- Template: ([^>]+) -->/g) || [];
+    
+    // 检查是否已经应用过这个模板
+    const isAlreadyApplied = appliedTemplates.some((signature: string) => 
+      signature.includes(templateSignature)
+    );
+    
+    if (isAlreadyApplied) {
+      message.warning(`模板 "${template.name}" 已经应用过了，避免重复应用`);
+      setShowTemplateModal(false);
+      return;
+    }
+    
     // 在光标位置插入模板内容，如果没有光标位置则插入到末尾
-    const newContent = currentContent + '\n\n' + templateContent;
+    const templateWithSignature = `<!-- Template: ${templateSignature} -->\n${templateContent}`;
+    const newContent = currentContent + '\n\n' + templateWithSignature;
+    
+    // 准备更新的表单字段
+    const updateFields: any = {
+      content: newContent
+    };
+    
+    // 只有当模板的subject不为空时才应用到主题字段
+    if (template.subject && template.subject.trim()) {
+      updateFields.subject = template.subject;
+    }
     
     // 更新表单内容
-    form.setFieldsValue({
-      content: newContent
-    });
+    form.setFieldsValue(updateFields);
     
     // 设置HTML内容标识
     setIsHtmlContent(true);
@@ -448,6 +472,16 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setShowPreviewModal(false);
       setPreviewTemplate(null);
     }
+  };
+
+  // 清除模板标记，允许重新应用模板
+  const clearTemplateSignatures = () => {
+    const currentContent = form.getFieldValue('content') || '';
+    const cleanedContent = currentContent.replace(/<!-- Template: [^>]+ -->\n/g, '');
+    form.setFieldsValue({
+      content: cleanedContent
+    });
+    message.success('已清除模板标记，可以重新应用模板');
   };
 
   const handleSubmit = async (values: {
@@ -772,13 +806,25 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         title={t('email.selectTemplate')}
         open={showTemplateModal}
         onCancel={() => setShowTemplateModal(false)}
-        footer={null}
+        footer={[
+          <Button key="clear" onClick={clearTemplateSignatures} type="default">
+            清除模板标记
+          </Button>,
+          <Button key="cancel" onClick={() => setShowTemplateModal(false)}>
+            关闭
+          </Button>
+        ]}
         width={800}
         destroyOnClose
       >
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
             {t('email.templateSelectionDescription')}
+          </div>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="text-sm text-blue-800">
+              <strong>提示：</strong>每个模板只能应用一次，如需重新应用请点击"清除模板标记"
+            </div>
           </div>
           {renderTemplateCards()}
         </div>
