@@ -22,6 +22,7 @@ import {
   Row,
   Col
 } from 'antd';
+import type { TableProps } from 'antd';
 import { 
   CheckOutlined, 
   CloseOutlined, 
@@ -81,7 +82,7 @@ export default function ApprovalsPage() {
   const [applicantName, setApplicantName] = useState('');
   
   // 批量操作相关状态
-  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [batchLoading, setBatchLoading] = useState(false);
 
   // 获取审核列表
@@ -328,7 +329,7 @@ export default function ApprovalsPage() {
           const totalCount = selectedRowKeys.length;
 
           for (let i = 0; i < selectedRowKeys.length; i++) {
-            const id = selectedRowKeys[i];
+            const id = selectedRowKeys[i].toString();
             try {
               const response = await fetch(`/api/email-approvals/${id}`, {
                 method: 'PUT',
@@ -395,7 +396,7 @@ export default function ApprovalsPage() {
           const totalCount = selectedRowKeys.length;
 
           for (let i = 0; i < selectedRowKeys.length; i++) {
-            const id = selectedRowKeys[i];
+            const id = selectedRowKeys[i].toString();
             try {
               const response = await fetch(`/api/email-approvals/${id}`, {
                 method: 'PUT',
@@ -452,15 +453,8 @@ export default function ApprovalsPage() {
       const values = await editForm.validateFields();
       setUpdating(true);
 
-      // 智能处理内容：如果包含HTML标签，直接使用；否则转换为HTML
-      let htmlContent;
-      if (values.content.includes('<') && values.content.includes('>')) {
-        // 检测到HTML标签，直接使用
-        htmlContent = values.content;
-      } else {
-        // 纯文本，转换为HTML格式
-        htmlContent = textToHtml(values.content);
-      }
+      // 直接使用用户输入的内容，保持HTML标签
+      const htmlContent = values.content;
 
       const response = await fetch(`/api/email-approvals/${selectedApproval.id}`, {
         method: 'PUT',
@@ -505,12 +499,10 @@ export default function ApprovalsPage() {
     setIsEditing(false);
     setDetailModalVisible(true);
     
-    // 将HTML内容转换为纯文本用于编辑
-    const textContent = htmlToText(approval.content);
-    
+    // 直接使用原始内容，保持HTML标签
     editForm.setFieldsValue({
       subject: approval.subject,
-      content: textContent
+      content: approval.content
     });
   };
 
@@ -524,10 +516,9 @@ export default function ApprovalsPage() {
     setIsEditing(false);
     if (selectedApproval) {
       // 重新设置表单值为原始内容
-      const textContent = htmlToText(selectedApproval.content);
       editForm.setFieldsValue({
         subject: selectedApproval.subject,
-        content: textContent
+        content: selectedApproval.content
       });
     }
   };
@@ -551,7 +542,7 @@ export default function ApprovalsPage() {
   };
 
   // 处理行选择变化
-  const handleRowSelectionChange = (selectedKeys: string[]) => {
+  const handleRowSelectionChange = (selectedKeys: React.Key[], selectedRows: Approval[], info: { type: 'all' | 'none' | 'invert' | 'single' | 'multiple' }) => {
     setSelectedRowKeys(selectedKeys);
   };
 
@@ -855,7 +846,7 @@ export default function ApprovalsPage() {
                 >
                   <TextArea 
                     rows={8} 
-                    placeholder={t('email.contentPlaceholderWithHtml')}
+                    placeholder="支持HTML标签，可以直接编辑HTML内容..."
                     maxLength={10000}
                   />
                 </Form.Item>
