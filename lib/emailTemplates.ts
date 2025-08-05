@@ -8,10 +8,19 @@ export interface EmailTemplate {
 }
 
 // 预定义的邮件模板 - 使用默认邮件模板内容
-export const EMAIL_TEMPLATES: EmailTemplate[] = [{
+export const EMAIL_TEMPLATES: EmailTemplate[] = [
+  {
+    id: 'db-header',
+    name: 'ヘッダー',
+    subject: '',
+    content: `<span style="font-size:24px;font-weight:bold;">Family協同組合</span>は、技能実習制度の適切な運用と、技能実習生および受け入れ企業の双方の支援を目的とし、募集や受け入れに関する調整、指導、監査を行う団体です。`,
+    description: '',
+    category: 'header'
+  },
+  {
   id: 'db',
   name: '営業部初期費用0円',
-  subject: '【初期費用0円】技能実習生受け入れキャンペーン!',
+  subject: '【初期費用0円】技能実習生受け入れキャンペーン!※このメールは返信可能です※',
   content: `
 <br>
 <div style="max-width: 750px; margin: 0 auto;">
