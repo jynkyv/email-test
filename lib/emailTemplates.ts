@@ -10,7 +10,7 @@ export interface EmailTemplate {
 // 预定义的邮件模板 - 使用默认邮件模板内容
 export const EMAIL_TEMPLATES: EmailTemplate[] = [{
   id: 'db',
-  name: '営業部1初期費用0円',
+  name: '営業部初期費用0円',
   subject: '【初期費用0円】技能実習生受け入れキャンペーン!',
   content: `
 <br>
