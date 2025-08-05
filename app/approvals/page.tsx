@@ -22,7 +22,6 @@ import {
   Row,
   Col
 } from 'antd';
-import type { TableProps } from 'antd';
 import { 
   CheckOutlined, 
   CloseOutlined, 
@@ -82,7 +81,7 @@ export default function ApprovalsPage() {
   const [applicantName, setApplicantName] = useState('');
   
   // 批量操作相关状态
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [batchLoading, setBatchLoading] = useState(false);
 
   // 获取审核列表
@@ -329,7 +328,7 @@ export default function ApprovalsPage() {
           const totalCount = selectedRowKeys.length;
 
           for (let i = 0; i < selectedRowKeys.length; i++) {
-            const id = selectedRowKeys[i].toString();
+            const id = selectedRowKeys[i];
             try {
               const response = await fetch(`/api/email-approvals/${id}`, {
                 method: 'PUT',
@@ -396,7 +395,7 @@ export default function ApprovalsPage() {
           const totalCount = selectedRowKeys.length;
 
           for (let i = 0; i < selectedRowKeys.length; i++) {
-            const id = selectedRowKeys[i].toString();
+            const id = selectedRowKeys[i];
             try {
               const response = await fetch(`/api/email-approvals/${id}`, {
                 method: 'PUT',
@@ -542,7 +541,7 @@ export default function ApprovalsPage() {
   };
 
   // 处理行选择变化
-  const handleRowSelectionChange = (selectedKeys: React.Key[], selectedRows: Approval[], info: { type: 'all' | 'none' | 'invert' | 'single' | 'multiple' }) => {
+  const handleRowSelectionChange = (selectedKeys: string[]) => {
     setSelectedRowKeys(selectedKeys);
   };
 
