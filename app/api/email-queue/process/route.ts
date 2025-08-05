@@ -198,10 +198,6 @@ export async function POST(request: NextRequest) {
           error: '处理失败'
         });
       }
-      
-      // 每封邮件发送后等待30秒
-      console.log(`⏳ 等待30秒后处理下一封邮件...`);
-      await new Promise(resolve => setTimeout(resolve, 30000));
     }
 
     // 更新申请人的发送统计

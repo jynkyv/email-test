@@ -149,10 +149,6 @@ export async function POST(request: NextRequest) {
         }
         
         totalProcessed++;
-        
-        // 每封邮件发送后等待30秒
-        console.log(`⏳ 等待30秒后处理下一封邮件...`);
-        await new Promise(resolve => setTimeout(resolve, 30000));
       }
 
       // 短暂等待，避免过于频繁的数据库操作
