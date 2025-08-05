@@ -17,7 +17,10 @@ import {
   Progress,
   Spin,
   Tooltip,
-  Popconfirm
+  Popconfirm,
+  Checkbox,
+  Row,
+  Col
 } from 'antd';
 import { 
   CheckOutlined, 
@@ -25,7 +28,9 @@ import {
   EditOutlined, 
   EyeOutlined,
   ClockCircleOutlined,
-  CodeOutlined
+  CodeOutlined,
+  CheckSquareOutlined,
+  CloseSquareOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -74,6 +79,10 @@ export default function ApprovalsPage() {
   
   // 筛选相关状态
   const [applicantName, setApplicantName] = useState('');
+  
+  // 批量操作相关状态
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [batchLoading, setBatchLoading] = useState(false);
 
   // 获取审核列表
   const fetchApprovals = async (page = 1, size = 50) => {
@@ -99,7 +108,7 @@ export default function ApprovalsPage() {
         setPageSize(size);
       }
     } catch (error) {
-              console.error('Failed to fetch approvals:', error);
+      console.error('Failed to fetch approvals:', error);
       message.error(t('approval.fetchApprovalsFailed'));
     } finally {
       setLoading(false);
@@ -116,51 +125,36 @@ export default function ApprovalsPage() {
       });
       const data = await response.json();
       if (data.success) {
-        setSelectedApproval(data.approval);
-        setDetailModalVisible(true);
-        // 设置编辑表单的初始值
-        editForm.setFieldsValue({
-          subject: data.approval.subject,
-          content: data.approval.content
-        });
+        return data.approval;
       }
     } catch (error) {
-              console.error('Failed to fetch approval detail:', error);
-      message.error(t('approval.fetchDetailFailed'));
+      console.error('Failed to fetch approval detail:', error);
     }
+    return null;
   };
 
-  // 审核操作
+  // 处理单个审核操作
   const handleApprovalAction = async (id: string, action: 'approve' | 'reject') => {
-    if (action === 'approve') {
-      // 审核通过，显示发送进度
-      await handleApproveWithProgress(id);
-    } else {
-      // 审核拒绝
-      try {
-        const response = await fetch(`/api/email-approvals/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user?.id}`,
-          },
-          body: JSON.stringify({ action }),
-        });
+    try {
+      const response = await fetch(`/api/email-approvals/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({ action }),
+      });
 
-        const data = await response.json();
-        if (data.success) {
-          message.success(data.message);
-          fetchApprovals(currentPage, pageSize);
-          if (detailModalVisible) {
-            setDetailModalVisible(false);
-          }
-        } else {
-          message.error(data.error || t('approval.actionFailed'));
-        }
-      } catch (error) {
-        console.error('Approval action failed:', error);
-        message.error(t('approval.actionFailed'));
+      const data = await response.json();
+      if (data.success) {
+        message.success(data.message);
+        fetchApprovals(currentPage, pageSize);
+      } else {
+        message.error(data.error || t('approval.actionFailed'));
       }
+    } catch (error) {
+      console.error('Approval action failed:', error);
+      message.error(t('approval.actionFailed'));
     }
   };
 
@@ -173,135 +167,281 @@ export default function ApprovalsPage() {
           'Authorization': `Bearer ${user?.id}`,
         },
       });
-      const detailData = await detailResponse.json();
-      
-      if (detailData.success) {
-        const recipients = detailData.approval.recipients;
-        setTotalCount(recipients.length);
-        setSentCount(0);
-        setProgressPercent(0);
-        
-        // 设置初始状态为待发送
-        const initialResults = recipients.map((recipient: string) => ({
-          email: recipient,
-          success: false,
-          status: 'pending',
-          error: null
-        }));
-        setSendingResults(initialResults);
-        setSendingProgress(true);
-        
-        // 添加邮件到队列
-        const queueResponse = await fetch('/api/email-queue', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user?.id}`,
-          },
-          body: JSON.stringify({ approvalId: id }),
-        });
 
-        const queueData = await queueResponse.json();
-        if (!queueData.success) {
-          message.error(queueData.error || t('email.queueAddFailed'));
-          setSendingProgress(false);
-          return;
-        }
+      if (detailResponse.ok) {
+        const detailData = await detailResponse.json();
+        if (detailData.success) {
+          const approval = detailData.approval;
+          setTotalCount(approval.recipients.length);
+          setSentCount(0);
+          setProgressPercent(0);
+          setSendingProgress(true);
+          setSendingResults([]);
 
-        // 开始轮询队列状态
-        const pollInterval = setInterval(async () => {
-          try {
-            const statusResponse = await fetch(`/api/email-queue?approvalId=${id}`, {
-              headers: {
-                'Authorization': `Bearer ${user?.id}`,
-              },
-            });
-            
-            const statusData = await statusResponse.json();
-            if (statusData.success) {
-              const { stats, queue } = statusData;
-              setProgressPercent(stats.progress);
-              setSentCount(stats.sent);
-              
-              // 更新发送结果
-              const results = queue.map((item: any) => {
-                let status = 'pending';
-                let error = null;
-                
-                if (item.status === 'sent') {
-                  status = 'success';
-                } else if (item.status === 'failed') {
-                  status = 'failed';
-                  error = item.error_message;
-                } else if (item.status === 'processing') {
-                  status = 'processing';
-                }
-                
-                return {
-                  email: item.recipient,
-                  success: item.status === 'sent',
-                  status: status,
-                  error: error
-                };
+          // 先通过审核
+          const approveResponse = await fetch(`/api/email-approvals/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user?.id}`,
+            },
+            body: JSON.stringify({ action: 'approve' }),
+          });
+
+          if (!approveResponse.ok) {
+            message.error(t('approval.approveFailed'));
+            setSendingProgress(false);
+            return;
+          }
+
+          // 添加邮件到队列
+          const queueResponse = await fetch('/api/email-queue', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user?.id}`,
+            },
+            body: JSON.stringify({ approvalId: id }),
+          });
+
+          const queueData = await queueResponse.json();
+          if (!queueData.success) {
+            message.error(queueData.error || t('email.queueAddFailed'));
+            setSendingProgress(false);
+            return;
+          }
+
+          // 开始轮询队列状态
+          const pollInterval = setInterval(async () => {
+            try {
+              const statusResponse = await fetch(`/api/email-queue?approvalId=${id}`, {
+                headers: {
+                  'Authorization': `Bearer ${user?.id}`,
+                },
               });
-              setSendingResults(results);
-
-              console.log('Queue status updated:', { stats, results });
-
-              // 如果所有邮件都处理完成，停止轮询
-              if (stats.completed === stats.total && stats.total > 0) {
-                clearInterval(pollInterval);
-                setTimeout(() => {
-                  const successMessage = t('email.sendComplete', { sent: stats.sent, failed: stats.failed });
-                  console.log('Send completed:', successMessage);
-                  message.success(successMessage);
-                  setSendingProgress(false);
-                  fetchApprovals(currentPage, pageSize);
-                  if (detailModalVisible) {
-                    setDetailModalVisible(false);
+              
+              const statusData = await statusResponse.json();
+              if (statusData.success) {
+                const { stats, queue } = statusData;
+                setProgressPercent(stats.progress);
+                setSentCount(stats.sent);
+                
+                // 更新发送结果
+                const results = queue.map((item: any) => {
+                  let status = 'pending';
+                  let error = null;
+                  
+                  if (item.status === 'sent') {
+                    status = 'success';
+                  } else if (item.status === 'failed') {
+                    status = 'failed';
+                    error = item.error_message;
+                  } else if (item.status === 'processing') {
+                    status = 'processing';
                   }
-                }, 1000);
+                  
+                  return {
+                    email: item.recipient,
+                    success: item.status === 'sent',
+                    status: status,
+                    error: error
+                  };
+                });
+                setSendingResults(results);
+
+                console.log('Queue status updated:', { stats, results });
+
+                // 如果所有邮件都处理完成，停止轮询
+                if (stats.completed === stats.total && stats.total > 0) {
+                  clearInterval(pollInterval);
+                  setTimeout(() => {
+                    const successMessage = t('email.sendComplete', { sent: stats.sent, failed: stats.failed });
+                    console.log('Send completed:', successMessage);
+                    message.success(successMessage);
+                    setSendingProgress(false);
+                    fetchApprovals(currentPage, pageSize);
+                    if (detailModalVisible) {
+                      setDetailModalVisible(false);
+                    }
+                  }, 1000);
+                }
               }
+            } catch (error) {
+              console.error('Failed to poll queue status:', error);
             }
-          } catch (error) {
-            console.error('Failed to poll queue status:', error);
-          }
-        }, 3000); // 每3秒轮询一次
+          }, 3000); // 每3秒轮询一次
 
-        // 开始持续处理队列直到完成
-        const processQueue = async () => {
-          try {
-            const processResponse = await fetch('/api/email-queue/process', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${user?.id}`,
-              },
-            });
-            
-            const processData = await processResponse.json();
-            if (processData.success && processData.hasRemaining) {
-              // 如果还有待处理的邮件，继续处理
-              console.log(`Still ${processData.remainingCount} emails to process, continuing...`);
-              setTimeout(processQueue, 1000); // 1秒后继续处理
-            } else {
-              console.log('Queue processing completed');
+          // 开始持续处理队列直到完成
+          const processQueue = async () => {
+            try {
+              const processResponse = await fetch('/api/email-queue/process', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${user?.id}`,
+                },
+              });
+              
+              const processData = await processResponse.json();
+              if (processData.success && processData.hasRemaining) {
+                // 如果还有待处理的邮件，继续处理
+                console.log(`Still ${processData.remainingCount} emails to process, continuing...`);
+                setTimeout(processQueue, 1000); // 1秒后继续处理
+              } else {
+                console.log('Queue processing completed');
+              }
+            } catch (error) {
+              console.error('Queue processing failed:', error);
             }
-          } catch (error) {
-            console.error('Queue processing failed:', error);
-          }
-        };
-        
-        // 启动队列处理
-        processQueue();
+          };
+          
+          // 启动队列处理
+          processQueue();
 
+        } else {
+          message.error(t('email.fetchApprovalDetailFailed'));
+        }
       } else {
         message.error(t('email.fetchApprovalDetailFailed'));
       }
     } catch (error) {
-              console.error('Approval action failed:', error);
+      console.error('Approval action failed:', error);
       message.error(t('approval.actionFailed'));
       setSendingProgress(false);
     }
+  };
+
+  // 批量通过审核
+  const handleBatchApprove = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请选择要批量通过的审核申请');
+      return;
+    }
+
+    Modal.confirm({
+      title: '批量通过审核',
+      content: `确定要批量通过 ${selectedRowKeys.length} 个审核申请吗？`,
+      onOk: async () => {
+        setBatchLoading(true);
+        try {
+          let successCount = 0;
+          let failCount = 0;
+          const totalCount = selectedRowKeys.length;
+
+          for (let i = 0; i < selectedRowKeys.length; i++) {
+            const id = selectedRowKeys[i];
+            try {
+              const response = await fetch(`/api/email-approvals/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${user?.id}`,
+                },
+                body: JSON.stringify({ action: 'approve' }),
+              });
+
+              const data = await response.json();
+              if (data.success) {
+                successCount++;
+                console.log(`✅ 审核通过成功: ${id}`);
+              } else {
+                failCount++;
+                console.log(`❌ 审核通过失败: ${id} - ${data.error}`);
+              }
+            } catch (error) {
+              failCount++;
+              console.error(`审核通过失败: ${id}`, error);
+            }
+
+            // 显示进度
+            const progress = Math.round(((i + 1) / totalCount) * 100);
+            console.log(`批量审核进度: ${progress}% (${i + 1}/${totalCount})`);
+          }
+
+          // 显示结果
+          if (failCount === 0) {
+            message.success(`批量通过成功！共通过 ${successCount} 个审核申请`);
+          } else {
+            message.warning(`批量通过完成。成功: ${successCount}, 失败: ${failCount}`);
+          }
+
+          // 清空选择并刷新列表
+          setSelectedRowKeys([]);
+          fetchApprovals(currentPage, pageSize);
+        } catch (error) {
+          console.error('批量审核失败:', error);
+          message.error('批量审核失败');
+        } finally {
+          setBatchLoading(false);
+        }
+      },
+    });
+  };
+
+  // 批量拒绝审核
+  const handleBatchReject = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请选择要批量拒绝的审核申请');
+      return;
+    }
+
+    Modal.confirm({
+      title: '批量拒绝审核',
+      content: `确定要批量拒绝 ${selectedRowKeys.length} 个审核申请吗？`,
+      onOk: async () => {
+        setBatchLoading(true);
+        try {
+          let successCount = 0;
+          let failCount = 0;
+          const totalCount = selectedRowKeys.length;
+
+          for (let i = 0; i < selectedRowKeys.length; i++) {
+            const id = selectedRowKeys[i];
+            try {
+              const response = await fetch(`/api/email-approvals/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${user?.id}`,
+                },
+                body: JSON.stringify({ action: 'reject' }),
+              });
+
+              const data = await response.json();
+              if (data.success) {
+                successCount++;
+                console.log(`✅ 审核拒绝成功: ${id}`);
+              } else {
+                failCount++;
+                console.log(`❌ 审核拒绝失败: ${id} - ${data.error}`);
+              }
+            } catch (error) {
+              failCount++;
+              console.error(`审核拒绝失败: ${id}`, error);
+            }
+
+            // 显示进度
+            const progress = Math.round(((i + 1) / totalCount) * 100);
+            console.log(`批量拒绝进度: ${progress}% (${i + 1}/${totalCount})`);
+          }
+
+          // 显示结果
+          if (failCount === 0) {
+            message.success(`批量拒绝成功！共拒绝 ${successCount} 个审核申请`);
+          } else {
+            message.warning(`批量拒绝完成。成功: ${successCount}, 失败: ${failCount}`);
+          }
+
+          // 清空选择并刷新列表
+          setSelectedRowKeys([]);
+          fetchApprovals(currentPage, pageSize);
+        } catch (error) {
+          console.error('批量拒绝失败:', error);
+          message.error('批量拒绝失败');
+        } finally {
+          setBatchLoading(false);
+        }
+      },
+    });
   };
 
   // 保存编辑内容
@@ -398,6 +538,16 @@ export default function ApprovalsPage() {
     setApplicantName('');
     setCurrentPage(1);
     fetchApprovals(1, pageSize);
+  };
+
+  // 处理行选择变化
+  const handleRowSelectionChange = (selectedKeys: string[]) => {
+    setSelectedRowKeys(selectedKeys);
+  };
+
+  // 获取可选择的审核申请（只有待审核状态的才能选择）
+  const getSelectableApprovals = () => {
+    return approvals.filter(approval => approval.status === 'pending');
   };
 
   useEffect(() => {
@@ -509,6 +659,15 @@ export default function ApprovalsPage() {
     },
   ];
 
+  // 行选择配置
+  const rowSelection = {
+    selectedRowKeys: selectedRowKeys,
+    onChange: handleRowSelectionChange,
+    getCheckboxProps: (record: Approval) => ({
+      disabled: record.status !== 'pending', // 只有待审核的才能选择
+    }),
+  };
+
   return (
     <div className="p-6">
       <Card title={t('approval.approvalManagement')} className="h-full">
@@ -533,7 +692,41 @@ export default function ApprovalsPage() {
           </div>
         </div>
 
+        {/* 批量操作区域 */}
+        {user?.role === 'admin' && selectedRowKeys.length > 0 && (
+          <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <Row gutter={16} align="middle">
+              <Col>
+                <span className="text-blue-700 font-medium">
+                  已选择 {selectedRowKeys.length} 个待审核申请
+                </span>
+              </Col>
+              <Col>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<CheckSquareOutlined />}
+                    loading={batchLoading}
+                    onClick={handleBatchApprove}
+                  >
+                    批量通过
+                  </Button>
+                  <Button
+                    danger
+                    icon={<CloseSquareOutlined />}
+                    loading={batchLoading}
+                    onClick={handleBatchReject}
+                  >
+                    批量拒绝
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </div>
+        )}
+
         <Table
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={approvals}
           rowKey="id"
