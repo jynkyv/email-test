@@ -199,12 +199,12 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     setSearchField(value);
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
+    // 移除自动刷新列表，只更新状态
     // 清空选中的客户和邮件列表
     setSelectedCustomer(null);
     setSelectedEmail(null);
     setEmails([]);
-    // 重新获取数据，确保状态同步
-    fetchCustomers(1, customerPageSize, value, '');
+    // 不再自动获取数据，等待用户点击搜索按钮
   };
 
   // 处理搜索按钮点击

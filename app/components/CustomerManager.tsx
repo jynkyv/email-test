@@ -556,8 +556,8 @@ export default function CustomerManager() {
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
     setCurrentPage(1);
-    // 重新获取数据，确保状态同步
-    fetchCustomersWithFaxFilter(1, pageSize, showFaxOnly, subscriptionStatus, value, '');
+    // 移除自动刷新列表，只更新状态
+    // 不再自动获取数据，等待用户点击搜索按钮
   };
 
   // 移除这个useEffect，因为它会干扰手动调用

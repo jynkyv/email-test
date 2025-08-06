@@ -388,8 +388,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setSearchValue(''); // 清空搜索值
     searchForm.setFieldsValue({ searchValue: '' }); // 清空表单中的搜索值
     setCurrentPage(1);
-    // 重新获取数据，确保状态同步
-    fetchCustomers(1, pageSize, value, '');
+    // 移除自动刷新列表，只更新状态
+    // 不再自动获取数据，等待用户点击搜索按钮
   };
 
   // 清空搜索
