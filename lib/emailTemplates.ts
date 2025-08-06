@@ -37,7 +37,13 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <br>
 <div style="max-width: 750px; margin: 0 auto;">
   <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
+    <img src="https://email-test-gamma.vercel.app/header-1.png" style="width: 100%; display: block;">
+  </a>
+  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
     <img src="https://email-test-gamma.vercel.app/hero-1.png" style="width: 100%; display: block;">
+  </a>
+  <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
+    <img src="https://email-test-gamma.vercel.app/detail-1.png" style="width: 100%; display: block;">
   </a>
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <div style="display: inline-block;">
