@@ -39,27 +39,7 @@
   border-left-style: solid !important;
 }
 
-/* 用户管理表格样式 */
-.user-management-table .ant-table-thead > tr > th {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  font-weight: 600;
-  color: #374151;
-}
 
-.user-management-table .ant-table-tbody > tr:hover > td {
-  background-color: #f1f5f9;
-}
-
-.user-management-table .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 16px;
-}
-
-/* 图标样式 */
-.user-management-table .anticon {
-  font-size: 14px;
-}
 
 /* 统计卡片样式 */
 .stats-card {

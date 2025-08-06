@@ -25,6 +25,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </div>
       </td>
   </tr>
+  <tr>
+    <td align="center" style="padding:0; ">
+      <div style="border: none;width:750px; height: 1px; background-color: #000000; margin: 20px 0 0 0;"></div>
+    </td>
+  </tr>
   </table>`,
     description: '',
     category: 'header'
@@ -34,7 +39,6 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   name: '営業部初期費用0円',
   subject: '【初期費用0円】技能実習生受け入れキャンペーン!※このメールは返信可能です※',
   content: `
-<br>
 <div style="max-width: 750px; margin: 0 auto;">
   <a href="https://www.familyorjp.com/" target="_blank" style="display: block;">
     <img src="https://email-test-gamma.vercel.app/header-1.png" style="width: 100%; display: block;">
