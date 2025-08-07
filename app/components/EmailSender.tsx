@@ -90,7 +90,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(150);
   const [total, setTotal] = useState(0);
   const [tempPageInput, setTempPageInput] = useState('1'); // 临时页码输入状态
   
@@ -103,14 +103,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
-    if (page && page > 0 && page <= Math.ceil(total / 100)) {
+    if (page && page > 0 && page <= Math.ceil(total / 150)) {
       setCurrentPage(page);
-      fetchCustomers(page, 100);
+      fetchCustomers(page, 150);
     }
   }, 1000);
 
   // 获取客户列表
-  const fetchCustomers = async (page = 1, size = 100, searchFieldParam?: string, searchValueParam?: string) => {
+  const fetchCustomers = async (page = 1, size = 150, searchFieldParam?: string, searchValueParam?: string) => {
     setLoadingCustomers(true);
     try {
       const params = new URLSearchParams({
@@ -240,7 +240,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     setShowCustomerModal(true);
     // 只有在没有数据时才获取数据，保留用户的分页状态
     if (customers.length === 0) {
-      fetchCustomers(1, 100);
+      fetchCustomers(1, 150);
     }
   };
 
@@ -268,9 +268,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 切换客户选择状态
   const handleCustomerToggle = (customer: Customer, checked: boolean) => {
     if (checked) {
-      // 检查是否超过100人的限制
-      if (tempSelectedCustomers.length >= 100) {
-        message.warning(t('email.maxRecipientsReached', { max: 100 }));
+      // 检查是否超过150人的限制
+      if (tempSelectedCustomers.length >= 150) {
+        message.warning(t('email.maxRecipientsReached', { max: 150 }));
         return;
       }
       setTempSelectedCustomers(prev => [...prev, customer]);
@@ -287,10 +287,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         customer => !tempSelectedCustomers.some(selected => selected.id === customer.id)
       );
       
-      // 检查是否超过100人的限制
-      const remainingSlots = 100 - tempSelectedCustomers.length;
+      // 检查是否超过150人的限制
+      const remainingSlots = 150 - tempSelectedCustomers.length;
       if (currentPageCustomers.length > remainingSlots) {
-        message.warning(t('email.maxRecipientsReached', { max: 100 }));
+        message.warning(t('email.maxRecipientsReached', { max: 150 }));
         // 只添加能容纳的数量
         const customersToAdd = currentPageCustomers.slice(0, remainingSlots);
         setTempSelectedCustomers(prev => [...prev, ...customersToAdd]);
@@ -354,7 +354,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   useEffect(() => {
     if (showCustomerModal && (startDate || endDate)) {
       console.log('Date filter changed, refetching data:', { startDate, endDate });
-      fetchCustomers(currentPage, 100);
+      fetchCustomers(currentPage, 150);
     }
   }, [startDate, endDate, showCustomerModal]); // 添加showCustomerModal依赖，确保只在模态框打开时重新获取
 
@@ -365,7 +365,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 清空筛选时重置到第一页
     setCurrentPage(1);
     // 立即获取数据，确保状态同步
-    fetchCustomers(1, 100);
+    fetchCustomers(1, 150);
   };
 
   // 处理搜索按钮点击
@@ -378,7 +378,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       setSearchValue(values.searchValue.trim());
       setCurrentPage(1);
       // 立即获取数据，确保状态同步
-      fetchCustomers(1, 100, values.searchField, values.searchValue.trim());
+      fetchCustomers(1, 150, values.searchField, values.searchValue.trim());
     }
   };
 
@@ -392,15 +392,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 不再自动获取数据，等待用户点击搜索按钮
   };
 
-      // 清空搜索
-    const handleClearSearch = () => {
-      setSearchField('company_name');
-      setSearchValue('');
-      searchForm.resetFields();
-      setCurrentPage(1);
-      // 立即获取数据，确保状态同步
-      fetchCustomers(1, 100, 'company_name', '');
-    };
+             // 清空搜索
+     const handleClearSearch = () => {
+       setSearchField('company_name');
+       setSearchValue('');
+       searchForm.resetFields();
+       setCurrentPage(1);
+       // 立即获取数据，确保状态同步
+       fetchCustomers(1, 150, 'company_name', '');
+     };
 
   // 处理模板选择
   const handleTemplateSelect = (template: EmailTemplate) => {
@@ -671,7 +671,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 </Button>
                 {selectedCustomers.length > 0 && (
                   <span className="text-sm text-gray-600 self-center">
-                    {t('customer.customersSelected', { count: selectedCustomers.length })} / 100
+                    {t('customer.customersSelected', { count: selectedCustomers.length })} / 150
                   </span>
                 )}
               </div>
@@ -849,9 +849,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         <div className="space-y-4">
           <div className="text-sm text-gray-600">
             {t('customer.customersSelected', { count: tempSelectedCustomers.length })}
-            {tempSelectedCustomers.length >= 100 && (
+            {tempSelectedCustomers.length >= 150 && (
               <span className="text-orange-600 ml-2">
-                ({t('email.maxRecipientsLimit', { max: 100 })})
+                ({t('email.maxRecipientsLimit', { max: 150 })})
               </span>
             )}
           </div>
@@ -859,7 +859,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           {/* 限制提示 */}
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="text-sm text-blue-800">
-              <strong>{t('email.recipientsLimitNotice', { max: 100 })}</strong>
+              <strong>{t('email.recipientsLimitNotice', { max: 150 })}</strong>
             </div>
           </div>
           
@@ -931,11 +931,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     e.preventDefault();
                     const values = searchForm.getFieldsValue();
                     if (values.searchValue && values.searchValue.trim()) {
-                                          // 直接执行搜索，传递当前表单值
-                    setSearchField(values.searchField);
-                    setSearchValue(values.searchValue.trim());
-                    setCurrentPage(1);
-                    fetchCustomers(1, 100, values.searchField, values.searchValue.trim());
+                                                                                     // 直接执行搜索，传递当前表单值
+                     setSearchField(values.searchField);
+                     setSearchValue(values.searchValue.trim());
+                     setCurrentPage(1);
+                     fetchCustomers(1, 150, values.searchField, values.searchValue.trim());
                     }
                   }}
                 />
@@ -1018,7 +1018,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     <Button
                       size="small"
                       disabled={currentPage === 1}
-                      onClick={() => fetchCustomers(currentPage - 1, 100)}
+                      onClick={() => fetchCustomers(currentPage - 1, 150)}
                     >
                       {t('common.previous')}
                     </Button>
@@ -1040,7 +1040,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                           }
                           
                           const page = parseInt(value);
-                          if (page && page > 0 && page <= Math.ceil(total / 100)) {
+                          if (page && page > 0 && page <= Math.ceil(total / 150)) {
                             // 使用防抖函数延迟执行跳转
                             debouncedPageChange(page);
                           }
@@ -1050,12 +1050,12 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                           if (value === '') {
                             return;
                           }
-                          const page = parseInt(value);
-                          if (page && page > 0 && page <= Math.ceil(total / 100)) {
-                            setCurrentPage(page);
-                            setTempPageInput(page.toString());
-                            fetchCustomers(page, 100);
-                          }
+                                                      const page = parseInt(value);
+                            if (page && page > 0 && page <= Math.ceil(total / 150)) {
+                              setCurrentPage(page);
+                              setTempPageInput(page.toString());
+                              fetchCustomers(page, 150);
+                            }
                         }}
                       />
                       <span className="text-sm text-gray-600">/ {Math.ceil(total / pageSize)}</span>
@@ -1063,8 +1063,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     
                     <Button
                       size="small"
-                      disabled={currentPage >= Math.ceil(total / 100)}
-                      onClick={() => fetchCustomers(currentPage + 1, 100)}
+                      disabled={currentPage >= Math.ceil(total / 150)}
+                      onClick={() => fetchCustomers(currentPage + 1, 150)}
                     >
                       {t('common.next')}
                     </Button>
