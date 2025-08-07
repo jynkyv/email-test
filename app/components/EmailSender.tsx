@@ -459,6 +459,83 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     message.success(`模板 "${template.name}" 已插入到编辑框`);
   };
 
+  // 处理部门模板一键应用
+  const handleDepartmentTemplate = (department: '一部' | '二部' | '三部') => {
+    // 获取当前HTML编辑框的内容
+    const currentContent = form.getFieldValue('content') || '';
+    
+    // 查找对应的模板
+    const headerTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db-header');
+    const mainTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db');
+    const footerTemplate = EMAIL_TEMPLATES.find(t => 
+      (department === '一部' && t.id === 'db-footer-1') ||
+      (department === '二部' && t.id === 'db-footer-2') ||
+      (department === '三部' && t.id === 'db-footer-3')
+    );
+    
+    if (!headerTemplate || !mainTemplate || !footerTemplate) {
+      message.error('模板配置错误，请联系管理员');
+      return;
+    }
+    
+    // 检查是否已经应用过部门模板
+    const departmentSignature = `department_${department}`;
+    const appliedTemplates = currentContent.match(/<!-- Template: ([^>]+) -->/g) || [];
+    const isAlreadyApplied = appliedTemplates.some((signature: string) => 
+      signature.includes(departmentSignature)
+    );
+    
+    if (isAlreadyApplied) {
+      message.warning(`${department}模板已经应用过了，避免重复应用`);
+      return;
+    }
+    
+    // 组合模板内容
+    let combinedContent = '';
+    
+    // 添加页头模板
+    let headerContent = headerTemplate.content;
+    if (headerContent.includes('<body') && headerContent.includes('</body>')) {
+      const bodyMatch = headerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) {
+        headerContent = bodyMatch[1].trim();
+      }
+    }
+    combinedContent += `<!-- Template: ${departmentSignature}_header -->\n${headerContent}\n\n`;
+    
+    // 添加主模板
+    let mainContent = mainTemplate.content;
+    if (mainContent.includes('<body') && mainContent.includes('</body>')) {
+      const bodyMatch = mainContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) {
+        mainContent = bodyMatch[1].trim();
+      }
+    }
+    combinedContent += `<!-- Template: ${departmentSignature}_main -->\n${mainContent}\n\n`;
+    
+    // 添加页脚模板
+    let footerContent = footerTemplate.content;
+    if (footerContent.includes('<body') && footerContent.includes('</body>')) {
+      const bodyMatch = footerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) {
+        footerContent = bodyMatch[1].trim();
+      }
+    }
+    combinedContent += `<!-- Template: ${departmentSignature}_footer -->\n${footerContent}`;
+    
+    // 更新表单内容
+    const newContent = currentContent + '\n\n' + combinedContent;
+    form.setFieldsValue({
+      content: newContent,
+      subject: mainTemplate.subject || ''
+    });
+    
+    // 设置HTML内容标识
+    setIsHtmlContent(true);
+    
+    message.success(`${department}模板已一键应用（页头+主内容+${department}页脚）`);
+  };
+
   // 处理模板预览
   const handleTemplatePreview = (template: EmailTemplate, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -483,6 +560,16 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       content: cleanedContent
     });
     message.success('已清除模板标记，可以重新应用模板');
+  };
+
+  // 清除部门模板标记，允许重新应用部门模板
+  const clearDepartmentTemplateSignatures = () => {
+    const currentContent = form.getFieldValue('content') || '';
+    const cleanedContent = currentContent.replace(/<!-- Template: department_[^>]+ -->\n/g, '');
+    form.setFieldsValue({
+      content: cleanedContent
+    });
+    message.success('已清除部门模板标记，可以重新应用部门模板');
   };
 
   const handleSubmit = async (values: {
@@ -715,14 +802,40 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   <EditOutlined />
                   <span>HTML编辑</span>
                 </div>
-                <Button
-                  type="default"
-                  icon={<TemplateOutlined />}
-                  onClick={() => setShowTemplateModal(true)}
-                  size="small"
-                >
-                  {t('email.insertTemplate')}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => handleDepartmentTemplate('一部')}
+                    style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
+                  >
+                    一部
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => handleDepartmentTemplate('二部')}
+                    style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+                  >
+                    二部
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => handleDepartmentTemplate('三部')}
+                    style={{ backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
+                  >
+                    三部
+                  </Button>
+                  <Button
+                    type="default"
+                    icon={<TemplateOutlined />}
+                    onClick={() => setShowTemplateModal(true)}
+                    size="small"
+                  >
+                    {t('email.insertTemplate')}
+                  </Button>
+                </div>
               </div>
               <Form.Item name="content" noStyle>
                 <TextArea
@@ -811,6 +924,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           <Button key="clear" onClick={clearTemplateSignatures} type="default">
             清除模板标记
           </Button>,
+          <Button key="clearDept" onClick={clearDepartmentTemplateSignatures} type="default">
+            清除部门模板标记
+          </Button>,
           <Button key="cancel" onClick={() => setShowTemplateModal(false)}>
             关闭
           </Button>
@@ -825,6 +941,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="text-sm text-blue-800">
               <strong>提示：</strong>每个模板只能应用一次，如需重新应用请点击"清除模板标记"
+            </div>
+          </div>
+          <div className="bg-green-50 p-3 rounded-lg">
+            <div className="text-sm text-green-800">
+              <strong>部门模板说明：</strong>点击页面上的"一部"、"二部"、"三部"按钮可一键应用完整的部门模板（页头+主内容+对应部门页脚）
             </div>
           </div>
           {renderTemplateCards()}

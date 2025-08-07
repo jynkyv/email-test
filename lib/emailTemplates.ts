@@ -67,7 +67,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   category: 'default'
 },
 
-{id: 'db-footer',
+{id: 'db-footer-1',
   name: '一部-页脚',
   subject: '',
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
@@ -97,7 +97,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   description: '',
   category: 'footer'
 },
-{id: 'db-footer',
+{id: 'db-footer-2',
   name: '二部-页脚',
   subject: '',
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
@@ -127,7 +127,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   description: '',
   category: 'footer'
 },
-{id: 'mid-footer',
+{id: 'db-footer-3',
   name: '三部-页脚',
   subject: '',
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
