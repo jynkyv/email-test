@@ -290,7 +290,18 @@
     "fetchApprovalsFailed": "获取审核列表失败",
     "fetchDetailFailed": "获取审核详情失败",
     "actionFailed": "审核操作失败",
-    "updateFailed": "更新内容失败"
+    "updateFailed": "更新内容失败",
+    "autoApprove": "自动审核",
+    "autoApproveEnabled": "自动审核已启用",
+    "autoApproveDisabled": "自动审核已禁用",
+    "autoApproveProcessing": "自动审核处理中",
+    "autoApproveProcessed": "已处理 {count} 个",
+    "nextExecution": "下次执行",
+    "autoApproveInterval": "每10分钟处理一个待审核项目",
+    "autoApproveStart": "自动审核已启动，每10分钟处理一个待审核项目",
+    "autoApproveStop": "自动审核已停止",
+    "autoApproveFailed": "自动审核失败",
+    "adminOnly": "只有管理员可以使用自动审核功能"
   },
   "user": {
     "userManagement": "员工管理",

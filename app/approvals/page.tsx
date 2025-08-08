@@ -17,7 +17,8 @@ import {
   Progress,
   Spin,
   Tooltip,
-  Popconfirm
+  Popconfirm,
+  Switch
 } from 'antd';
 import { 
   CheckOutlined, 
@@ -25,7 +26,8 @@ import {
   EditOutlined, 
   EyeOutlined,
   ClockCircleOutlined,
-  CodeOutlined
+  CodeOutlined,
+  PlayCircleOutlined
 } from '@ant-design/icons';
 
 const { TextArea } = Input;
@@ -58,6 +60,13 @@ export default function ApprovalsPage() {
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
   
+  // 自动审核相关状态
+  const [autoApproveEnabled, setAutoApproveEnabled] = useState(false);
+  const [autoApproveInterval, setAutoApproveInterval] = useState<NodeJS.Timeout | null>(null);
+  const [nextAutoApproveTime, setNextAutoApproveTime] = useState<Date | null>(null);
+  const [autoApproveCount, setAutoApproveCount] = useState(0);
+  const [isAutoProcessing, setIsAutoProcessing] = useState(false);
+  
   // 详情弹窗相关状态
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
@@ -74,6 +83,141 @@ export default function ApprovalsPage() {
   
   // 筛选相关状态
   const [applicantName, setApplicantName] = useState('');
+
+  // 自动审核处理函数
+  const processNextPendingApproval = async () => {
+    if (!user || user.role !== 'admin') return;
+    
+    setIsAutoProcessing(true);
+    try {
+      // 重新获取最新的审核列表
+      let url = `/api/email-approvals?page=1&pageSize=100`;
+      if (applicantName.trim()) {
+        url += `&applicantName=${encodeURIComponent(applicantName.trim())}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
+      const data = await response.json();
+      
+      if (!data.success) {
+        console.error('Failed to fetch approvals for auto processing');
+        return;
+      }
+      
+      // 获取待审核的申请列表
+      const allApprovals = data.approvals || [];
+      const pendingApprovals = allApprovals.filter((approval: Approval) => approval.status === 'pending');
+      
+      if (pendingApprovals.length === 0) {
+        console.log('No pending approvals to process');
+        return;
+      }
+      
+      // 按创建时间排序，处理最早的申请
+      const sortedPendingApprovals = pendingApprovals.sort((a: Approval, b: Approval) => 
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+      
+      const nextApproval = sortedPendingApprovals[0];
+      console.log(`Auto processing approval: ${nextApproval.id}`);
+      
+      // 执行审核通过操作
+      await handleApprovalAction(nextApproval.id, 'approve');
+      
+      // 更新计数
+      setAutoApproveCount(prev => prev + 1);
+      
+      // 刷新当前页面的列表
+      await fetchApprovals(currentPage, pageSize);
+      
+    } catch (error) {
+      console.error('Auto approval failed:', error);
+      message.error(t('approval.autoApproveFailed'));
+    } finally {
+      setIsAutoProcessing(false);
+    }
+  };
+
+  // 启动自动审核
+  const startAutoApprove = () => {
+    if (!user || user.role !== 'admin') {
+      message.error(t('approval.adminOnly'));
+      return;
+    }
+    
+    setAutoApproveEnabled(true);
+    setAutoApproveCount(0);
+    
+    // 立即执行一次
+    processNextPendingApproval();
+    
+    // 设置10分钟间隔
+    const interval = setInterval(() => {
+      processNextPendingApproval();
+      // 更新下次执行时间
+      const nextTime = new Date(Date.now() + 10 * 60 * 1000);
+      setNextAutoApproveTime(nextTime);
+    }, 10 * 60 * 1000); // 10分钟
+    
+    setAutoApproveInterval(interval);
+    
+    // 设置下次执行时间
+    const nextTime = new Date(Date.now() + 10 * 60 * 1000);
+    setNextAutoApproveTime(nextTime);
+    
+    message.success(t('approval.autoApproveStart'));
+  };
+
+  // 停止自动审核
+  const stopAutoApprove = () => {
+    setAutoApproveEnabled(false);
+    if (autoApproveInterval) {
+      clearInterval(autoApproveInterval);
+      setAutoApproveInterval(null);
+    }
+    setNextAutoApproveTime(null);
+    message.info(t('approval.autoApproveStop'));
+  };
+
+  // 格式化剩余时间
+  const formatTimeRemaining = () => {
+    if (!nextAutoApproveTime) return '';
+    
+    const now = new Date();
+    const diff = nextAutoApproveTime.getTime() - now.getTime();
+    
+    if (diff <= 0) return '即将执行';
+    
+    const minutes = Math.floor(diff / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (autoApproveInterval) {
+        clearInterval(autoApproveInterval);
+      }
+    };
+  }, [autoApproveInterval]);
+
+  // 更新剩余时间显示
+  useEffect(() => {
+    if (!autoApproveEnabled || !nextAutoApproveTime) return;
+    
+    const timer = setInterval(() => {
+      // 触发重新渲染以更新剩余时间显示
+      setNextAutoApproveTime(prev => prev);
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [autoApproveEnabled, nextAutoApproveTime]);
 
   // 获取审核列表
   const fetchApprovals = async (page = 1, size = 50) => {
@@ -512,6 +656,47 @@ export default function ApprovalsPage() {
   return (
     <div className="p-6">
       <Card title={t('approval.approvalManagement')} className="h-full">
+        {/* 自动审核控制区域 */}
+        {user?.role === 'admin' && (
+          <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-700">{t('approval.autoApprove')}:</span>
+                  <Switch
+                    checked={autoApproveEnabled}
+                    onChange={(checked) => {
+                      if (checked) {
+                        startAutoApprove();
+                      } else {
+                        stopAutoApprove();
+                      }
+                    }}
+                    loading={isAutoProcessing}
+                  />
+                </div>
+                
+                {autoApproveEnabled && (
+                  <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <PlayCircleOutlined className="text-green-600" />
+                      <span className="text-gray-600">{t('approval.autoApproveProcessed', { count: autoApproveCount })}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <ClockCircleOutlined className="text-blue-600" />
+                      <span className="text-gray-600">{t('approval.nextExecution')}: {formatTimeRemaining()}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                {t('approval.autoApproveInterval')}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 筛选区域 */}
         <div className="mb-4 flex items-center space-x-4">
           <div className="flex items-center space-x-2">
