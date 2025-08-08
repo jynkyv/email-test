@@ -66,6 +66,35 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
 },
+{
+  id: 'ag',
+  name: '福州亜麟',
+  subject: '実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ',
+  content: `
+<div style="max-width: 750px; margin: 0 auto;">
+  <div style="display: block;">
+    <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block;">
+  </div>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: inline-block;">
+      <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; display: block;">
+    </div>
+    <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank" style="display: inline-block;">
+      <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; display: block;">
+    </a>
+    <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank" style="display: inline-block;">
+      <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; display: block;">
+    </a>
+  </div>
+  <div style="display: block;">
+    <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block;">
+  </div>
+</div>
+<br>
+`,
+  description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
+  category: 'default'
+},
 
 {id: 'db-footer-1',
   name: '一部-页脚',
