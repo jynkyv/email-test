@@ -769,24 +769,14 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                   {/* 页码输入 */}
                   <div className="flex items-center gap-1">
                     <span className="text-sm text-gray-600">{t('common.page')}:</span>
-                                        <Input
+                    <Input
                       size="small"
                       style={{ width: 60 }}
                       value={tempCustomerPageInput}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const value = e.target.value;
                         setTempCustomerPageInput(value);
-                        
-                        // 允许空值，这样用户可以删除个位数
-                        if (value === '') {
-                          return;
-                        }
-                        
-                        const page = parseInt(value);
-                        if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
-                          // 使用防抖函数延迟执行跳转
-                          debouncedPageChange(page);
-                        }
+                        // 移除防抖调用，只在输入时更新状态，不触发跳转
                       }}
                       onPressEnter={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         const value = (e.target as HTMLInputElement).value;
@@ -801,6 +791,19 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
                         }
                       }}
                     />
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        const page = parseInt(tempCustomerPageInput);
+                        if (page && page > 0 && page <= Math.ceil(customerTotal / customerPageSize)) {
+                          setCustomerCurrentPage(page);
+                          setTempCustomerPageInput(page.toString());
+                          fetchCustomers(page, customerPageSize);
+                        }
+                      }}
+                    >
+                      {t('common.confirm')}
+                    </Button>
                     <span className="text-sm text-gray-600">/ {Math.ceil(customerTotal / customerPageSize)}</span>
                   </div>
                   

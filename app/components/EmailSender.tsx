@@ -1154,17 +1154,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                         onChange={(e) => {
                           const value = e.target.value;
                           setTempPageInput(value);
-                          
-                          // 允许空值，这样用户可以删除个位数
-                          if (value === '') {
-                            return;
-                          }
-                          
-                          const page = parseInt(value);
-                          if (page && page > 0 && page <= Math.ceil(total / 100)) {
-                            // 使用防抖函数延迟执行跳转
-                            debouncedPageChange(page);
-                          }
+                          // 移除防抖调用，只在输入时更新状态，不触发跳转
                         }}
                         onPressEnter={(e) => {
                           const value = (e.target as HTMLInputElement).value;
@@ -1179,6 +1169,19 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                           }
                         }}
                       />
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          const page = parseInt(tempPageInput);
+                          if (page && page > 0 && page <= Math.ceil(total / 100)) {
+                            setCurrentPage(page);
+                            setTempPageInput(page.toString());
+                            fetchCustomers(page, 100);
+                          }
+                        }}
+                      >
+                        {t('common.confirm')}
+                      </Button>
                       <span className="text-sm text-gray-600">/ {Math.ceil(total / pageSize)}</span>
                     </div>
                     
