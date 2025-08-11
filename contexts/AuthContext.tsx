@@ -26,24 +26,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
 
-    // 检查本地存储的会话
-    const checkSession = async () => {
-      try {
+    // 检查本地存储的会话 - 优化为同步执行
+    try {
       const session = localStorage.getItem('user_session');
       if (session) {
-          const userData = JSON.parse(session);
-          setUser(userData);
-          setUserRole(userData.role);
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-        localStorage.removeItem('user_session');
-      } finally {
-        setLoading(false);
+        const userData = JSON.parse(session);
+        setUser(userData);
+        setUserRole(userData.role);
       }
-    };
-
-    checkSession();
+    } catch (error) {
+      console.error('Error checking session:', error);
+      localStorage.removeItem('user_session');
+    } finally {
+      setLoading(false);
+    }
   }, [mounted]);
 
   const signIn = async (username: string, password: string) => {
@@ -70,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // 保存用户信息到本地存储
       if (typeof window !== 'undefined') {
-      localStorage.setItem('user_session', JSON.stringify(userData));
+        localStorage.setItem('user_session', JSON.stringify(userData));
       }
       setUser(userData);
       setUserRole(userData.role);
@@ -84,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     if (typeof window !== 'undefined') {
-    localStorage.removeItem('user_session');
+      localStorage.removeItem('user_session');
     }
     setUser(null);
     setUserRole(null);

@@ -46,7 +46,7 @@ interface ExcelCustomer {
 
 export default function CustomerManager() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // 改为 false，避免初始loading
   const [form] = Form.useForm();
   const { user, userRole } = useAuth();
   const { t } = useI18n();
@@ -124,9 +124,12 @@ export default function CustomerManager() {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadFileList, setUploadFileList] = useState<UploadFile[]>([]);
 
+  // 修改 useEffect，只在 user 准备好时才获取数据
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (user) {
+      fetchCustomers();
+    }
+  }, [user]); // 添加 user 依赖
 
   // 新增：带传真筛选的获取客户函数
   const fetchCustomersWithFaxFilter = async (page = currentPage, size = pageSize, faxOnly = showFaxOnly, subscriptionStatusParam = subscriptionStatus, searchFieldParam?: string, searchValueParam?: string, startDateParam?: Date | null, endDateParam?: Date | null) => {
@@ -718,10 +721,14 @@ export default function CustomerManager() {
     },
   ];
 
-  if (loading) {
+  // 在客户端挂载之前，显示加载状态
+  if (!user) {
     return (
-      <div className="text-center py-8">
-        <Spin size="large" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Spin size="large" />
+          <p className="text-gray-600 mt-4">{t('auth.checkingAuth')}</p>
+        </div>
       </div>
     );
   }

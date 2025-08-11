@@ -755,11 +755,12 @@ export default function ApprovalsPage() {
             )}
           </div>
 
+          {/* 表格区域 */}
           <Table
-            columns={columns}
             dataSource={approvals}
+            columns={columns}
             rowKey="id"
-            loading={loading}
+            loading={loading} // 这里只对表格显示loading
             pagination={{
               current: currentPage,
               pageSize: pageSize,

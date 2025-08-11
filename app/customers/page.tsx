@@ -25,18 +25,6 @@ export default function CustomersPage() {
     }
   }, [mounted, loading, user, router]);
 
-  // 在客户端挂载之前，显示加载状态
-  if (!mounted || loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <Spin size="large" />
-          <p className="text-gray-600 mt-4">{t('auth.checkingAuth')}</p>
-        </div>
-      </div>
-    );
-  }
-
   // 如果用户未登录，显示重定向信息
   if (!user) {
     return (
