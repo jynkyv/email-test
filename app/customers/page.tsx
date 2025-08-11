@@ -5,19 +5,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { useRouter } from 'next/navigation';
 import { Spin } from 'antd';
-import EmailSender from './components/EmailSender';
-import EmailViewer from './components/EmailViewer';
-import AppHeader from './components/Header';
+import CustomerManager from '../components/CustomerManager';
+import AppHeader from '../components/Header';
 
-interface ReplyData {
-  to: string;
-  subject: string;
-  content: string;
-  isHtml?: boolean;
-}
-
-export default function Home() {
-  const [replyData, setReplyData] = useState<ReplyData | null>(null);
+export default function CustomersPage() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
@@ -33,14 +24,6 @@ export default function Home() {
       router.push('/login');
     }
   }, [mounted, loading, user, router]);
-
-  const handleReply = (emailData: ReplyData) => {
-    setReplyData(emailData);
-  };
-
-  const handleSendComplete = () => {
-    setReplyData(null);
-  };
 
   // 在客户端挂载之前，显示加载状态
   if (!mounted || loading) {
@@ -70,18 +53,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <AppHeader />
       <div className="p-6">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
-            <EmailSender 
-              replyData={replyData}
-              onSendComplete={handleSendComplete}
-            />
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
-            <EmailViewer onReply={handleReply} />
-          </div>
-        </div>
+        <CustomerManager />
       </div>
     </div>
   );

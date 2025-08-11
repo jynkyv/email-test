@@ -263,8 +263,7 @@
     "exportDescription": "以下は選択された顧客のFAX番号です。カンマ区切り形式で、Fax Plusに直接コピーして使用できます：",
     "copyToClipboard": "クリップボードにコピー",
     "faxNumbersCopied": "FAX番号がクリップボードにコピーされました",
-    "copyFailed": "コピーに失敗しました。手動でコピーしてください",
-    "selectionHint": "注意：FAX番号があり、まだ送信されていない顧客のみ選択できます"
+    "copyFailed": "コピーに失敗しました。手動でコピーしてください"
   },
   "approval": {
     "approvalManagement": "承認管理",

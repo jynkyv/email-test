@@ -259,8 +259,7 @@
     "exportDescription": "以下是选中客户的传真号码，格式为逗号分隔，可直接复制到Fax Plus使用：",
     "copyToClipboard": "复制到剪贴板",
     "faxNumbersCopied": "传真号码已复制到剪贴板",
-    "copyFailed": "复制失败，请手动复制",
-    "selectionHint": "提示：只有有传真号码且未发送传真的客户可以被选择"
+    "copyFailed": "复制失败，请手动复制"
   },
   "approval": {
     "approvalManagement": "审核管理",

@@ -5,20 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { useRouter } from 'next/navigation';
 import { Spin } from 'antd';
-import EmailSender from './components/EmailSender';
-import EmailViewer from './components/EmailViewer';
-import AppHeader from './components/Header';
+import UserManager from '../components/UserManager';
+import AppHeader from '../components/Header';
 
-interface ReplyData {
-  to: string;
-  subject: string;
-  content: string;
-  isHtml?: boolean;
-}
-
-export default function Home() {
-  const [replyData, setReplyData] = useState<ReplyData | null>(null);
-  const { user, loading } = useAuth();
+export default function UsersPage() {
+  const { user, loading, userRole } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -34,13 +25,13 @@ export default function Home() {
     }
   }, [mounted, loading, user, router]);
 
-  const handleReply = (emailData: ReplyData) => {
-    setReplyData(emailData);
-  };
-
-  const handleSendComplete = () => {
-    setReplyData(null);
-  };
+  // 检查管理员权限
+  useEffect(() => {
+    if (mounted && !loading && user && userRole !== 'admin') {
+      // message.error(t('auth.accessDenied')); // Original code had this line commented out
+      router.push('/');
+    }
+  }, [mounted, loading, user, userRole, router, t]);
 
   // 在客户端挂载之前，显示加载状态
   if (!mounted || loading) {
@@ -66,22 +57,22 @@ export default function Home() {
     );
   }
 
+  // 如果不是管理员，显示访问被拒绝
+  if (userRole !== 'admin') {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mt-4">{t('auth.accessDenied')}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <AppHeader />
       <div className="p-6">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
-            <EmailSender 
-              replyData={replyData}
-              onSendComplete={handleSendComplete}
-            />
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
-            <EmailViewer onReply={handleReply} />
-          </div>
-        </div>
+        <UserManager />
       </div>
     </div>
   );

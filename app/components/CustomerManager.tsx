@@ -763,10 +763,6 @@ export default function CustomerManager() {
               </Space>
             )}
             
-            {/* 添加选择提示 */}
-            <div className="text-sm text-gray-500 mt-2">
-              {t('customer.selectionHint')}
-            </div>
             <Button
               type="primary"
               icon={<UploadOutlined />}

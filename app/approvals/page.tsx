@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { useRouter } from 'next/navigation';
 import { htmlToText, textToHtml } from '@/lib/utils';
 import { 
   Card, 
@@ -27,6 +28,7 @@ import {
   ClockCircleOutlined,
   CodeOutlined
 } from '@ant-design/icons';
+import AppHeader from '../components/Header';
 
 const { TextArea } = Input;
 
@@ -50,8 +52,10 @@ interface Approval {
 }
 
 export default function ApprovalsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { t } = useI18n();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -99,7 +103,7 @@ export default function ApprovalsPage() {
         setPageSize(size);
       }
     } catch (error) {
-              console.error('Failed to fetch approvals:', error);
+      console.error('Failed to fetch approvals:', error);
       message.error(t('approval.fetchApprovalsFailed'));
     } finally {
       setLoading(false);
@@ -125,7 +129,7 @@ export default function ApprovalsPage() {
         });
       }
     } catch (error) {
-              console.error('Failed to fetch approval detail:', error);
+      console.error('Failed to fetch approval detail:', error);
       message.error(t('approval.fetchDetailFailed'));
     }
   };
@@ -298,7 +302,7 @@ export default function ApprovalsPage() {
         message.error(t('email.fetchApprovalDetailFailed'));
       }
     } catch (error) {
-              console.error('Approval action failed:', error);
+      console.error('Approval action failed:', error);
       message.error(t('approval.actionFailed'));
       setSendingProgress(false);
     }
@@ -399,6 +403,17 @@ export default function ApprovalsPage() {
     setCurrentPage(1);
     fetchApprovals(1, pageSize);
   };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !authLoading && !user) {
+      console.log('User not logged in, redirecting to login page');
+      router.push('/login');
+    }
+  }, [mounted, authLoading, user, router]);
 
   useEffect(() => {
     if (user) {
@@ -509,281 +524,308 @@ export default function ApprovalsPage() {
     },
   ];
 
+  // 在客户端挂载之前，显示加载状态
+  if (!mounted || authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Spin size="large" />
+          <p className="text-gray-600 mt-4">{t('auth.checkingAuth')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 如果用户未登录，显示重定向信息
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Spin />
+          <p className="text-gray-600 mt-4">{t('auth.redirectingToLogin')}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
-      <Card title={t('approval.approvalManagement')} className="h-full">
-        {/* 筛选区域 */}
-        <div className="mb-4 flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">{t('approval.applicant')}:</span>
-            <Input
-              placeholder={t('approval.searchByApplicant')}
-              value={applicantName}
-              onChange={handleApplicantNameChange}
-              style={{ width: 200 }}
-              onPressEnter={handleSearch}
-              allowClear
-            />
-            <Button type="primary" onClick={handleSearch}>
-              {t('common.search')}
-            </Button>
-            <Button onClick={handleClearFilter}>
-              {t('common.clear')}
-            </Button>
-          </div>
-        </div>
-
-        <Table
-          columns={columns}
-          dataSource={approvals}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: total,
-            showSizeChanger: true,
-            showQuickJumper: {
-              goButton: true
-            },
-            showTotal: (total, range) => 
-              t('common.totalRecords', { total }) + 
-              ` (${range[0]}-${range[1]})`,
-            onChange: (page, size) => fetchApprovals(page, size || 50),
-            itemRender: (page, type, originalElement) => {
-              if (type === 'page') {
-                return (
-                  <Button
-                    type={page === currentPage ? 'primary' : 'default'}
-                    size="small"
-                    onClick={() => fetchApprovals(page, pageSize)}
-                  >
-                    {page}
-                  </Button>
-                );
-              }
-              return originalElement;
-            },
-          }}
-          scroll={{ x: 800 }}
-        />
-      </Card>
-
-      {/* 详情弹窗 */}
-      <Modal
-        title={t('approval.approvalDetails')}
-        open={detailModalVisible}
-        onCancel={() => setDetailModalVisible(false)}
-        footer={null}
-        width={800}
-        destroyOnClose
-        closable={true}
-        maskClosable={true}
-        keyboard={true}
-      >
-        <div className="space-y-6">
-          {/* 审核状态信息 */}
-          <div className="space-y-2">
-            <div>
-              <span className="font-medium">{t('approval.applicant')}:</span>
-              <span className="ml-2">{selectedApproval?.applicant.username}</span>
-            </div>
-            <div>
-              <span className="font-medium">{t('approval.status')}:</span>
-              <span className="ml-2">
-                {selectedApproval?.status === 'pending' && t('approval.pending')}
-                {selectedApproval?.status === 'approved' && t('approval.approved')}
-                {selectedApproval?.status === 'rejected' && t('approval.rejected')}
-              </span>
-            </div>
-            {selectedApproval?.approver && (
-              <div>
-                <span className="font-medium">{t('approval.approver')}:</span>
-                <span className="ml-2">{selectedApproval.approver.username}</span>
-              </div>
-            )}
-          </div>
-
-          {/* 收件人列表 */}
-          <div>
-            <div className="font-medium mb-2">{t('approval.recipients')}:</div>
-            <div className="bg-gray-50 p-3 rounded-lg max-h-32 overflow-y-auto">
-              <div className="flex flex-wrap gap-2">
-                {selectedApproval?.recipients.map((recipient, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
-                  >
-                    {recipient}
-                  </span>
-                ))}
-              </div>
+    <div className="min-h-screen bg-white">
+      <AppHeader />
+      <div className="p-6">
+        <Card title={t('approval.approvalManagement')} className="h-full">
+          {/* 筛选区域 */}
+          <div className="mb-4 flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">{t('approval.applicant')}:</span>
+              <Input
+                placeholder={t('approval.searchByApplicant')}
+                value={applicantName}
+                onChange={handleApplicantNameChange}
+                style={{ width: 200 }}
+                onPressEnter={handleSearch}
+                allowClear
+              />
+              <Button type="primary" onClick={handleSearch}>
+                {t('common.search')}
+              </Button>
+              <Button onClick={handleClearFilter}>
+                {t('common.clear')}
+              </Button>
             </div>
           </div>
 
-          {/* 邮件内容 */}
-          <div>
-            <div className="font-medium mb-2">{t('approval.emailContent')}:</div>
-            {isEditing ? (
-              <Form form={editForm} layout="vertical">
-                <Form.Item
-                  name="subject"
-                  label={t('email.emailSubject')}
-                  rules={[{ required: true, message: t('email.subjectRequired') }]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  name="content"
-                  label={
-                    <div className="flex items-center justify-between">
-                      <span>{t('email.emailContent')}</span>
-                      <div className="flex items-center gap-2">
-                        <Tooltip title={t('email.htmlSupported')}>
-                          <CodeOutlined className="text-blue-500" />
-                        </Tooltip>
-                        <span className="text-xs text-gray-500">
-                          {t('email.htmlSupportText')}
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  rules={[{ required: true, message: t('email.contentRequired') }]}
-                >
-                  <TextArea 
-                    rows={8} 
-                    placeholder="支持HTML标签，可以直接编辑HTML内容..."
-                    maxLength={10000}
-                  />
-                </Form.Item>
-              </Form>
-            ) : (
-              <div className="space-y-3">
-                <div>
-                  <div className="font-medium text-gray-700">{t('email.emailSubject')}:</div>
-                  <div className="bg-gray-50 p-3 rounded-lg">{selectedApproval?.subject}</div>
-                </div>
-                <div>
-                  <div className="font-medium text-gray-700">{t('email.emailContent')}:</div>
-                  <div className="bg-gray-50 p-3 rounded-lg max-h-64 overflow-y-auto">
-                    {(() => {
-                      // 检查是否是HTML内容（包含HTML标签）
-                      if (selectedApproval?.content.includes('<') && selectedApproval?.content.includes('>')) {
-                        // 复杂HTML内容使用dangerouslySetInnerHTML
-                        return (
-                          <div 
-                            className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800 prose-img:my-0 prose-img:mx-0"
-                            dangerouslySetInnerHTML={{ __html: selectedApproval.content }}
-                          />
-                        );
-                      } else {
-                        // 纯文本内容
-                        return (
-                          <div className="whitespace-pre-wrap">
-                            {selectedApproval?.content}
-                          </div>
-                        );
-                      }
-                    })()}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 操作按钮 */}
-          <div className="flex justify-end space-x-2 pt-4 border-t">
-            {user?.role === 'admin' && selectedApproval?.status === 'pending' && (
-              <>
-                {isEditing ? (
-                  <>
-                    <Button onClick={handleCancelEdit}>
-                      {t('common.cancel')}
-                    </Button>
+          <Table
+            columns={columns}
+            dataSource={approvals}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: total,
+              showSizeChanger: true,
+              showQuickJumper: {
+                goButton: true
+              },
+              showTotal: (total, range) => 
+                t('common.totalRecords', { total }) + 
+                ` (${range[0]}-${range[1]})`,
+              onChange: (page, size) => fetchApprovals(page, size || 50),
+              itemRender: (page, type, originalElement) => {
+                if (type === 'page') {
+                  return (
                     <Button
-                      type="primary"
-                      loading={updating}
-                      onClick={handleSaveEdit}
+                      type={page === currentPage ? 'primary' : 'default'}
+                      size="small"
+                      onClick={() => fetchApprovals(page, pageSize)}
                     >
-                      {t('common.save')}
+                      {page}
                     </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button icon={<EditOutlined />} onClick={handleStartEdit}>
-                      {t('common.edit')}
-                    </Button>
-                  </>
-                )}
-              </>
-            )}
-            <Button onClick={() => setDetailModalVisible(false)}>
-              {t('common.close')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+                  );
+                }
+                return originalElement;
+              },
+            }}
+            scroll={{ x: 800 }}
+          />
+        </Card>
 
-      {/* 发送进度显示 */}
-      {sendingProgress && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-medium">{t('email.sending')}</h3>
-            </div>
-            
-            <div className="space-y-4">
+        {/* 详情弹窗 */}
+        <Modal
+          title={t('approval.approvalDetails')}
+          open={detailModalVisible}
+          onCancel={() => setDetailModalVisible(false)}
+          footer={null}
+          width={800}
+          destroyOnClose
+          closable={true}
+          maskClosable={true}
+          keyboard={true}
+        >
+          <div className="space-y-6">
+            {/* 审核状态信息 */}
+            <div className="space-y-2">
               <div>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>{t('email.progress')}</span>
-                  <span>{sentCount} / {totalCount}</span>
-                </div>
-                <Progress 
-                  percent={progressPercent} 
-                  status={progressPercent === 100 ? 'success' : 'active'}
-                  strokeColor={{
-                    '0%': '#108ee9',
-                    '100%': '#87d068',
-                  }}
-                />
+                <span className="font-medium">{t('approval.applicant')}:</span>
+                <span className="ml-2">{selectedApproval?.applicant.username}</span>
               </div>
-              
-              {sendingResults.length > 0 && (
-                <div className="max-h-32 overflow-y-auto">
-                  <div className="text-sm font-medium mb-2">{t('email.sentResults')}:</div>
-                  <div className="space-y-1">
-                    {sendingResults.map((result, index) => (
-                      <div key={index} className="flex items-center justify-between text-xs">
-                        <span className="truncate">{result.email}</span>
-                        {result.status === 'pending' && (
-                          <Tag color="default">
-                            {t('email.pending')}
-                          </Tag>
-                        )}
-                        {result.status === 'processing' && (
-                          <Tag color="processing">
-                            {t('email.processing')}
-                          </Tag>
-                        )}
-                        {result.status === 'success' && (
-                          <Tag color="success">
-                            {t('email.sent')}
-                          </Tag>
-                        )}
-                        {result.status === 'failed' && (
-                          <Tag color="error">
-                            {t('email.failed')}
-                          </Tag>
-                        )}
+              <div>
+                <span className="font-medium">{t('approval.status')}:</span>
+                <span className="ml-2">
+                  {selectedApproval?.status === 'pending' && t('approval.pending')}
+                  {selectedApproval?.status === 'approved' && t('approval.approved')}
+                  {selectedApproval?.status === 'rejected' && t('approval.rejected')}
+                </span>
+              </div>
+              {selectedApproval?.approver && (
+                <div>
+                  <span className="font-medium">{t('approval.approver')}:</span>
+                  <span className="ml-2">{selectedApproval.approver.username}</span>
+                </div>
+              )}
+            </div>
+
+            {/* 收件人列表 */}
+            <div>
+              <div className="font-medium mb-2">{t('approval.recipients')}:</div>
+              <div className="bg-gray-50 p-3 rounded-lg max-h-32 overflow-y-auto">
+                <div className="flex flex-wrap gap-2">
+                  {selectedApproval?.recipients.map((recipient, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
+                    >
+                      {recipient}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 邮件内容 */}
+            <div>
+              <div className="font-medium mb-2">{t('approval.emailContent')}:</div>
+              {isEditing ? (
+                <Form form={editForm} layout="vertical">
+                  <Form.Item
+                    name="subject"
+                    label={t('email.emailSubject')}
+                    rules={[{ required: true, message: t('email.subjectRequired') }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="content"
+                    label={
+                      <div className="flex items-center justify-between">
+                        <span>{t('email.emailContent')}</span>
+                        <div className="flex items-center gap-2">
+                          <Tooltip title={t('email.htmlSupported')}>
+                            <CodeOutlined className="text-blue-500" />
+                          </Tooltip>
+                          <span className="text-xs text-gray-500">
+                            {t('email.htmlSupportText')}
+                          </span>
+                        </div>
                       </div>
-                    ))}
+                    }
+                    rules={[{ required: true, message: t('email.contentRequired') }]}
+                  >
+                    <TextArea 
+                      rows={8} 
+                      placeholder="支持HTML标签，可以直接编辑HTML内容..."
+                      maxLength={10000}
+                    />
+                  </Form.Item>
+                </Form>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <div className="font-medium text-gray-700">{t('email.emailSubject')}:</div>
+                    <div className="bg-gray-50 p-3 rounded-lg">{selectedApproval?.subject}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-700">{t('email.emailContent')}:</div>
+                    <div className="bg-gray-50 p-3 rounded-lg max-h-64 overflow-y-auto">
+                      {(() => {
+                        // 检查是否是HTML内容（包含HTML标签）
+                        if (selectedApproval?.content.includes('<') && selectedApproval?.content.includes('>')) {
+                          // 复杂HTML内容使用dangerouslySetInnerHTML
+                          return (
+                            <div 
+                              className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800 prose-img:my-0 prose-img:mx-0"
+                              dangerouslySetInnerHTML={{ __html: selectedApproval.content }}
+                            />
+                          );
+                        } else {
+                          // 纯文本内容
+                          return (
+                            <div className="whitespace-pre-wrap">
+                              {selectedApproval?.content}
+                            </div>
+                          );
+                        }
+                      })()}
+                    </div>
                   </div>
                 </div>
               )}
             </div>
+
+            {/* 操作按钮 */}
+            <div className="flex justify-end space-x-2 pt-4 border-t">
+              {user?.role === 'admin' && selectedApproval?.status === 'pending' && (
+                <>
+                  {isEditing ? (
+                    <>
+                      <Button onClick={handleCancelEdit}>
+                        {t('common.cancel')}
+                      </Button>
+                      <Button
+                        type="primary"
+                        loading={updating}
+                        onClick={handleSaveEdit}
+                      >
+                        {t('common.save')}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button icon={<EditOutlined />} onClick={handleStartEdit}>
+                        {t('common.edit')}
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
+              <Button onClick={() => setDetailModalVisible(false)}>
+                {t('common.close')}
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        </Modal>
+
+        {/* 发送进度显示 */}
+        {sendingProgress && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-medium">{t('email.sending')}</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <span>{t('email.progress')}</span>
+                    <span>{sentCount} / {totalCount}</span>
+                  </div>
+                  <Progress 
+                    percent={progressPercent} 
+                    status={progressPercent === 100 ? 'success' : 'active'}
+                    strokeColor={{
+                      '0%': '#108ee9',
+                      '100%': '#87d068',
+                    }}
+                  />
+                </div>
+                
+                {sendingResults.length > 0 && (
+                  <div className="max-h-32 overflow-y-auto">
+                    <div className="text-sm font-medium mb-2">{t('email.sentResults')}:</div>
+                    <div className="space-y-1">
+                      {sendingResults.map((result, index) => (
+                        <div key={index} className="flex items-center justify-between text-xs">
+                          <span className="truncate">{result.email}</span>
+                          {result.status === 'pending' && (
+                            <Tag color="default">
+                              {t('email.pending')}
+                            </Tag>
+                          )}
+                          {result.status === 'processing' && (
+                            <Tag color="processing">
+                              {t('email.processing')}
+                            </Tag>
+                          )}
+                          {result.status === 'success' && (
+                            <Tag color="success">
+                              {t('email.sent')}
+                            </Tag>
+                          )}
+                          {result.status === 'failed' && (
+                            <Tag color="error">
+                              {t('email.failed')}
+                            </Tag>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 
