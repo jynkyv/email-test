@@ -42,11 +42,11 @@ function generateEmailFooter(email: string): string {
   return `
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
       <p style="margin: 0 0 10px 0;">
-        If you no longer wish to receive our emails, please click the link below to unsubscribe:
+        今後、当組合からのご案内メールがご不要の場合は、下記のリンクより配信停止できます。
       </p>
       <p style="margin: 0;">
         <a href="${unsubscribeUrl}" style="color: #007bff; text-decoration: none;">
-          Unsubscribe
+          配信停止はこちら
         </a>
       </p>
     </div>
