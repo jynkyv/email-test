@@ -300,7 +300,8 @@
     "autoApproveStart": "自动审核已启动，每10分钟处理一个待审核项目",
     "autoApproveStop": "自动审核已停止",
     "autoApproveFailed": "自动审核失败",
-    "adminOnly": "只有管理员可以使用自动审核功能"
+    "adminOnly": "只有管理员可以使用自动审核功能",
+    "autoApproveNoPending": "没有待审核项目，自动审核已停止"
   },
   "user": {
     "userManagement": "员工管理",

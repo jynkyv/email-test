@@ -94,49 +94,37 @@ export default function ApprovalsPage() {
     
     setIsAutoProcessing(true);
     try {
-      // 重新获取最新的审核列表
-      let url = `/api/email-approvals?page=1&pageSize=100`;
-      if (applicantName.trim()) {
-        url += `&applicantName=${encodeURIComponent(applicantName.trim())}`;
-      }
-      
-      const response = await fetch(url, {
+      // 调用专门的自动审核API
+      const response = await fetch('/api/email-approvals/batch', {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${user?.id}`,
         },
       });
+      
       const data = await response.json();
       
-      if (!data.success) {
-        console.error('Failed to fetch approvals for auto processing');
-        return;
+      if (data.success) {
+        console.log('自动审核完成:', data.message);
+        
+        // 检查是否有处理的项目
+        if (data.processed > 0) {
+          // 更新计数
+          setAutoApproveCount(prev => prev + data.processed);
+          
+          // 刷新当前页面的列表
+          await fetchApprovals(currentPage, pageSize);
+        } else {
+          // 没有待审核项目，自动停止
+          console.log('没有待审核项目，自动停止自动审核');
+          stopAutoApprove();
+          message.info(t('approval.autoApproveNoPending'));
+          return;
+        }
+      } else {
+        console.error('自动审核失败:', data.error);
+        message.error(data.error || t('approval.autoApproveFailed'));
       }
-      
-      // 获取待审核的申请列表
-      const allApprovals = data.approvals || [];
-      const pendingApprovals = allApprovals.filter((approval: Approval) => approval.status === 'pending');
-      
-      if (pendingApprovals.length === 0) {
-        console.log('No pending approvals to process');
-        return;
-      }
-      
-      // 按创建时间排序，处理最早的申请
-      const sortedPendingApprovals = pendingApprovals.sort((a: Approval, b: Approval) => 
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
-      
-      const nextApproval = sortedPendingApprovals[0];
-      console.log(`Auto processing approval: ${nextApproval.id}`);
-      
-      // 执行审核通过操作
-      await handleApprovalAction(nextApproval.id, 'approve');
-      
-      // 更新计数
-      setAutoApproveCount(prev => prev + 1);
-      
-      // 刷新当前页面的列表
-      await fetchApprovals(currentPage, pageSize);
       
     } catch (error) {
       console.error('Auto approval failed:', error);
@@ -159,19 +147,21 @@ export default function ApprovalsPage() {
     // 立即执行一次
     processNextPendingApproval();
     
+    // 设置下次执行时间（立即设置）
+    const nextTime = new Date(Date.now() + 10 * 60 * 1000);
+    setNextAutoApproveTime(nextTime);
+    
     // 设置10分钟间隔
     const interval = setInterval(() => {
+      // 执行处理
       processNextPendingApproval();
-      // 更新下次执行时间
-      const nextTime = new Date(Date.now() + 10 * 60 * 1000);
-      setNextAutoApproveTime(nextTime);
+      
+      // 执行完成后更新下次执行时间
+      const newNextTime = new Date(Date.now() + 10 * 60 * 1000);
+      setNextAutoApproveTime(newNextTime);
     }, 10 * 60 * 1000); // 10分钟
     
     setAutoApproveInterval(interval);
-    
-    // 设置下次执行时间
-    const nextTime = new Date(Date.now() + 10 * 60 * 1000);
-    setNextAutoApproveTime(nextTime);
     
     message.success(t('approval.autoApproveStart'));
   };
@@ -211,13 +201,21 @@ export default function ApprovalsPage() {
     };
   }, [autoApproveInterval]);
 
-  // 更新剩余时间显示
+  // 更新剩余时间显示 - 修复时间更新逻辑
   useEffect(() => {
     if (!autoApproveEnabled || !nextAutoApproveTime) return;
     
     const timer = setInterval(() => {
-      // 触发重新渲染以更新剩余时间显示
-      setNextAutoApproveTime(prev => prev);
+      // 只触发重新渲染，不修改时间值
+      setNextAutoApproveTime(prev => {
+        if (!prev) return prev;
+        // 如果时间已经过期，立即更新为新的10分钟后
+        const now = new Date();
+        if (prev.getTime() <= now.getTime()) {
+          return new Date(now.getTime() + 10 * 60 * 1000);
+        }
+        return prev;
+      });
     }, 1000);
     
     return () => clearInterval(timer);

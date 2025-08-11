@@ -304,7 +304,8 @@
     "autoApproveStart": "自動承認を開始しました。10分ごとに1件の承認待ち項目を処理します",
     "autoApproveStop": "自動承認を停止しました",
     "autoApproveFailed": "自動承認に失敗しました",
-    "adminOnly": "管理者のみが自動承認機能を使用できます"
+    "adminOnly": "管理者のみが自動承認機能を使用できます",
+    "autoApproveNoPending": "承認待ち項目がないため、自動承認を停止しました"
   },
   "user": {
     "userManagement": "従業員管理",
