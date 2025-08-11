@@ -599,38 +599,21 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
   };
 
   return (
-    <Card title={t('navigation.emailManagement')} className="h-full">
-      <div className="space-y-4 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <TeamOutlined />
-            <span className="font-medium">{t('email.myCustomers')}</span>
-          </div>
-          <Space>
-            <Tooltip title={t('settings.emailSettings')}>
-              <Button
-                icon={<SettingOutlined />}
-                onClick={() => setSettingsModalVisible(true)}
-                size="small"
-              />
-            </Tooltip>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize, searchField, searchValue)}
-              loading={loadingCustomers}
-            >
-              {t('email.refreshCustomers')}
-            </Button>
-          </Space>
-        </div>
-      </div>
-
+    <Card title={t('navigation.emailManagement')}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[600px]">
         {/* 客户列表 */}
         <div className="border rounded-lg overflow-hidden flex flex-col">
           <div className="bg-gray-50 px-4 py-3 border-b flex-shrink-0">
             <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
               <span className="text-sm font-medium">{t('customer.customerList')}</span>
+                  <Button
+              icon={<ReloadOutlined />}
+              onClick={() => fetchCustomers(customerCurrentPage, customerPageSize, searchField, searchValue)}
+              loading={loadingCustomers}
+            >
+            </Button>
+              </div>
               <span className="text-xs text-gray-500">
                 {t('common.totalRecords', { total: customerTotal })}
               </span>

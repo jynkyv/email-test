@@ -69,16 +69,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <AppHeader />
-      <div className="p-6">
+      <div className="px-6 pt-6">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
+          <div className="bg-white rounded-lg shadow-lg p-6 ">
             <EmailSender 
               replyData={replyData}
               onSendComplete={handleSendComplete}
             />
           </div>
           
-          <div className="bg-white rounded-lg shadow-lg p-6 h-[850px]">
+          <div className="bg-white rounded-lg shadow-lg p-6 ">
             <EmailViewer onReply={handleReply} />
           </div>
         </div>
