@@ -200,8 +200,7 @@ export default function ApprovalsPage() {
     if (!autoApproveEnabled || !nextAutoApproveTime) return;
     
     const timer = setInterval(() => {
-      // 强制组件重新渲染
-      setAutoApproveCount(prev => prev); // 触发重新渲染但不改变值
+      setCountdownTrigger(prev => prev + 1);
     }, 1000);
     
     return () => clearInterval(timer);
