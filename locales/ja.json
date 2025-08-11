@@ -293,7 +293,18 @@
     "fetchApprovalsFailed": "承認リストの取得に失敗しました",
     "fetchDetailFailed": "承認詳細の取得に失敗しました",
     "actionFailed": "承認操作に失敗しました",
-    "updateFailed": "内容の更新に失敗しました"
+    "updateFailed": "内容の更新に失敗しました",
+    "autoApprove": "自動承認",
+    "autoApproveEnabled": "自動承認が有効",
+    "autoApproveDisabled": "自動承認が無効",
+    "autoApproveProcessing": "自動承認処理中",
+    "autoApproveProcessed": "{count}件処理済み",
+    "nextExecution": "次回実行",
+    "autoApproveInterval": "10分ごとに1件の承認待ち項目を処理",
+    "autoApproveStart": "自動承認を開始しました。10分ごとに1件の承認待ち項目を処理します",
+    "autoApproveStop": "自動承認を停止しました",
+    "autoApproveFailed": "自動承認に失敗しました",
+    "adminOnly": "管理者のみが自動承認機能を使用できます"
   },
   "user": {
     "userManagement": "従業員管理",
