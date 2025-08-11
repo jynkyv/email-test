@@ -51,14 +51,27 @@ export async function POST(request: NextRequest) {
       userAgent
     });
 
-    // 检查是否已经退订
-    const { data: existingUnsubscription } = await supabaseAdmin
-      .from('email_unsubscriptions')
-      .select('id, created_at')
-      .eq('email', email.toLowerCase())
-      .single();
+    // 检查是否已经退订 - 同时检查两个表
+    const [unsubscriptionResult, customerResult] = await Promise.all([
+      supabaseAdmin
+        .from('email_unsubscriptions')
+        .select('id, created_at')
+        .eq('email', email.toLowerCase())
+        .single(),
+      supabaseAdmin
+        .from('customers')
+        .select('unsubscribe, unsubscribe_at')
+        .eq('email', email.toLowerCase())
+        .single()
+    ]);
 
-    if (!existingUnsubscription) {
+    const existingUnsubscription = unsubscriptionResult.data;
+    const customer = customerResult.data;
+
+    // 检查是否真的需要重新订阅
+    const needsResubscribe = existingUnsubscription || (customer && customer.unsubscribe);
+
+    if (!needsResubscribe) {
       console.log('⚠️ 该邮箱未退订:', email);
       return NextResponse.json(
         { 
@@ -69,21 +82,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 删除退订记录
-    const { error: deleteError } = await supabaseAdmin
-      .from('email_unsubscriptions')
-      .delete()
-      .eq('email', email.toLowerCase());
+    // 删除退订记录（如果存在）
+    if (existingUnsubscription) {
+      const { error: deleteError } = await supabaseAdmin
+        .from('email_unsubscriptions')
+        .delete()
+        .eq('email', email.toLowerCase());
 
-    if (deleteError) {
-      console.error('❌ 删除退订记录失败:', deleteError);
-      return NextResponse.json(
-        { success: false, message: '重新订阅处理失败' },
-        { status: 500 }
-      );
+      if (deleteError) {
+        console.error('❌ 删除退订记录失败:', deleteError);
+        return NextResponse.json(
+          { success: false, message: '重新订阅处理失败' },
+          { status: 500 }
+        );
+      }
     }
 
-    // 同时更新客户表的unsubscribe字段
+    // 更新客户表的unsubscribe字段
     const { error: updateError } = await supabaseAdmin
       .from('customers')
       .update({
@@ -94,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       console.error('❌ 更新客户订阅状态失败:', updateError);
-      // 不返回错误，因为退订记录已经成功删除
+      // 如果客户表更新失败，但退订记录已删除，仍然认为重新订阅成功
     }
 
     console.log('✅ 重新订阅成功:', email);
