@@ -135,8 +135,9 @@ export async function GET(request: NextRequest) {
     let sortedQuery = query;
 
     if (sortByUnread) {
-      // 邮件管理页面：按创建时间倒序，然后在内存中处理未读邮件排序
-      sortedQuery = sortedQuery.order('created_at', { ascending: false });
+      // 邮件管理页面：直接按数据库中的has_unread_emails字段排序
+      sortedQuery = sortedQuery.order('has_unread_emails', { ascending: false, nullsLast: true })
+                              .order('created_at', { ascending: false });
     } else {
       // 其他页面：按创建时间倒序，添加ID作为第二排序字段确保稳定性
       sortedQuery = sortedQuery.order('created_at', { ascending: false })
@@ -155,7 +156,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 处理客户数据，计算未读邮件状态
+    // 处理客户数据，计算未读邮件状态（保持兼容性）
     const processedCustomers = customersWithEmails?.map(customer => {
       const hasUnreadEmails = customer.customer_emails?.some((email: any) => !email.is_read) || false;
       return {
@@ -165,34 +166,19 @@ export async function GET(request: NextRequest) {
       };
     }) || [];
 
-    // 如果是邮件管理页面，需要重新排序（有未读邮件的排在前面）
-    let finalCustomers = processedCustomers;
-    if (sortByUnread) {
-      finalCustomers = processedCustomers.sort((a, b) => {
-        // 首先按未读邮件状态排序（有未读邮件的排在前面）
-        if (a.has_unread_emails && !b.has_unread_emails) {
-          return -1;
-        }
-        if (!a.has_unread_emails && b.has_unread_emails) {
-          return 1;
-        }
-        // 如果未读邮件状态相同，按创建时间倒序
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
-    }
-
     console.log('客户列表查询结果:', { 
-      customersCount: finalCustomers?.length, 
+      customersCount: processedCustomers?.length, 
       totalCount: totalCount, 
       page, 
       pageSize,
       startDate,
-      endDate
+      endDate,
+      sortByUnread
     });
 
     return NextResponse.json({
       success: true,
-      customers: finalCustomers,
+      customers: processedCustomers,
       total: totalCount || 0,
       page,
       pageSize,
@@ -269,7 +255,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     console.log('用户查询结果:', { userData, userError });
-
     if (userError || !userData) {
       console.log('用户不存在或查询失败:', userError);
       return NextResponse.json(
