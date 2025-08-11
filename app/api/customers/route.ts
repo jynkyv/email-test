@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
 
     if (sortByUnread) {
       // 邮件管理页面：直接按数据库中的has_unread_emails字段排序
-      sortedQuery = sortedQuery.order('has_unread_emails', { ascending: false, nullsLast: true })
+      sortedQuery = sortedQuery.order('has_unread_emails', { ascending: false, nullsFirst: false })
                               .order('created_at', { ascending: false });
     } else {
       // 其他页面：按创建时间倒序，添加ID作为第二排序字段确保稳定性
