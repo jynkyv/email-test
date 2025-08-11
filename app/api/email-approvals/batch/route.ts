@@ -286,13 +286,12 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
 // 更新用户邮件发送统计
 async function updateUserEmailStats(userId: string, sendCount: number, recipientCount: number) {
   try {
-    const { error } = await supabase
-      .from('users')
-      .update({
-        email_send_count: supabase.sql`email_send_count + ${sendCount}`,
-        email_recipient_count: supabase.sql`email_recipient_count + ${recipientCount}`
-      })
-      .eq('id', userId);
+    // 使用原始SQL查询来更新计数器
+    const { error } = await supabase.rpc('update_user_email_stats', {
+      user_id: userId,
+      send_count: sendCount,
+      recipient_count: recipientCount
+    });
 
     if (error) {
       console.error('更新用户邮件统计失败:', error);
