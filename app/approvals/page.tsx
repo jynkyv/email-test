@@ -71,6 +71,9 @@ export default function ApprovalsPage() {
   const [autoApproveCount, setAutoApproveCount] = useState(0);
   const [isAutoProcessing, setIsAutoProcessing] = useState(false);
   
+  // 新增：倒计时更新触发器
+  const [countdownTrigger, setCountdownTrigger] = useState(0);
+  
   // 详情弹窗相关状态
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
@@ -192,30 +195,13 @@ export default function ApprovalsPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // 组件卸载时清理定时器
-  useEffect(() => {
-    return () => {
-      if (autoApproveInterval) {
-        clearInterval(autoApproveInterval);
-      }
-    };
-  }, [autoApproveInterval]);
-
-  // 更新剩余时间显示 - 修复时间更新逻辑
+  // 更新剩余时间显示 - 简化版本
   useEffect(() => {
     if (!autoApproveEnabled || !nextAutoApproveTime) return;
     
     const timer = setInterval(() => {
-      // 只触发重新渲染，不修改时间值
-      setNextAutoApproveTime(prev => {
-        if (!prev) return prev;
-        // 如果时间已经过期，立即更新为新的10分钟后
-        const now = new Date();
-        if (prev.getTime() <= now.getTime()) {
-          return new Date(now.getTime() + 10 * 60 * 1000);
-        }
-        return prev;
-      });
+      // 强制组件重新渲染
+      setAutoApproveCount(prev => prev); // 触发重新渲染但不改变值
     }, 1000);
     
     return () => clearInterval(timer);
