@@ -753,10 +753,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
           {/* 客户列表分页 */}
           {!loadingCustomers && customerTotal > 0 && (
             <div className="px-4 py-3 border-t bg-gray-50 flex-shrink-0">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
-                  {t('common.totalRecords', { total: customerTotal })}
-                </span>
+              <div className="flex justify-end items-center">
                 <div className="flex items-center gap-2">
                   <Button
                     size="small"
