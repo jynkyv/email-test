@@ -200,18 +200,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 更新申请人的发送统计
-    // 注意：审核邮件发送时，发送次数只算1次（因为是一次审核操作），收件人数是实际成功发送的数量
-    for (const [applicantId, stats] of applicantStats) {
-      if (stats.recipientCount > 0) {
-        try {
-          await updateUserEmailStats(applicantId, 1, stats.recipientCount);
-        } catch (statsError) {
-          console.error(`更新申请人 ${applicantId} 统计失败:`, statsError);
-          // 不阻止邮件发送流程，只记录错误
-        }
-      }
-    }
+    // 注意：邮件统计数据通过实时查询 email_approvals 表计算，无需手动更新
+    // email_send_count 和 email_recipient_count 字段会自动计算
 
     // 检查是否还有待处理的邮件，如果有则继续处理
     const { data: remainingEmails } = await supabase
@@ -322,45 +312,4 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
   }
 }
 
-// 更新用户邮件发送统计
-async function updateUserEmailStats(userId: string, sendCount: number, recipientCount: number) {
-  try {
-    // 先获取当前用户的统计数据
-    const { data: currentStats, error: statsError } = await supabase
-      .from('users')
-      .select('email_send_count, email_recipient_count')
-      .eq('id', userId)
-      .single();
-
-    if (statsError) {
-      console.error('获取用户统计失败:', statsError);
-      throw statsError;
-    }
-
-    // 计算新的统计值
-    const newSendCount = (currentStats?.email_send_count || 0) + sendCount;
-    const newRecipientCount = (currentStats?.email_recipient_count || 0) + recipientCount;
-
-    // 更新用户统计
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({
-        email_send_count: newSendCount,
-        email_recipient_count: newRecipientCount
-      })
-      .eq('id', userId);
-
-    if (updateError) {
-      console.error('更新用户统计失败:', updateError);
-      throw updateError;
-    }
-
-    console.log(`✅ 用户 ${userId} 统计更新成功:`, {
-      sendCount: `${currentStats?.email_send_count || 0} + ${sendCount} = ${newSendCount}`,
-      recipientCount: `${currentStats?.email_recipient_count || 0} + ${recipientCount} = ${newRecipientCount}`
-    });
-  } catch (error) {
-    console.error('更新用户邮件发送统计失败:', error);
-    throw error;
-  }
-} 
+ 

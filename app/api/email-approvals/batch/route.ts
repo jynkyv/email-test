@@ -188,14 +188,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 更新申请人的发送统计
-    if (successCount > 0) {
-      try {
-        await updateUserEmailStats(approval.applicant_id, 1, successCount);
-      } catch (statsError) {
-        console.error(`更新申请人 ${approval.applicant_id} 统计失败:`, statsError);
-      }
-    }
+    // 注意：邮件统计数据通过实时查询 email_approvals 表计算，无需手动更新
+    // email_send_count 和 email_recipient_count 字段会自动计算
 
     console.log(`�� 自动审核完成: 申请 ${approval.id}, 处理 ${processedCount} 个邮件，成功 ${successCount}，失败 ${failCount}`);
 
@@ -283,24 +277,4 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
   }
 }
 
-// 更新用户邮件发送统计
-async function updateUserEmailStats(userId: string, sendCount: number, recipientCount: number) {
-  try {
-    // 使用原始SQL查询来更新计数器
-    const { error } = await supabase.rpc('update_user_email_stats', {
-      user_id: userId,
-      send_count: sendCount,
-      recipient_count: recipientCount
-    });
 
-    if (error) {
-      console.error('更新用户邮件统计失败:', error);
-      throw error;
-    }
-
-    console.log(`✅ 用户 ${userId} 邮件统计更新成功: 发送次数+${sendCount}, 收件人数+${recipientCount}`);
-  } catch (error) {
-    console.error('更新用户邮件统计时出错:', error);
-    throw error;
-  }
-}

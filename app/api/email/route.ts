@@ -124,26 +124,7 @@ export async function POST(request: NextRequest) {
           });
       }
 
-      // 更新用户统计 - 群发时发送次数只算1次，收件人数+成功发送的数量
-      if (successCount > 0) {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/users/update-stats`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userId}`,
-            },
-            body: JSON.stringify({
-              userId: userData.id,
-              sendCount: 1, // 群发时发送次数只算1次
-              recipientCount: successCount, // 实际成功发送的收件人数
-            }),
-          });
-        } catch (statsError) {
-          console.error('更新用户统计失败:', statsError);
-          // 不阻止邮件发送流程，只记录错误
-        }
-      }
+      // 注意：邮件统计数据通过实时查询 email_approvals 表计算，无需手动更新
 
       return NextResponse.json({
         success: successCount > 0,
@@ -173,24 +154,7 @@ export async function POST(request: NextRequest) {
           });
       }
 
-      // 更新用户统计 - 单发模式发送次数+1，收件人数+1
-      try {
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/users/update-stats`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userId}`,
-          },
-          body: JSON.stringify({
-            userId: userData.id,
-            sendCount: 1, // 单发模式发送次数+1
-            recipientCount: 1, // 单发模式收件人数+1
-          }),
-        });
-      } catch (statsError) {
-        console.error('更新用户统计失败:', statsError);
-        // 不阻止邮件发送流程，只记录错误
-      }
+      // 注意：邮件统计数据通过实时查询 email_approvals 表计算，无需手动更新
       
       return NextResponse.json({
         success: true,
