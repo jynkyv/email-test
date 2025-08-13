@@ -136,7 +136,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <td align="center" style="padding:0;">
       <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
         <p style="margin:0 0 10px 0;">
-        <p>お問い合わせもお気軽にどうぞ。<br>
+        <p style="font-size:18px">お問い合わせもお気軽にどうぞ。<br>
           ※このメールは返信可能です※<br>
           </p>
         <p>
@@ -148,16 +148,16 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         </p>
         <p style="margin:0 0 10px 0;">
           〒110-0015<br>
-          東京都台東区東上野１丁目8-2 オーイズミ東上野東館9階</p>
+          東京都台東区東上野１丁目8-2<br>オーイズミ東上野東館9階</p>
       <hr>
        <p style="margin:0 0 10px 0;">
           <span style="font-size:18px">福州亚麟科技创新有限责任公司</span>
         </p>
+        </p>
           <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;陳（チン）日本語・中国語対応</span><br>
           Mobile: 0452-6668555<br>
           E-mail: <a href="mailto:yalin6668555@163.com" style="color:#0056b3; text-decoration:none;">yalin6668555@163.com</a>
-        </p>
-        <p style="margin:0 0 10px 0;">
+        <p style="margin:10px 0 10px 0;">
           〒350004<br>
           中国福建省福州市台江区工業路360号<br>
           中央第五街2棟620号 </p>
