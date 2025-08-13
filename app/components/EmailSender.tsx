@@ -460,7 +460,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   };
 
   // 处理部门模板一键应用
-  const handleDepartmentTemplate = (department: '一部' | '二部' | '三部') => {
+  const handleDepartmentTemplate = (department: '一部' | '二部' | '三部' | 'AG') => {
     // 获取当前HTML编辑框的内容
     const currentContent = form.getFieldValue('content') || '';
     
@@ -470,7 +470,8 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     const footerTemplate = EMAIL_TEMPLATES.find(t => 
       (department === '一部' && t.id === 'db-footer-1') ||
       (department === '二部' && t.id === 'db-footer-2') ||
-      (department === '三部' && t.id === 'db-footer-3')
+      (department === '三部' && t.id === 'db-footer-3') ||
+      (department === 'AG' && t.id === 'ag')
     );
     
     if (!headerTemplate || !mainTemplate || !footerTemplate) {
@@ -826,6 +827,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     style={{ backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
                   >
                     三部
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={() => handleDepartmentTemplate('AG')}
+                    style={{ backgroundColor: '#00C3D0', borderColor: '#00C3D0' }}
+                  >
+                    AG
                   </Button>
                   <Button
                     type="default"
