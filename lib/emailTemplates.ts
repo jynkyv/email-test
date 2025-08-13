@@ -70,8 +70,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   id: 'ag',
   name: 'AG',
   subject: '【監理団体様へ】実習生送出の新たな選択肢「福州亜麟」！',
-  content: `
-<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+  content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
       <div style="font-size:27px;font-weight:bold">実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
@@ -86,10 +85,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <td align="center" style="padding:0; ">
       <div style="text-align:left;width:750px;line-height:1.5">
       <span style="font-size:20px;">監理団体ご担当者様</span><br>
+        <span style="font-size:18px;">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。<br>
 現在、日本国内の監理団体様との連携を募集しております。<br>
 このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い実習生送出サービスをご案内いたします。<br>
-        
+        </span>
       </div>
       </td>
   </tr>
@@ -137,6 +137,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
         <p style="margin:0 0 10px 0;">
         <p>お問い合わせもお気軽にどうぞ。<br>
+          ※このメールは返信可能です※<br>
+          </p>
+        <p>
           <span style="font-size:18px">株式会社AGグループ</span>
         </p>
           <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;卓（たく）日本語・中国語対応</span><br>
@@ -158,11 +161,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           〒350004<br>
           中国福建省福州市台江区工業路360号<br>
           中央第五街2棟620号 </p>
+  <p style="margin:0;">© 2025 株式会社AGグループ All Rights Reserved.</p>
       </div>
     </td>
   </tr>
-</table>
-`,
+</table>`,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
 },
