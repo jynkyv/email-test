@@ -464,21 +464,6 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 获取当前HTML编辑框的内容
     const currentContent = form.getFieldValue('content') || '';
     
-    // 查找对应的模板
-    const headerTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db-header');
-    const mainTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db');
-    const footerTemplate = EMAIL_TEMPLATES.find(t => 
-      (department === '一部' && t.id === 'db-footer-1') ||
-      (department === '二部' && t.id === 'db-footer-2') ||
-      (department === '三部' && t.id === 'db-footer-3') ||
-      (department === 'AG' && t.id === 'ag')
-    );
-    
-    if (!headerTemplate || !mainTemplate || !footerTemplate) {
-      message.error('模板配置错误，请联系管理员');
-      return;
-    }
-    
     // 检查是否已经应用过部门模板
     const departmentSignature = `department_${department}`;
     const appliedTemplates = currentContent.match(/<!-- Template: ([^>]+) -->/g) || [];
@@ -491,50 +476,95 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       return;
     }
     
-    // 组合模板内容
-    let combinedContent = '';
-    
-    // 添加页头模板
-    let headerContent = headerTemplate.content;
-    if (headerContent.includes('<body') && headerContent.includes('</body>')) {
-      const bodyMatch = headerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      if (bodyMatch) {
-        headerContent = bodyMatch[1].trim();
+    if (department === 'AG') {
+      // AG模板是完整的模板，不需要组合
+      const agTemplate = EMAIL_TEMPLATES.find(t => t.id === 'ag');
+      
+      if (!agTemplate) {
+        message.error('AG模板配置错误，请联系管理员');
+        return;
       }
-    }
-    combinedContent += `<!-- Template: ${departmentSignature}_header -->\n${headerContent}\n\n`;
-    
-    // 添加主模板
-    let mainContent = mainTemplate.content;
-    if (mainContent.includes('<body') && mainContent.includes('</body>')) {
-      const bodyMatch = mainContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      if (bodyMatch) {
-        mainContent = bodyMatch[1].trim();
+      
+      // 提取AG模板内容
+      let agContent = agTemplate.content;
+      if (agContent.includes('<body') && agContent.includes('</body>')) {
+        const bodyMatch = agContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+          agContent = bodyMatch[1].trim();
+        }
       }
-    }
-    combinedContent += `<!-- Template: ${departmentSignature}_main -->\n${mainContent}\n\n`;
-    
-    // 添加页脚模板
-    let footerContent = footerTemplate.content;
-    if (footerContent.includes('<body') && footerContent.includes('</body>')) {
-      const bodyMatch = footerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-      if (bodyMatch) {
-        footerContent = bodyMatch[1].trim();
+      
+      // 更新表单内容
+      const newContent = currentContent + '\n\n' + `<!-- Template: ${departmentSignature} -->\n${agContent}`;
+      form.setFieldsValue({
+        content: newContent,
+        subject: agTemplate.subject || ''
+      });
+      
+      // 设置HTML内容标识
+      setIsHtmlContent(true);
+      
+      message.success('AG模板已一键应用（完整模板）');
+    } else {
+      // 其他部门模板需要组合header、main、footer
+      const headerTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db-header');
+      const mainTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db');
+      const footerTemplate = EMAIL_TEMPLATES.find(t => 
+        (department === '一部' && t.id === 'db-footer-1') ||
+        (department === '二部' && t.id === 'db-footer-2') ||
+        (department === '三部' && t.id === 'db-footer-3')
+      );
+      
+      if (!headerTemplate || !mainTemplate || !footerTemplate) {
+        message.error('模板配置错误，请联系管理员');
+        return;
       }
+      
+      // 组合模板内容
+      let combinedContent = '';
+      
+      // 添加页头模板
+      let headerContent = headerTemplate.content;
+      if (headerContent.includes('<body') && headerContent.includes('</body>')) {
+        const bodyMatch = headerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+          headerContent = bodyMatch[1].trim();
+        }
+      }
+      combinedContent += `<!-- Template: ${departmentSignature}_header -->\n${headerContent}\n\n`;
+      
+      // 添加主模板
+      let mainContent = mainTemplate.content;
+      if (mainContent.includes('<body') && mainContent.includes('</body>')) {
+        const bodyMatch = mainContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+          mainContent = bodyMatch[1].trim();
+        }
+      }
+      combinedContent += `<!-- Template: ${departmentSignature}_main -->\n${mainContent}\n\n`;
+      
+      // 添加页脚模板
+      let footerContent = footerTemplate.content;
+      if (footerContent.includes('<body') && footerContent.includes('</body>')) {
+        const bodyMatch = footerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+          footerContent = bodyMatch[1].trim();
+        }
+      }
+      combinedContent += `<!-- Template: ${departmentSignature}_footer -->\n${footerContent}`;
+      
+      // 更新表单内容
+      const newContent = currentContent + '\n\n' + combinedContent;
+      form.setFieldsValue({
+        content: newContent,
+        subject: mainTemplate.subject || ''
+      });
+      
+      // 设置HTML内容标识
+      setIsHtmlContent(true);
+      
+      message.success(`${department}模板已一键应用（页头+主内容+${department}页脚）`);
     }
-    combinedContent += `<!-- Template: ${departmentSignature}_footer -->\n${footerContent}`;
-    
-    // 更新表单内容
-    const newContent = currentContent + '\n\n' + combinedContent;
-    form.setFieldsValue({
-      content: newContent,
-      subject: mainTemplate.subject || ''
-    });
-    
-    // 设置HTML内容标识
-    setIsHtmlContent(true);
-    
-    message.success(`${department}模板已一键应用（页头+主内容+${department}页脚）`);
   };
 
   // 处理模板预览
@@ -954,7 +984,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           </div>
           <div className="bg-green-50 p-3 rounded-lg">
             <div className="text-sm text-green-800">
-              <strong>部门模板说明：</strong>点击页面上的"一部"、"二部"、"三部"按钮可一键应用完整的部门模板（页头+主内容+对应部门页脚）
+              <strong>部门模板说明：</strong>点击页面上的"一部"、"二部"、"三部"按钮可一键应用完整的部门模板（页头+主内容+对应部门页脚），"AG"按钮可一键应用完整的AG模板
             </div>
           </div>
           {renderTemplateCards()}

@@ -69,7 +69,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 {
   id: 'ag',
   name: 'AG',
-  subject: '【監理団体様へ】実習生送出の新たな選択肢「福州亜麟」！',
+  subject: '【監理団体様へ】実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
