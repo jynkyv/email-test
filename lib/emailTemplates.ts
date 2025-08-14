@@ -69,11 +69,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 {
   id: 'ag',
   name: 'AG',
-  subject: '【監理団体様へ】実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
+  subject: '【監理団体様へ】技能実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="font-size:27px;font-weight:bold">実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+      <div style="font-size:27px;font-weight:bold">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
     </td>
   </tr>
   <tr>
@@ -86,9 +86,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <div style="text-align:left;width:750px;line-height:1.5">
       <span style="font-size:20px;">監理団体ご担当者様</span><br>
         <span style="font-size:18px;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。<br>
 現在、日本国内の監理団体様との連携を募集しております。<br>
-このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い実習生送出サービスをご案内いたします。<br>
+このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。<br>
         </span>
       </div>
       </td>
@@ -142,7 +142,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <p>
           <span style="font-size:18px">株式会社AGグループ</span>
         </p>
-          <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;卓（たく）日本語・中国語対応</span><br>
+          <div style="font-size:18px;margin:0 0 10px 0">担当:&nbsp;&nbsp;&nbsp;卓（たく）<br>日本語・中国語対応可能</div>
           Mobile: 080-7140-0762<br>
           E-mail: <a href="mailto:taku@aggroup.cc" style="color:#0056b3; text-decoration:none;">taku@aggroup.cc</a>
         </p>
@@ -154,7 +154,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <span style="font-size:18px">福州亚麟科技创新有限责任公司</span>
         </p>
         </p>
-          <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;陳（チン）日本語・中国語対応</span><br>
+          <div style="font-size:18px;margin-bottom:10px">担当:&nbsp;&nbsp;&nbsp;陳（チン）<br>日本語・中国語対応可能</div>
           Mobile: 0452-6668555<br>
           E-mail: <a href="mailto:yalin6668555@163.com" style="color:#0056b3; text-decoration:none;">yalin6668555@163.com</a>
         <p style="margin:10px 0 10px 0;">
