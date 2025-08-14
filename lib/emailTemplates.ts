@@ -70,7 +70,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   id: 'ag',
   name: 'AG',
   subject: '【監理団体様へ】技能実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
-  content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+  content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;">
+    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
       <div style="font-size:27px;font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
@@ -97,7 +98,144 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <br>
 <div style="max-width: 750px; margin: 0 auto;">
   <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-header-1.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block;">
+  </div>
+  <!-- 外层卡片 -->
+  <div style="background:#fff;overflow:hidden;border:34px solid #D61518;">
+
+    <!-- 头部：左侧品牌 + 右侧说明 -->
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0; padding:0;">
+      <tr>
+        <td style="padding:18px 22px 12px 22px;">
+          <img src="https://email-test-gamma.vercel.app/ag-detail-header-1.png" alt="" style="height:94px;object-fit:contain;" />
+        </td>
+      </tr>
+    </table>
+
+    <!-- 说明文字 -->
+    <div style="padding:0 22px 16px 22px;font-size:20px;font-weight: 900; letter-spacing: 0em;line-height:1.7;color: #0061ae;">
+      株式会社ＡＧグループは、福州亞鱗の提携会社であり、<br />
+      自社の講習センターを有し、日本人国般の講習を実施しています。
+    </div>
+
+    <!-- 表格标题行 -->
+    <div style="padding:0 18px 18px 18px; width:calc(100% - 36px);">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:3px solid #e5e9f2; font-weight: 700;">
+        <!-- 表头 -->
+        <tr style="background:#f1f6fb;font-weight:900;">
+          <td style="width:140px;padding:6px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:22px;">初期費用項目</td>
+          <td style="width:160px;padding:6px 0;border: 1px solid #164a7b;background-color: gray;color:white;text-align:center;font-size:22px">企業負担</td>
+          <td style="width:160px;padding:6px 0;border: 1px solid #164a7b;background-color: white;text-align:center;">
+            <img src="https://email-test-gamma.vercel.app/ag-openwork-logo-1.png" alt="" style="height:28px;" />
+          </td>
+          <td style="width:160px;padding:6px 0;border: 1px solid #164a7b;background-color: #c9ecf5;font-size:22px; font-weight: 900; text-align:center;">無料の理由</td>
+        </tr>
+
+        <!-- 1 -->
+        <tr>
+          <td style="padding:8px 0;background-color: #c9ecf5; border: 1px solid #164a7b;text-align:center;font-size:20px;">入国渡航費</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b; font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">77,000</span><span style="font-size:18px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900; font-size:24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">亞鱗（者）が負担</td>
+        </tr>
+
+        <!-- 2 -->
+        <tr style="background:#fcfdff;">
+          <td style="padding:8px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">入国前講習費</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">15,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900;font-size:24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">亞鱗（者）が負担</td>
+        </tr>
+
+        <!-- 3 -->
+        <tr>
+          <td style="padding:8px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">入国後講習費</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">110,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900;font-size:24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">連携会社<br><div style="font-size:12px;">（株）AGグループが負担</div></td>
+        </tr>
+
+        <!-- 4 -->
+        <tr style="background:#fcfdff;">
+          <td style="padding:8px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">実習生への<br>講習手当</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">60,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900;font-size:24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">亞鱗（者）が負担</td>
+        </tr>
+
+        <!-- 5 -->
+        <tr>
+          <td style="padding:8px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">健康診断</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">110,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900; font-size: 24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">亞鱗（者）が負担</td>
+        </tr>
+
+        <!-- 6 -->
+        <tr style="background:#fcfdff;">
+          <td style="padding:8px 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">国内人件費<br>経費等</td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">77,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;font-weight:900;font-size:24px">無料</span>
+          </td>
+          <td style="width:160px;padding:8px 0;border: 1px solid #164a7b;text-align:center;font-size:16px;">アプリで一元管理</td>
+        </tr>
+
+        <!-- 合計 -->
+        <tr style="background:#fff7f7;">
+          <td style="padding:10px 0;font-weight:800;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:20px;">合計</td>
+          <td style="width:160px;padding:10px 0;font-weight:800;border: 1px solid #164a7b;font-size:24px;text-align:right;">
+            <div style="display:inline-block;text-align:left;">
+              <span style="font-size:24px;font-weight:bold;">350,000</span><span style="font-size:24px;font-weight:bold;">円</span><span style="font-size:12px;font-weight:bold;">(税込)</span>
+            </div>
+          </td>
+          <td style="width:160px;border-left:1px solid #f5d6d6;border: 1px solid #164a7b;text-align:center;">
+            <span style="color:#d8322a;border-radius:6px;font-weight:900;">
+              <span style="font-size:40px">0</span>
+              <span style="font-size:12px">円</span>
+            </span>
+          </td>
+          <td style="width:160px;padding:10px 0;border: 1px solid #164a7b;text-align:center;background: linear-gradient(to bottom left, transparent calc(50% - 1px), #164a7b calc(50% - 1px), #164a7b calc(50% + 1px), transparent calc(50% + 1px));"></td>
+        </tr>
+      </table>
+
+      <!-- 备注 -->
+      <div style="margin-top:8px;font-size:12px;color:#8a94a6;">※受入れ後費用明細（1名あたり）</div>
+    </div>
   </div>
   <div style="display: block;">
     <img src="https://email-test-gamma.vercel.app/ag-detail-1.png" style="width: 100%; display: block;">
@@ -149,7 +287,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <p style="margin:0 0 10px 0;">
           〒110-0015<br>
           東京都台東区東上野１丁目8-2<br>オーイズミ東上野東館9階</p>
-      <hr>
+      <div style="border: none;width:750px; height: 1px; background-color: #000000; margin: 20px 0;"></div>
        <p style="margin:0 0 10px 0;">
           <span style="font-size:18px">福州亚麟科技创新有限责任公司</span>
         </p>
@@ -165,7 +303,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </div>
     </td>
   </tr>
-</table>`,
+</table>
+  </div>`,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
 },

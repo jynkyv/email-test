@@ -881,7 +881,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   rows={12}
                   placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
                   showCount
-                  maxLength={10000}
+                  maxLength={100000}
                   onChange={(e) => {
                     // 检测用户输入的内容是否包含HTML标签
                     const content = e.target.value;
