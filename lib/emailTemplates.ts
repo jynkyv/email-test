@@ -86,9 +86,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <div style="text-align:left;width:750px;line-height:1.5">
       <span style="font-size:20px;">監理団体ご担当者様</span><br>
         <span style="font-size:18px;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。
 現在、日本国内の監理団体様との連携を募集しております。<br>
-このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。<br>
         </span>
       </div>
       </td>
