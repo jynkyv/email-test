@@ -73,19 +73,19 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="font-size:27px;font-weight:bold">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+      <div style="font-size:27px;font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
     </td>
   </tr>
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="border: none;width:750px; height: 3px; background-color: #000000; margin: 20px 0;"></div>
+      <div style="border: none;width:750px; height: 3px; background-color: #000000;margin:20px 0;"></div>
     </td>
   </tr>
   <tr>
     <td align="center" style="padding:0; ">
       <div style="text-align:left;width:750px;line-height:1.5">
-      <span style="font-size:20px;">監理団体ご担当者様</span><br>
-        <span style="font-size:18px;">
+      <span style="font-size:20px;color:#000000;">監理団体ご担当者様</span><br>
+        <span style="font-size:18px;color:#000000;">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。
 現在、日本国内の監理団体様との連携を募集しております。<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。<br>
@@ -121,7 +121,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="font-size:27px;font-weight:bold">もしご興味がございましたら、資料の送付も可能です。<br>
+      <div style="font-size:27px;font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
 何卒ご検討のほど、よろしくお願い申し上げます。</div>
     </td>
   </tr>
