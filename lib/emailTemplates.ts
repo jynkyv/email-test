@@ -70,36 +70,159 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   id: 'ag',
   name: 'AG',
   subject: '【監理団体様へ】技能実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
-  content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;">
-  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+  content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 <tr>
   <td align="center" style="padding:0; ">
     <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+    <div style="max-width: 750px; margin: 0 auto;">
+      <div style="display: block; margin-top:clamp(10px, 1.5vw, 20px);margin-bottom:clamp(10px, 1.5vw, 20px);">
+        <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </div>
+    </div>
   </td>
 </tr>
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="border: none;width:min(75vw, 750px); height: clamp(2px, 0.3vw, 4px); background-color: #000000;margin:clamp(15px, 2vw, 25px) 0;"></div>
-  </td>
-</tr>
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="text-align:left;width:min(75vw, 750px);line-height:1.5">
+    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5">
     <span style="font-size:clamp(16px, 2vw, 24px);color:#000000;">監理団体ご担当者様</span><br>
       <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。
-現在、日本国内の監理団体様との連携を募集しております。<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。<br>
+現在、日本国内の監理団体様との連携を募集しております。
       </span>
     </div>
-    </td>
+  </td>
 </tr>
+  <tr><td align="center" style="padding:0; ">
+    <div style="font-size:clamp(14px, 2.7vw, 26px);font-weight:bold;color:#000000; text-align: center;">福州亜麟（アリン）は中国政府認定の信頼ある送出機関です。</div>
+  </td></tr>
+  <tr>
+    <td align="center">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: clamp(750px, 75vw, 750px);">
+                  <tr>
+            <!-- 左侧：中国商务部认可信息 -->
+            <td style="width: 30%; vertical-align: top; padding-right: clamp(10px, 1.5vw, 20px); text-align: center; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px); padding-left: clamp(10px, 1.5vw, 20px);">
+              <div style="color: #0061ae; font-size: clamp(14px, 2vw, 24px); font-weight: bold; margin-bottom: clamp(4px, 1.5vw, 12px); letter-spacing: clamp(0.5px, 0.1vw, 1px);">
+                中国商務部認可<br>
+                の海外人材派遣
+              </div>
+              <div style="color: #0061ae; font-size: clamp(12px, 2vw, 16px); font-weight: bold;letter-spacing: clamp(0.3px, 0.05vw, 0.8px);">
+                資格証番号
+              </div>
+              <div style="color: #0061ae; font-size: clamp(10px, 2vw, 20px); font-weight: bold; letter-spacing: clamp(0.5px, 0.1vw, 1px);">
+                LW350020240003
+              </div>
+              <div style="color: #d8322a; font-size: clamp(12px, 2vw, 24px); font-weight: bold; letter-spacing: clamp(0.5px, 0.1vw, 1px);">
+                資格取得
+              </div>
+            </td>
+            
+            <!-- 右侧：三个优势点 -->
+            <td style="width: 70%; vertical-align: top; padding-left: clamp(10px, 1.5vw, 20px); font-weight: 900; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px);">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                             <tr>
+                 <td style="padding-bottom: clamp(10px, 2.5vw, 14px);">
+                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
+                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
+                           <defs>
+                             <style>
+                               .cls-1 { fill: none; }
+                               .cls-2 { fill: #00b3d6; }
+                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
+                             </style>
+                           </defs>
+                           <g>
+                             <rect class="cls-1" width="70" height="70"/>
+                             <g>
+                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
+                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
+                             </g>
+                           </g>
+                         </svg>
+                       </td>
+                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                            安定した優良実習生の確保
+                          </div>
+                        </td>
+                     </tr>
+                   </table>
+                 </td>
+               </tr>
+               
+               <tr>
+                 <td style="padding-bottom: clamp(10px, 2.5vw, 14px);">
+                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
+                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
+                           <defs>
+                             <style>
+                               .cls-1 { fill: none; }
+                               .cls-2 { fill: #00b3d6; }
+                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
+                             </style>
+                           </defs>
+                           <g>
+                             <rect class="cls-1" width="70" height="70"/>
+                             <g>
+                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
+                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
+                             </g>
+                           </g>
+                         </svg>
+                       </td>
+                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                            豊富な送出実績と経験
+                          </div>
+                        </td>
+                     </tr>
+                   </table>
+                 </td>
+               </tr>
+               
+               <tr>
+                 <td>
+                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                     <tr>
+                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
+                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
+                           <defs>
+                             <style>
+                               .cls-1 { fill: none; }
+                               .cls-2 { fill: #00b3d6; }
+                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
+                             </style>
+                           </defs>
+                           <g>
+                             <rect class="cls-1" width="70" height="70"/>
+                             <g>
+                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
+                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
+                             </g>
+                           </g>
+                         </svg>
+                       </td>
+                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                            入国後の講習にも対応
+                          </div>
+                        </td>
+                     </tr>
+                   </table>
+                 </td>
+               </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 </table>
-<br>
 <div style="max-width: 750px; margin: 0 auto;">
-  <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block;">
-  </div>
   <!-- 外层卡片 -->
   <div style="background:#fff;overflow:hidden;border:clamp(20px, 2.5vw, 34px) solid #D61518;">
 
@@ -107,7 +230,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0; padding:0;">
       <tr>
         <td style="padding:clamp(12px, 1.5vw, 18px) clamp(15px, 2vw, 22px) clamp(8px, 1vw, 12px) clamp(15px, 2vw, 22px);">
-          <img src="https://email-test-gamma.vercel.app/ag-detail-header-1.png" alt="" style="width:100%;height:clamp(60px, 8vw, 94px);object-fit:contain;" />
+          <img src="https://email-test-gamma.vercel.app/ag-detail-header-1.png" alt="" style="width:100%;height:clamp(60px, 8vw, 94px);object-fit:contain; border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
         </td>
       </tr>
     </table>
@@ -126,7 +249,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:140px;padding:clamp(2px, 0.25vw, 6px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(10px, 1.2vw, 22px);">初期費用項目</td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: gray;color:white;text-align:center;font-size:clamp(10px, 1.2vw, 22px)">企業負担</td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: white;text-align:center;">
-            <img src="https://email-test-gamma.vercel.app/ag-openwork-logo-1.png" alt="" style="height:clamp(14px, 1.8vw, 28px);" />
+            <img src="https://email-test-gamma.vercel.app/ag-openwork-logo-1.png" alt="" style="height:clamp(14px, 1.8vw, 28px); border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
           </td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: #c9ecf5;font-size:clamp(10px, 1.2vw, 22px); font-weight: 900; text-align:center;">無料の理由</td>
         </tr>
@@ -136,7 +259,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5; border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">入国渡航費</td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b; font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">77,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">77,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
@@ -150,7 +273,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">入国前講習費</td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">15,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(非課税)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">15,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(非課税)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
@@ -164,7 +287,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">入国後講習費</td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">110,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">110,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
@@ -178,7 +301,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">実習生への<br>講習手当</td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">60,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(非課税)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">60,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(非課税)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
@@ -190,15 +313,15 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <!-- 5 -->
         <tr>
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">健康診断</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solidrgb(99, 103, 107);font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">110,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">110,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size: clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亞鱗（者）が負担</td>
         </tr>
 
         <!-- 6 -->
@@ -206,7 +329,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">国内人件費<br>経費等</td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">77,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">77,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
           </td>
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
@@ -220,7 +343,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="padding:clamp(4px, 0.5vw, 10px) 0;font-weight:800;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(10px, 1.2vw, 20px);">合計</td>
           <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;font-weight:800;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">350,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
+              <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">350,000</span><span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
           </td>
           <td style="width:160px;border-left:1px solid #f5d6d6;border: 1px solid #164a7b;text-align:center;">
@@ -229,77 +352,91 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
               <span style="font-size:clamp(6px, 0.7vw, 12px)">円</span>
             </span>
           </td>
-          <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;border: 1px solid #164a7b;text-align:center;background: linear-gradient(to bottom left, transparent calc(50% - 1px), #164a7b calc(50% - 1px), #164a7b calc(50% + 1px), transparent calc(50% + 1px));"></td>
+          <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;border: 1px solid #164a7b;text-align:center;position:relative;overflow:hidden;">
+            <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100" y2="100" stroke="#164a7b" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+            </svg>
+          </td>
         </tr>
       </table>
 
       <!-- 备注 -->
-      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#8a94a6;">※受入れ後費用概算(1名あたり)</div>
+      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#000000;font-weight: 900;">※受入れ後費用概算(1名あたり)</div>
     </div>
-  </div>
-  <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-detail-1.png" style="width: 100%; display: block;">
-  </div>
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; display: block;">
     </div>
-    <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank" style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; display: block;">
-    </a>
-    <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank" style="display: inline-block;">
-      <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; display: block;">
-    </a>
-  </div>
   <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block;">
+    <img src="https://email-test-gamma.vercel.app/ag-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+  </div>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <tr>
+      <td style="width: 33%; text-align: center;">
+        <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </td>
+      <td style="width: 33%; text-align: center;">
+        <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
+          <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        </a>
+      </td>
+      <td style="width: 33%; text-align: center;">
+        <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
+          <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        </a>
+      </td>
+    </tr>
+  </table>
+  <div style="display: block;">
+    <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
   </div>
 </div>
+</div>
 <br>
-<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 30px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
+    <div style="font-size:clamp(14px, 2.7vw, 30px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
 何卒ご検討のほど、よろしくお願い申し上げます。</div>
   </td>
 </tr>
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="border: none;width:min(75vw, 750px); height: clamp(2px, 0.3vw, 4px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
+    <div style="border: none;width: 90vw; max-width: 750px; height: clamp(2px, 0.3vw, 4px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
   </td>
 </tr>
 </table>
-<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 <tr>
   <td align="center" style="padding:0;">
-    <div style="text-align:left;width:min(75vw, 750px);background-color:#0000; color:#000000; padding:clamp(15px, 2vw, 25px) clamp(20px, 3vw, 35px); font-size:clamp(12px, 1.4vw, 18px); border-radius:clamp(6px, 0.8vw, 10px);">
-      <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
+    <div style="text-align:left;width: 90vw; max-width: 750px; background-color:#0000; color:#000000; padding:clamp(15px, 2vw, 25px) clamp(20px, 3vw, 35px); font-size:clamp(12px, 1.4vw, 18px); border-radius:clamp(6px, 0.8vw, 10px);">
       <p style="font-size:clamp(14px, 1.8vw, 22px)">お問い合わせもお気軽にどうぞ。<br>
         ※このメールは返信可能です※<br>
-        </p>
+      </p>
       <p>
         <span style="font-size:clamp(14px, 1.8vw, 22px)">株式会社AGグループ</span>
       </p>
-        <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;卓（たく）<br>日本語・中国語対応可能</div>
+      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;卓（たく）<br>日本語・中国語対応可能</div>
+      <p>
         Mobile: 080-7140-0762<br>
         E-mail: <a href="mailto:taku@aggroup.cc" style="color:#0056b3; text-decoration:none;">taku@aggroup.cc</a>
       </p>
       <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
         〒110-0015<br>
-        東京都台東区東上野１丁目8-2<br>オーイズミ東上野東館9階</p>
-    <div style="border: none;width:min(75vw, 750px); height: clamp(1px, 0.1vw, 2px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
-     <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
+        東京都台東区東上野１丁目8-2<br>オーイズミ東上野東館9階
+      </p>
+      <div style="border: none;width: 90vw; max-width: 750px; height: clamp(1px, 0.1vw, 2px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
+      <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
         <span style="font-size:clamp(14px, 1.8vw, 22px)">福州亚麟科技创新有限责任公司</span>
       </p>
-      </p>
-        <div style="font-size:clamp(14px, 1.8vw, 22px);margin-bottom:clamp(8px, 1vw, 12px)">担当:&nbsp;&nbsp;&nbsp;陳（チン）<br>日本語・中国語対応可能</div>
+      <div style="font-size:clamp(14px, 1.8vw, 22px);margin-bottom:clamp(8px, 1vw, 12px)">担当:&nbsp;&nbsp;&nbsp;陳（チン）<br>日本語・中国語対応可能</div>
+      <p>
         Mobile: 0452-6668555<br>
         E-mail: <a href="mailto:yalin6668555@163.com" style="color:#0056b3; text-decoration:none;">yalin6668555@163.com</a>
+      </p>
       <p style="margin:clamp(8px, 1vw, 12px) 0 clamp(8px, 1vw, 12px) 0;">
         〒350004<br>
         中国福建省福州市台江区工業路360号<br>
-        中央第五街2棟620号 </p>
-<p style="margin:0;">© 2025 株式会社AGグループ All Rights Reserved.</p>
+        中央第五街2棟620号
+      </p>
+      <p style="margin:0;">© 2025 株式会社AGグループ All Rights Reserved.</p>
     </div>
   </td>
 </tr>
