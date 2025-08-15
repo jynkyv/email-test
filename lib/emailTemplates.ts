@@ -17,7 +17,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="text-align:left;width:750px">
+      <div style="text-align:left;width:750px;color: #000000;">
       <span style="font-size:18px;font-weight: bold">Family協同組合</span>は、<br>
 技能実習生および受け入れ企業の双方の支援を目的とし、<br>
 募集や受け入れに関する調整、指導、監査を行う団体です。<br>
