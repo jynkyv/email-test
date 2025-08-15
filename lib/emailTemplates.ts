@@ -125,22 +125,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
-                           <defs>
-                             <style>
-                               .cls-1 { fill: none; }
-                               .cls-2 { fill: #00b3d6; }
-                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
-                             </style>
-                           </defs>
-                           <g>
-                             <rect class="cls-1" width="70" height="70"/>
-                             <g>
-                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
-                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
-                             </g>
-                           </g>
-                         </svg>
+                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
                           <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
@@ -157,22 +142,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
-                           <defs>
-                             <style>
-                               .cls-1 { fill: none; }
-                               .cls-2 { fill: #00b3d6; }
-                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
-                             </style>
-                           </defs>
-                           <g>
-                             <rect class="cls-1" width="70" height="70"/>
-                             <g>
-                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
-                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
-                             </g>
-                           </g>
-                         </svg>
+                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
                           <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
@@ -189,22 +159,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <svg width="100%" height="100%" viewBox="0 0 70 70" style="position: absolute; top: 0; left: 0;">
-                           <defs>
-                             <style>
-                               .cls-1 { fill: none; }
-                               .cls-2 { fill: #00b3d6; }
-                               .cls-3 { fill: #040000; stroke: #231815; stroke-miterlimit: 10; stroke-width: 2.9px; }
-                             </style>
-                           </defs>
-                           <g>
-                             <rect class="cls-1" width="70" height="70"/>
-                             <g>
-                               <rect class="cls-2" x="4.13" y="14.4" width="48.26" height="50.91"/>
-                               <path class="cls-3" d="M39.49,50.66L65.07,4.69h.8v2.32l-27.18,49.33h-1.2L21.1,23.88l-5.8,3.37-.6-1.9,9.39-5.48,15.39,30.78Z"/>
-                             </g>
-                           </g>
-                         </svg>
+                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
                           <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
