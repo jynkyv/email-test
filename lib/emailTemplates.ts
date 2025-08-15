@@ -115,7 +115,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <!-- 说明文字 -->
     <div style="padding:0 clamp(12px, 1.5vw, 22px) clamp(10px, 1.2vw, 16px) clamp(12px, 1.5vw, 22px);font-size:clamp(14px, 1.6vw, 20px);font-weight: 900; letter-spacing: 0em;line-height:1.7;color: #0061ae;">
       株式会社ＡＧグループは、福州亞鱗の提携会社であり、<br />
-      自社の講習センターを有し、日本人国般の講習を実施しています。
+      自社の講習センターを有し、日本入国後の講習を実施しています。
     </div>
 
     <!-- 表格标题行 -->
@@ -142,7 +142,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（来）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
         </tr>
 
         <!-- 2 -->
@@ -156,7 +156,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900;font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（来）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
         </tr>
 
         <!-- 3 -->
@@ -184,13 +184,13 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900;font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（来）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
         </tr>
 
         <!-- 5 -->
         <tr>
           <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(9px, 1.1vw, 20px);">健康診断</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solidrgb(99, 103, 107);font-size:clamp(10px, 1.3vw, 24px);text-align:right;">
             <div style="display:inline-block;text-align:left;">
               <span style="font-size:clamp(10px, 1.3vw, 24px);font-weight:bold;">110,000</span><span style="font-size:clamp(8px, 0.9vw, 18px);font-weight:bold;">円</span><span style="font-size:clamp(6px, 0.7vw, 12px);font-weight:bold;">(税込)</span>
             </div>
@@ -198,7 +198,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size: clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（来）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
         </tr>
 
         <!-- 6 -->
@@ -234,7 +234,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </table>
 
       <!-- 备注 -->
-      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#8a94a6;">※受入れ後費用明細（1名あたり）</div>
+      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#8a94a6;">※受入れ後費用概算(1名あたり)</div>
     </div>
   </div>
   <div style="display: block;">
