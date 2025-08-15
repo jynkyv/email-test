@@ -74,7 +74,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 32px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
   </td>
 </tr>
 <tr>
@@ -96,7 +96,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </tr>
 </table>
 <br>
-<div style="max-width: 900px; margin: 0 auto;">
+<div style="max-width: 750px; margin: 0 auto;">
   <div style="display: block;">
     <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block;">
   </div>
@@ -259,7 +259,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 32px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
+    <div style="font-size:clamp(18px, 2.7vw, 30px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
 何卒ご検討のほど、よろしくお願い申し上げます。</div>
   </td>
 </tr>
