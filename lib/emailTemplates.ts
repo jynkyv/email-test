@@ -102,7 +102,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                   <tr>
             <!-- 左侧：中国商务部认可信息 -->
             <td style="width: 30%; vertical-align: top; padding-right: clamp(10px, 1.5vw, 20px); text-align: center; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px); padding-left: clamp(10px, 1.5vw, 20px);">
-              <div style="color: #0061ae; font-size: clamp(14px, 2vw, 24px); font-weight: bold; margin-bottom: clamp(4px, 1.5vw, 12px); letter-spacing: clamp(0.5px, 0.1vw, 1px);">
+              <div style="color: #0061ae; font-size: clamp(12px, 2vw, 24px); font-weight: bold; margin-bottom: clamp(4px, 1.5vw, 12px); letter-spacing: clamp(0.5px, 0.1vw, 1px);">
                 中国商務部認可<br>
                 の海外人材派遣
               </div>
@@ -118,17 +118,17 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
             </td>
             
             <!-- 右侧：三个优势点 -->
-            <td style="width: 70%; vertical-align: top; padding-left: clamp(10px, 1.5vw, 20px); font-weight: 900; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px);">
+            <td style="width: 70%; vertical-align: middle; padding-left: clamp(10px, 1.5vw, 20px); font-weight: 900; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px);">
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
                              <tr>
-                 <td style="padding-bottom: clamp(10px, 2.5vw, 14px);">
+                 <td style="padding-bottom: clamp(5px, 2.5vw, 5px);">
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
+                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
                             安定した優良実習生の確保
                           </div>
                         </td>
@@ -138,14 +138,14 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                </tr>
                
                <tr>
-                 <td style="padding-bottom: clamp(10px, 2.5vw, 14px);">
+                 <td style="padding-bottom: clamp(5px, 2.5vw, 5px);">
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
+                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
                             豊富な送出実績と経験
                           </div>
                         </td>
@@ -159,10 +159,10 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                      <tr>
                        <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(30px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
+                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
                        </td>
                                                <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
+                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
                             入国後の講習にも対応
                           </div>
                         </td>
@@ -276,7 +276,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size: clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亞鱗（者）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
         </tr>
 
         <!-- 6 -->
@@ -307,11 +307,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
               <span style="font-size:clamp(6px, 0.7vw, 12px)">円</span>
             </span>
           </td>
-          <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;border: 1px solid #164a7b;text-align:center;position:relative;overflow:hidden;">
-            <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <line x1="0" y1="0" x2="100" y2="100" stroke="#164a7b" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
-            </svg>
-          </td>
+          <td style="padding:clamp(4px,0.6vw,8px) clamp(1px,0.2vw,2px);border:clamp(1px,0.1vw,1px) solid #164a7b;text-align:center;background:linear-gradient(to bottom left,transparent calc(50% - 1px),#164a7b calc(50% - 1px),#164a7b calc(50% + 1px),transparent calc(50% + 1px))"></td>
         </tr>
       </table>
 
