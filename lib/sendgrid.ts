@@ -42,7 +42,7 @@ function generateEmailFooter(email: string): string {
   return `
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
       <p style="margin: 0 0 10px 0;">
-        今後、弊社からのご案内メールがご不要の場合は、下記のリンクより配信停止できます。
+        ${process.env.NEXT_PUBLIC_UNSUBSCRIBE_TEXT}
       </p>
       <p style="margin: 0;">
         <a href="${unsubscribeUrl}" style="color: #007bff; text-decoration: none;">
