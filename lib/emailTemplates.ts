@@ -501,15 +501,15 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </div>
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
-      <td style="width: 33%; text-align: center;">
-        <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      <td style="width: 50%; text-align: center;">
+        <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </td>
-      <td style="width: 33%; text-align: center;">
+      <td style="width: 25%; text-align: center;">
         <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
           <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
         </a>
       </td>
-      <td style="width: 33%; text-align: center;">
+      <td style="width: 25%; text-align: center;">
         <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
           <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
         </a>
