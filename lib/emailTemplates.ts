@@ -220,7 +220,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亜麟（有）が負担</td>
         </tr>
 
         <!-- 2 -->
@@ -234,7 +234,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900;font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亜麟（有）が負担</td>
         </tr>
 
         <!-- 3 -->
@@ -262,7 +262,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900;font-size:clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亜麟（有）が負担</td>
         </tr>
 
         <!-- 5 -->
@@ -276,7 +276,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
             <span style="color:#d8322a;font-weight:900; font-size: clamp(10px, 1.3vw, 24px)">無料</span>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亚麟（有）が負担</td>
+          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 0.9vw, 16px);">亜麟（有）が負担</td>
         </tr>
 
         <!-- 6 -->
@@ -315,6 +315,17 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#000000;font-weight: 900;">※受入れ後費用概算(1名あたり)</div>
     </div>
     </div>
+    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+      <tr>
+        <td align="center" style="padding-top:clamp(10px,1.5vw,10px);padding-bottom:clamp(10px,1.5vw,10px) ">
+          <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5">
+            <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。
+            </span>
+          </div>
+        </td>
+      </tr>
+    </table>
   <div style="display: block;">
     <img src="https://email-test-gamma.vercel.app/ag-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
   </div>
@@ -375,7 +386,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </p>
       <div style="border: none;width: 90vw; max-width: 750px; height: clamp(1px, 0.1vw, 2px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
       <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
-        <span style="font-size:clamp(14px, 1.8vw, 22px)">福州亚麟科技创新有限责任公司</span>
+        <span style="font-size:clamp(14px, 1.8vw, 22px)">福州亜麟科技创新有限责任公司</span>
       </p>
       <div style="font-size:clamp(14px, 1.8vw, 22px);margin-bottom:clamp(8px, 1vw, 12px)">担当:&nbsp;&nbsp;&nbsp;陳（チン）<br>日本語・中国語対応可能</div>
       <p>
