@@ -3,24 +3,31 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { htmlToText, debounce } from '@/lib/utils';
+import { debounce } from '@/lib/utils';
+import { processEmailContent, processHtmlEmailContent } from '@/lib/encodingUtils';
 import { 
+  Form, 
+  Input, 
+  Button, 
   Card, 
-  List, 
-  Avatar, 
-  Space, 
-  Spin, 
-  message,
-  Divider,
-  Button,
-  Tag,
+  Table, 
+  message, 
+  Space,
   Modal,
-  Form,
-  Input,
-  InputNumber,
+  Spin,
+  Popconfirm,
   Tooltip,
+  Upload,
   Badge,
-  Select
+  Select,
+  Checkbox,
+  DatePicker,
+  Tabs,
+  Avatar,
+  Tag,
+  Divider,
+  InputNumber,
+  List
 } from 'antd';
 import { 
   ReloadOutlined, 
@@ -368,7 +375,7 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
     }
   };
 
-  const decodeEmailContent = (data: string) => {
+  const decodeBase64Content = (data: string) => {
     try {
       return Buffer.from(data, 'base64').toString('utf-8');
     } catch {
@@ -383,25 +390,17 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
   const getEmailContent = (email: Email) => {
     if (email.payload.body?.data) {
-      const content = decodeEmailContent(email.payload.body.data);
-      // 检查是否是HTML内容（包含HTML标签）
-      if (content.includes('<') && content.includes('>')) {
-        // 使用改进的HTML转换函数
-        return htmlToText(content);
-      }
-      return content;
+      const content = decodeBase64Content(email.payload.body.data);
+      // 使用新的编码处理函数
+      return processEmailContent(content);
     }
     
     if (email.payload.parts) {
       for (const part of email.payload.parts) {
         if (part.mimeType === 'text/plain' && part.body.data) {
-          const content = decodeEmailContent(part.body.data);
-          // 检查是否是HTML内容
-          if (content.includes('<') && content.includes('>')) {
-            // 使用改进的HTML转换函数
-            return htmlToText(content);
-          }
-          return content;
+          const content = decodeBase64Content(part.body.data);
+          // 使用新的编码处理函数
+          return processEmailContent(content);
         }
       }
     }
@@ -411,40 +410,22 @@ export default function EmailViewer({ onReply }: EmailViewerProps) {
 
   // 获取邮件的HTML内容
   const getEmailHtmlContent = (email: Email) => {
+    if (email.payload.body?.data) {
+      const content = decodeBase64Content(email.payload.body.data);
+      // 对于HTML内容，只进行编码转换，不清理HTML标签
+      return processHtmlEmailContent(content);
+    }
+    
     if (email.payload.parts) {
       for (const part of email.payload.parts) {
         if (part.mimeType === 'text/html' && part.body.data) {
-          const content = decodeEmailContent(part.body.data);
-          // 检查是否是简单的HTML内容（主要是<br>标签），如果是则不当作HTML处理
-          if (content.includes('<br>') && !content.includes('<div') && !content.includes('<p>') && 
-              !content.includes('<span') && !content.includes('<strong') && !content.includes('<em')) {
-            return null; // 简单HTML内容不当作HTML处理
-          }
-          return content;
+          const content = decodeBase64Content(part.body.data);
+          return processHtmlEmailContent(content);
         }
       }
     }
     
-    // 如果没有HTML部分，检查body是否包含HTML
-    if (email.payload.body?.data) {
-      const content = decodeEmailContent(email.payload.body.data);
-      // 检查是否包含HTML标签
-      if (content.includes('<') && content.includes('>')) {
-        // 进一步检查是否包含常见的HTML标签
-        const htmlTags = ['<div', '<p', '<br', '<span', '<strong', '<em', '<b', '<i', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6', '<ul', '<ol', '<li', '<table', '<tr', '<td', '<th'];
-        const hasHtmlTags = htmlTags.some(tag => content.toLowerCase().includes(tag));
-        if (hasHtmlTags) {
-          // 检查是否是简单的HTML内容
-          if (content.includes('<br>') && !content.includes('<div') && !content.includes('<p>') && 
-              !content.includes('<span') && !content.includes('<strong') && !content.includes('<em')) {
-            return null; // 简单HTML内容不当作HTML处理
-          }
-          return content;
-        }
-      }
-    }
-    
-    return null;
+    return email.snippet || t('email.noContent');
   };
 
   // 检测邮件内容类型并自动选择显示模式
