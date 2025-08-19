@@ -545,7 +545,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <p>
         <span style="font-size:clamp(14px, 1.8vw, 22px)">株式会社AGグループ</span>
       </p>
-      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;菅原（たく）<br>日本語・中国語対応可能</div>
+      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;菅原（すがわら）<br>日本語・中国語対応可能</div>
       <p>
         Mobile: 080-7140-0762<br>
         E-mail: <a href="mailto:taku@aggroup.cc" style="color:#0056b3; text-decoration:none;">taku@aggroup.cc</a>
