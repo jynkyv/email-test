@@ -14,20 +14,13 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     name: '页头',
     subject: '',
     content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-  
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="text-align:left;width:750px;color: #000000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける<br>
+      <div style="text-align:left;width:750px;color: #000000;font-size: 18px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける<br>
 監理団体として、技能実習生の受け入れに関わる<br>
 サポート業務を誠実かつ丁寧に行っております。
-        
       </div>
       </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding:0; ">
-      <div style="border: none;width:750px; height: 1px; background-color: #000000; margin: 20px 0 0 0;"></div>
-    </td>
   </tr>
   </table>`,
     description: '',
