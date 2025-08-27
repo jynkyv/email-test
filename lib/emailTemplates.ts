@@ -16,7 +16,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     content: `<table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
    <tr>
   <td align="left" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;max-width:750px;margin:0 auto">技能実習生の導入・採用なら、Family協同組合</div>
+    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;max-width:750px;margin:0 auto">技能実習生の採用・受入なら、Family協同組合</div>
   </td>
 </tr>
     <tr>
@@ -33,7 +33,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   {
   id: 'db',
   name: '営業部初期費用0円',
-  subject: '【初期費用無料に挑戦！】技能実習生の採用ならFamily協同組合！※このメールは返信可能です※',
+  subject: '【初期費用無料に挑戦！】技能実習生の採用・受入ならFamily協同組合！※このメールは返信可能です※',
   content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
 <div style="max-width: 750px; margin: 0 auto;">
   <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-2.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
