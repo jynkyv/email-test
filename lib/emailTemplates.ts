@@ -41,7 +41,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <div style="background:#fff;overflow:hidden;border:clamp(20px, 2.5vw, 34px) solid #D61518;">
     <!-- 说明文字 -->
     <div style="padding:0 clamp(12px, 1.5vw, 22px) clamp(10px, 1.2vw, 16px) clamp(12px, 1.5vw, 22px);font-size:clamp(14px, 1.6vw, 40px);font-weight: 900; letter-spacing: 0em;line-height:1.7;color: #d8202f;text-align:center;">
-      特別無料キャンペ-ン
+      特別無料キャンペーン
     </div>
 
     <!-- 表格标题行 -->
