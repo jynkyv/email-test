@@ -196,7 +196,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </table>
 
       <!-- 备注 -->
-      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#d8202f;font-weight: 900;">※受入れ後費用概算(1名あたり)</div>
+      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#d8202f;font-weight: 900;">※受入れ後費用概算(1名あたり)お申込みは先着順となっております、枠がなくなり次第終了となります。</div>
     </div>
     </div>
   <div style="display: block;">
@@ -410,7 +410,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </table>
 
       <!-- 备注 -->
-      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#000000;font-weight: 900;">※受入れ後費用概算(1名あたり)</div>
+      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#000000;font-weight: 900;">※受入れ後費用概算(1名あたり)お申込みは先着順となっております、枠がなくなり次第終了となります。</div>
     </div>
     </div>
     <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
