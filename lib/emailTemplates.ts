@@ -17,10 +17,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   
   <tr>
     <td align="center" style="padding:0; ">
-      <div style="text-align:left;width:750px;color: #000000;">
-      <span style="font-size:18px;font-weight: bold">Family協同組合</span>は、<br>
-技能実習生および受け入れ企業の双方の支援を目的とし、<br>
-募集や受け入れに関する調整、指導、監査を行う団体です。<br>
+      <div style="text-align:left;width:750px;color: #000000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける<br>
+監理団体として、技能実習生の受け入れに関わる<br>
+サポート業務を誠実かつ丁寧に行っております。
         
       </div>
       </td>
@@ -242,110 +241,46 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   subject: '【監理団体様へ】技能実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
   content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-<tr>
+    <tr>
   <td align="center" style="padding:0; ">
     <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+  </td>
+</tr>
+    <tr>
+  <td align="center" style="padding:0; ">
+    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5;margin-top:clamp(10px, 1.5vw, 20px);">
+    <span style="font-size:clamp(16px, 2vw, 24px);color:#000000;">監理団体ご担当者様</span><br>
+      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。現在、日本国内の連携監理団体様を募集しております。
+      </span><br>
+      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
+当機構は、中国籍の技能実習生の送出を専門に行っており、現地公的機関との強固な繋がりを活かし、幅広い人材を安定的に紹介
+可能です。
+</span>
+    </div>
+  </td>
+</tr>
+<tr>
+  <td align="center" style="padding:0; ">
     <div style="max-width: 750px; margin: 0 auto;">
       <div style="display: block; margin-top:clamp(10px, 1.5vw, 20px);margin-bottom:clamp(10px, 1.5vw, 20px);">
-        <img src="https://email-test-gamma.vercel.app/ag-hero-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-gamma.vercel.app/qilin.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </div>
     </div>
   </td>
 </tr>
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5">
-    <span style="font-size:clamp(16px, 2vw, 24px);color:#000000;">監理団体ご担当者様</span><br>
+    <tr>
+  <td align="center" style="padding:0;">
+    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5;margin-bottom:clamp(10px, 1.5vw, 20px);">
       <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは技能実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。
-現在、日本国内の監理団体様との連携を募集しております。
-      </span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用した、より効率的、かつ透明性の高い実習生送出サービスをご案内いたしております。
+      </span><br>
+      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;これらのサービスは、新たに業務提携をご締結いただく監理団体様にもすべて無料でご提供しております。初めての連携でも安心して導入いただける体制を整えております。
+</span>
     </div>
   </td>
 </tr>
-  <tr><td align="center" style="padding:0; ">
-    <div style="font-size:clamp(14px, 2.7vw, 26px);font-weight:bold;color:#000000; text-align: center;">福州亜麟（アリン）は中国政府認定の信頼ある送出機関です。</div>
-  </td></tr>
-  <tr>
-    <td align="center">
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: clamp(750px, 75vw, 750px);">
-                  <tr>
-            <!-- 左侧：中国商务部认可信息 -->
-            <td style="width: 30%; vertical-align: top; padding-right: clamp(10px, 1.5vw, 20px); text-align: center; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px); padding-left: clamp(10px, 1.5vw, 20px);">
-              <div style="color: #0061ae; font-size: clamp(12px, 2vw, 24px); font-weight: bold; margin-bottom: clamp(4px, 1.5vw, 12px); letter-spacing: clamp(0.5px, 0.1vw, 1px);">
-                中国商務部認可<br>
-                の海外人材派遣
-              </div>
-              <div style="color: #0061ae; font-size: clamp(12px, 2vw, 16px); font-weight: bold;letter-spacing: clamp(0.3px, 0.05vw, 0.8px);">
-                資格証番号
-              </div>
-              <div style="color: #0061ae; font-size: clamp(10px, 2vw, 20px); font-weight: bold; letter-spacing: clamp(0.5px, 0.1vw, 1px);">
-                LW350020240003
-              </div>
-              <div style="color: #d8322a; font-size: clamp(12px, 2vw, 24px); font-weight: bold; letter-spacing: clamp(0.5px, 0.1vw, 1px);">
-                資格取得
-              </div>
-            </td>
-            
-            <!-- 右侧：三个优势点 -->
-            <td style="width: 70%; vertical-align: middle; padding-left: clamp(10px, 1.5vw, 20px); font-weight: 900; padding-top: clamp(8px, 2vw, 25px); padding-bottom: clamp(15px, 2vw, 25px);">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-                             <tr>
-                 <td style="padding-bottom: clamp(5px, 2.5vw, 5px);">
-                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                     <tr>
-                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
-                       </td>
-                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
-                            安定した優良実習生の確保
-                          </div>
-                        </td>
-                     </tr>
-                   </table>
-                 </td>
-               </tr>
-               
-               <tr>
-                 <td style="padding-bottom: clamp(5px, 2.5vw, 5px);">
-                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                     <tr>
-                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
-                       </td>
-                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
-                            豊富な送出実績と経験
-                          </div>
-                        </td>
-                     </tr>
-                   </table>
-                 </td>
-               </tr>
-               
-               <tr>
-                 <td>
-                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                     <tr>
-                       <td style="width: clamp(20px, 2.5vw, 24px); height: clamp(20px, 2.5vw, 24px); text-align: center; vertical-align: top; position: relative;">
-                         <span style="color: #000000; font-size: clamp(20px, 2.5vw, 40px); font-weight: bold; display: inline-block; vertical-align: middle;">✓</span>
-                       </td>
-                                               <td style="padding-left: clamp(8px, 1vw, 12px); vertical-align: top;">
-                          <div style="color: #000000; font-size: clamp(17px, 2.5vw, 30px); line-height: 1.5;font-weight: 900; letter-spacing: clamp(0.5px, 0.1vw, 1.2px);">
-                            入国後の講習にも対応
-                          </div>
-                        </td>
-                     </tr>
-                   </table>
-                 </td>
-               </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
 </table>
 <div style="max-width: 750px; margin: 0 auto;">
   <!-- 外层卡片 -->
@@ -572,8 +507,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </div>
   </td>
 </tr>
-</table>
-</div>`,
+</table>`,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
 },
