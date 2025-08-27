@@ -13,12 +13,16 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     id: 'db-header',
     name: '页头',
     subject: '',
-    content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-  <tr>
-    <td align="center" style="padding:0; ">
-      <div style="text-align:left;width:750px;color: #000000;font-size: 18px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける<br>
-監理団体として、技能実習生の受け入れに関わる<br>
-サポート業務を誠実かつ丁寧に行っております。
+    content: `<table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+   <tr>
+  <td align="left" style="padding:0; ">
+    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;max-width:750px;margin:0 auto">技能実習生の導入・採用なら、Family協同組合</div>
+  </td>
+</tr>
+    <tr>
+    <td align="left" style="padding:0; ">
+      <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける監理団体として、<br>
+技能実習生の受け入れに関わるサポート業務を誠実かつ丁寧に行っております。
       </div>
       </td>
   </tr>
@@ -29,7 +33,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   {
   id: 'db',
   name: '営業部初期費用0円',
-  subject: '【初期費用0円】技能実習生受け入れキャンペーン!※このメールは返信可能です※',
+  subject: '【初期費用無料に挑戦！】技能実習生の採用ならFamily協同組合！※このメールは返信可能です※',
   content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
 <div style="max-width: 750px; margin: 0 auto;">
   <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-2.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
@@ -236,7 +240,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
+    <div style="font-size:clamp(20px, 3vw, 28px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
   </td>
 </tr>
     <tr>
@@ -244,11 +248,10 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5;margin-top:clamp(10px, 1.5vw, 20px);">
     <span style="font-size:clamp(16px, 2vw, 24px);color:#000000;">監理団体ご担当者様</span><br>
       <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟（アリン）有限会社」です。現在、日本国内の連携監理団体様を募集しております。
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟(アリン)有限会社」です。現在、 <span style="font-size:clamp(18px, 1.8vw, 24px);color:#000000;font-weight:bold;">日本国内の連携監理団体様</span>を募集しております。
       </span><br>
       <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-当機構は、中国籍の技能実習生の送出を専門に行っており、現地公的機関との強固な繋がりを活かし、幅広い人材を安定的に紹介
-可能です。
+当機構は、中国籍の技能実習生の送出を専門に行っており、現地公的機関との強固な繋がりを活かし、幅広い人材を安定的に紹介可能です。
 </span>
     </div>
   </td>
@@ -268,9 +271,6 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用した、より効率的、かつ透明性の高い実習生送出サービスをご案内いたしております。
       </span><br>
-      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;これらのサービスは、新たに業務提携をご締結いただく監理団体様にもすべて無料でご提供しております。初めての連携でも安心して導入いただける体制を整えております。
-</span>
     </div>
   </td>
 </tr>
@@ -418,7 +418,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <td align="center" style="padding-top:clamp(10px,1.5vw,10px);padding-bottom:clamp(10px,1.5vw,10px) ">
           <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5">
             <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用し、より効率的で透明性の高い技能実習生送出サービスをご案内いたします。
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;これらのサービスは、新たに業務提携をご締結いただく監理団体様にもすべて無料でご提供しております。初めての連携でも安心して導入いただける体制を整えております。
             </span>
           </div>
         </td>
@@ -473,7 +473,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <p>
         <span style="font-size:clamp(14px, 1.8vw, 22px)">株式会社AGグループ</span>
       </p>
-      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;菅原（すがわら）<br>日本語・中国語対応可能</div>
+      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;菅原（スガワラ）<br>日本語・中国語対応可能</div>
       <p>
         Mobile: 080-7140-0762<br>
         E-mail: <a href="mailto:taku@aggroup.cc" style="color:#0056b3; text-decoration:none;">taku@aggroup.cc</a>
