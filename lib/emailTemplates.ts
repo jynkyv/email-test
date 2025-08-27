@@ -32,7 +32,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   subject: '【初期費用0円】技能実習生受け入れキャンペーン!※このメールは返信可能です※',
   content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
 <div style="max-width: 750px; margin: 0 auto;">
-  <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-1.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
+  <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-2.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
   <!-- 外层卡片 -->
   <div style="background:#fff;overflow:hidden;border:clamp(20px, 2.5vw, 34px) solid #D61518;">
     <!-- 说明文字 -->
