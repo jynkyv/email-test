@@ -14,220 +14,82 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     name: '页头',
     subject: '',
     content: `<table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-   <tr>
-  <td align="left" style="padding:0; ">
-    <div style="font-size:clamp(18px, 2.7vw, 26px);font-weight:bold;color:#000000;max-width:750px;margin:0 auto">技能実習生の採用・受入なら、Family協同組合</div>
-  </td>
-</tr>
-    <tr>
-    <td align="left" style="padding:0; ">
-      <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちFamily協同組合は、企業様に安心してお任せいただける監理団体として、<br>
-技能実習生の受け入れに関わるサポート業務を誠実かつ丁寧に行っております。
-      </div>
-      </td>
-  </tr>
-  </table>`,
+         <tr>
+         <td align="left" style="padding:0; ">
+           <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">私たちFamily協同組合は、企業様に安心してお任せいただける監理団体として、<br>
+     技能実習生の受け入れに関わるサポート業務を誠実かつ丁寧に行っております。
+           </div>
+           </td>
+       </tr>
+       </table>`,
     description: '',
     category: 'header'
   },
   {
   id: 'db',
-  name: '営業部初期費用0円',
-  subject: '【初期費用無料に挑戦！】技能実習生の採用・受入ならFamily協同組合！※このメールは返信可能です※',
-  content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
-<div style="max-width: 750px; margin: 0 auto;">
-  <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-2.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
-  <!-- 外层卡片 -->
-  <div style="background:#fff;overflow:hidden;border:clamp(20px, 2.5vw, 34px) solid #D61518;">
-    <!-- 说明文字 -->
-    <div style="padding:0 clamp(12px, 1.5vw, 22px) clamp(10px, 1.2vw, 16px) clamp(12px, 1.5vw, 22px);font-size:clamp(14px, 1.6vw, 40px);font-weight: 900; letter-spacing: 0em;line-height:1.7;color: #d8202f;text-align:center;">
-      特別無料キャンペーン
-    </div>
-
-    <!-- 表格标题行 -->
-    <div style="padding:0 clamp(6px, 0.8vw, 18px) clamp(6px, 0.8vw, 18px) clamp(6px, 0.8vw, 18px); width:calc(100% - clamp(12px, 1.6vw, 36px));">
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:clamp(1px, 0.12vw, 3px) solid #e5e9f2; font-weight: 700;">
-        <!-- 表头 -->
-        <tr style="background:#f1f6fb;font-weight:900;">
-          <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 1vw, 20px);color:#d8202f;">初期費用項目</td>
-          <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: gray;color:white;text-align:center;font-size:clamp(8px, 1vw, 20px)">他社</td>
-          <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: #c9ecf5;text-align:center;font-size:clamp(8px, 1vw, 20px); font-weight: 900;background-color: #f6bbb9;color:#d8202f;">初期費用項目</td>
-          <td style="width:120px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 1vw, 20px); font-weight: 900;"><img src="https://email-test-gamma.vercel.app/family-logo-1.png" alt="" style="height:clamp(14px, 1.8vw, 28px); border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" /></td>
-          <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: #3c85c7;color:white;text-align:center;font-size:clamp(8px, 1vw, 20px); font-weight: 900;">無料の理由</td>
-        </tr>
-
-        <!-- 1 -->
+  name: '募集中！',
+  subject: '【募集中！】ビジネスパートナー(代理)共同創業者募集※このメールは返信可能です',
+  content: `
+ <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    <div style="max-width: 750px; margin: 0 auto;">
+      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-3.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
+      <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5; border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">技能実習計画認<br>定申請手数料</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b; font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">3,900</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
+        <td align="left" style="padding:0; ">
+          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto;margin-bottom:20px;">ビジネスパートナー(代理)と共同創業者募集中<br>
+            当社では、技能実習生の受け入れ企業をご紹介いただける<br>
+            ビジネスパートナー(代理)を募集しております。
+          </div>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">技能実習計画認<br>定申請手数料</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900; font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">当組合の<br>サポートスタッフ<br>が書類作成を指導</td>
-        </tr>
-
-        <!-- 2 -->
-        <tr style="background:#fcfdff;">
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">在留資格認定証明<br>書交付申請費</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">55,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">在留資格認定証明<br>書交付申請費</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">経験豊富な<br>スタッフが<br>ビザ申請をサポート</td>
-        </tr>
-
-        <!-- 3 -->
+      </tr>
+      </table>
+      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-content-1.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:20px;"/></a>
+      <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">入国渡航費</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">77,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
+        <td align="left" style="padding:0; ">
+          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">※1報酬体系について<br>
+            ご紹介いただいた企業が技能実習生を受け入れる人数に応じて、<br>
+            報酬をお支払いします。<br>
+            例：１社が技能実習生３名を受け入れる場合、代理の方には（６０万円）の報酬をお支払いします。（1名あたり、２０万円）<br>
+            ※2継続的な報酬獲得が可能<br>
+            ご紹介いただいた企業と代理の方は「継続的な提携関係」となります。<br>
+            例：今年３名の受け入れがあった企業が、翌年も３名を受け入れる場合翌年も同様に代理の方に報酬（６０万円）をお支払いします。<br>
+            求めるパートナー像<br>
+            ●技能実習制度に理解のある方<br>
+            ●企業とのネットワークをお持ちの方<br>
+            ●長期的な協力関係を築ける方<br>
+            ●紹介活動に意欲的な方
+          </div>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">入国渡航費</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">当組合が負担</td>
-        </tr>
-
-        <!-- 4 -->
-        <tr style="background:#fcfdff;">
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">入国前講習費</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">15,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(非課税)</span>
-            </div>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">入国前講習費</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">実績のある送出機関での講習を実施</td>
-        </tr>
-
-        <!-- 5 -->
+      </tr>
+      </table>
+      <div style="display: block;">
+        <a href="https://www.familyorjp.com/">
+        <img src="https://email-test-gamma.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </a>
+      </div>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">入国後講習費</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">110,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
+          <td style="width: 50%; text-align: center;">
+            <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">入国後講習費</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
+          <td style="width: 25%; text-align: center;">
+            <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
+              <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            </a>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">当組合の講習センターで講習を実施</td>
-        </tr>
-
-        <!-- 6 -->
-        <tr style="background:#fcfdff;">
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">実習生への<br>講習手当</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">60,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
+          <td style="width: 25%; text-align: center;">
+            <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
+              <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            </a>
           </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">実習生への<br>講習手当</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">当組合が負担</td>
-        </tr>
-
-        <!-- 7 -->
-        <tr>
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">健康診断</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">11,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">健康診断</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900; font-size: clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">当組合が負担</td>
-        </tr>
-
-        <!-- 8 -->
-        <tr>
-          <td style="padding:clamp(3px, 0.4vw, 8px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);">国内人件費<br>経費等</td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">77,000</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(7px, 0.8vw, 18px);background-color: #f6bbb9;">国内人件費<br>経費等</td>
-          <td style="width:120px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;font-weight:900;font-size:clamp(8px, 1.1vw, 22px)">無料</span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">アプリで一元管理</td>
-        </tr>
-
-        <!-- 合計 -->
-        <tr>
-          <td style="padding:clamp(4px, 0.5vw, 10px) 0;font-weight:800;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 1vw, 18px);">合計</td>
-          <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;font-weight:800;border: 1px solid #164a7b;font-size:clamp(8px, 1.1vw, 22px);text-align:right;">
-            <div style="display:inline-block;text-align:left;">
-              <span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">408,900</span><span style="font-size:clamp(8px, 1.1vw, 22px);font-weight:bold;">円</span><span style="font-size:clamp(4px, 0.5vw, 10px);font-weight:bold;">(税込)</span>
-            </div>
-          </td>
-          <td style="width:160px;padding:clamp(4px, 0.5vw, 10px) 0;font-weight:800;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(8px, 1vw, 18px);background-color: #f6bbb9;">合計</td>
-          <td style="width:120px;border-left:1px solid #f5d6d6;border: 1px solid #164a7b;text-align:center;">
-            <span style="color:#d8322a;border-radius:clamp(2px, 0.25vw, 6px);">
-              <span style="font-size:clamp(16px, 2vw, 36px)">0</span>
-              <span style="font-size:clamp(4px, 1vw, 12px)">円</span>
-            </span>
-          </td>
-          <td style="width:160px;padding:clamp(3px, 0.4vw, 8px) 0;border: 1px solid #164a7b;text-align:center;font-size:clamp(6px, 0.7vw, 14px);">※組合加入費別途</td>
         </tr>
       </table>
-
-      <!-- 备注 -->
-      <div style="margin-top:clamp(4px, 0.5vw, 8px);font-size:clamp(7px, 0.8vw, 12px);color:#d8202f;font-weight: 900;">※受入れ後費用概算(1名あたり)&nbsp;※お申込みは先着順となっております、枠がなくなり次第終了となります。</div>
+      <div style="display: block;">
+        <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </div>
     </div>
     </div>
-  <div style="display: block;">
-    <a href="https://www.familyorjp.com/">
-    <img src="https://email-test-gamma.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-  </a>
-  </div>
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-    <tr>
-      <td style="width: 50%; text-align: center;">
-        <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </td>
-      <td style="width: 25%; text-align: center;">
-        <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
-          <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-        </a>
-      </td>
-      <td style="width: 25%; text-align: center;">
-        <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-          <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-        </a>
-      </td>
-    </tr>
-  </table>
-  <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-  </div>
-</div>
-</div>
-<br>
-</div>
 `,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
