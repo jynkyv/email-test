@@ -29,8 +29,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   id: 'db',
   name: '募集中！',
   subject: '【募集中！】ビジネスパートナー(代理)共同創業者募集※このメールは返信可能です',
-  content: `
- <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+  content: ` <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
     <div style="max-width: 750px; margin: 0 auto;">
       <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-3.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
       <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
@@ -48,19 +47,19 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <tr>
         <td align="left" style="padding:0; ">
           <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; line-height: 2;">※1報酬体系について<br>
-            ご紹介いただいた企業が技能実習生を受け入れる人数に応じて、<br>
+            ご紹介いただいた企業が技能実習生を受け入れる人数に応じて、
             報酬をお支払いします。<br>
-            例：１社が技能実習生３名を受け入れる場合、代理の方には（60万円）の<br>
-            報酬をお支払いします。（1名あたり、20万円）<br>
+            例：１社が技能実習生３名を受け入れる場合、代理の方には（60万円）の
+            報酬をお支払いし<br>ます。（1名あたり、20万円）<br>
             ※2継続的な報酬獲得が可能<br>
             ご紹介いただいた企業と代理の方は「継続的な提携関係」となります。<br>
-            例：今年３名の受け入れがあった企業が、翌年も３名を受け入れる場合<br>
+            例：今年３名の受け入れがあった企業が、翌年も３名を受け入れる場合
             翌年も同様に代理の方に報酬（60万円）をお支払いします。<br>
             ※3代理紹介制度について 代理Aが、技能実習生を受け入れる企業Bを当<br>
-            社に紹介した場合： 企業Bが技能実習生1名あたり（20万円）の紹介報酬<br>
-            を紹介元Aにお支払いします。 紹介された企業Bが別の企業を当社へ<br>
-紹介し、技能実習生の採用に至った場合、 Bにも技能実習生１名あたり<br>
-（20万円）の紹介報酬をお支払いします。 この制度により、ネット<br>
+            社に紹介した場合： 企業Bが技能実習生1名あたり（20万円）の紹介報酬
+            を紹介元Aに<br>お支払いします。 紹介された企業Bが別の企業を当社へ
+紹介し、技能実習生の採用に至った場合、 Bにも技能実習生１名あたり
+（20万円）の紹介報酬をお支払いします。 この制度により、<br>ネット
 ワークを広げることで双方に利益が生まれます。<br>
 <div style="height: 20px;width: 20px;"></div>
             求めるパートナー像<br>
