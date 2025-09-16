@@ -16,7 +16,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     content: `<table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
          <tr>
          <td align="left" style="padding:0; ">
-           <div style="width:750px;color: #000000;font-size: 22px; font-weight: 900;max-width:750px;margin:0 auto">1人紹介＝20万円
+           <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">私たちFamily協同組合は、企業様に安心してお任せいただける監理団体として、<br>
+     技能実習生の受け入れに関わるサポート業務を誠実かつ丁寧に行っております。
            </div>
            </td>
        </tr>
@@ -34,41 +35,38 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
         <td align="left" style="padding:0; ">
-          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; margin-bottom:1vh; line-height: 2;">ビジネスパートナー(代理)と共同創業者募集中<br>
+          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; margin-bottom:1vh;">ビジネスパートナー(代理)と共同創業者募集中<br>
             当社では、技能実習生の受け入れ企業をご紹介いただける<br>
             ビジネスパートナー(代理)を募集しております。
           </div>
           </td>
       </tr>
       </table>
-      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-content-2.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:1vh;"/></a>
+      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-content-1.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:1vh;"/></a>
       <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
         <td align="left" style="padding:0; ">
-          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; line-height: 2;">
-            <div style="margin-bottom: 20px;">
-              ※1 報酬について<br>
-  ご紹介いただいた企業が技能実習生を受け入れた場合、紹介者（代理の方）のみに報酬をお支払いします。<br>
-  金額は 1名あたり20万円 です。
-  <br>例：1社が技能実習生3名を受け入れた場合、代理の方には合計60万円をお支払いします。
-            </div>
-            <div style="margin-bottom: 20px;">
-              ※2 継続的な報酬について<br>
-              ご紹介いただいた企業と代理の方は「継続的な提携関係」となります。<br>
-              例：今年3名を受け入れた企業が翌年も3名を受け入れた場合、翌年も同様に代理の方へ60万円をお支払いします。
-            </div>
-            <div style="margin-bottom: 20px;">
-              ※3 代理紹介制度について<br>
-              代理Aが企業Bを当社に紹介し、企業Bが技能実習生を受け入れた場合、代理Aにのみ1名あたり20万円の紹介報酬をお支払いします。<br>
-              さらに、企業Bが別の企業Cを当社に紹介し、C社が技能実習生を受け入れた場合も、受け入れ1名あたり20万円を紹介元（代理AではなくB社）にお支払いします。<br>
-              この制度により、ネットワークを広げることで代理の方が継続。
-            </div>
-            <div style="margin-bottom: 20px;">求めるパートナー像<br>
-              ●技能実習制度に理解のある方<br>
-              ●企業とのネットワークをお持ちの方<br>
-              ●長期的な協力関係を築ける方<br>
-              ●紹介活動に意欲的な方
-            </div>
+          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; line-height: 2;">※1報酬体系について<br>
+            ご紹介いただいた企業が技能実習生を受け入れる人数に応じて、
+            報酬をお支払いします。<br>
+            例：１社が技能実習生３名を受け入れる場合、代理の方には（60万円）の
+            報酬をお支払いし<br>ます。（1名あたり、20万円）<br>
+            ※2継続的な報酬獲得が可能<br>
+            ご紹介いただいた企業と代理の方は「継続的な提携関係」となります。<br>
+            例：今年３名の受け入れがあった企業が、翌年も３名を受け入れる場合
+            翌年も同様に代理の方に報酬（60万円）をお支払いします。<br>
+            ※3代理紹介制度について 代理Aが、技能実習生を受け入れる企業Bを当<br>
+            社に紹介した場合： 企業Bが技能実習生1名あたり（20万円）の紹介報酬
+            を紹介元Aに<br>お支払いします。 紹介された企業Bが別の企業を当社へ
+紹介し、技能実習生の採用に至った場合、 Bにも技能実習生１名あたり
+（20万円）の紹介報酬をお支払いします。 この制度により、<br>ネット
+ワークを広げることで双方に利益が生まれます。<br>
+<div style="height: 20px;width: 20px;"></div>
+            求めるパートナー像<br>
+            ●技能実習制度に理解のある方<br>
+            ●企業とのネットワークをお持ちの方<br>
+            ●長期的な協力関係を築ける方<br>
+            ●紹介活動に意欲的な方
           </div>
           </td>
       </tr>
@@ -89,8 +87,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
             </a>
           </td>
           <td style="width: 25%; text-align: center;">
-            <a href="https://play.google.com/store/apps/details?id=openwork.firm.com" target="_blank">
-              <img src="https://email-test-gamma.vercel.app/ag-qr-right-2.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
+              <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
             </a>
           </td>
         </tr>
@@ -99,7 +97,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </div>
     </div>
-    </div>`,
+    </div>
+`,
   description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
   category: 'default'
 },
