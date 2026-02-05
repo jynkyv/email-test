@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { supabase } from '@/lib/supabase';
 
 // 获取用户实时统计数据
@@ -6,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: '用户ID不能为空' },
@@ -24,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     const currentUserId = authHeader.replace('Bearer ', '');
-    
+
     // 获取当前用户信息
     const { data: currentUserData, error: currentUserError } = await supabase
       .from('users')
