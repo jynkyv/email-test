@@ -205,7 +205,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         ※1 期間限定（2025年9月1日～2026年12月31日） ※2 組合加入費別途 ※3 入国までの初期費用完全0円
                     </div>
 
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 11px; line-height: 1.6; color: #000000;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px; line-height: 1.6; color: #000000;">
                         <tr>
                             <td style="padding-bottom: 15px;">
                                 <div style="color: #00569d; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
@@ -254,7 +254,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         </table>
     </center>
 <br>
-<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
     <div style="font-size:clamp(14px, 2.7vw, 30px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
