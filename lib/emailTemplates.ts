@@ -43,7 +43,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                                 <th width="25%" style="background-color: #ffffff; color: #555555; font-size: 16px; font-weight: bold; padding: 15px 10px; border-bottom: 1px solid #cccccc; text-align: center;">
                                     他社
                                 </th>
-                                <th width="20%" style="background-color: #00569d; color: #ffffff; font-size: 18px; font-weight: bold; padding: 15px 10px; border: 3px solid #00569d; text-align: center;">
+                                <th width="20%" style="background-color: #00569d; color: #ffffff; font-size: 17px; font-weight: bold; padding: 15px 10px; border: 3px solid #00569d; text-align: center;">
                                     Family協同組合
                                 </th>
                                 <th width="35%" style="background-color: #00569d; color: #ffffff; font-size: 18px; font-weight: bold; padding: 15px 10px; border-top: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 3px solid #00569d; text-align: center;">
