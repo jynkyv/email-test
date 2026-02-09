@@ -281,32 +281,40 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>
-<div style="display: block;">
-        <a href="https://www.familyorjp.com/">
-        <img src="https://email-test-black.vercel.app/family-detail-2026.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </a>
-      </div>
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-        <tr>
-          <td style="width: 50%; text-align: center;">
-            <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-          </td>
-          <td style="width: 25%; text-align: center;">
-            <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
-              <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </a>
-          </td>
-          <td style="width: 25%; text-align: center;">
-            <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-              <img src="https://email-test-black.vercel.app/ag-qr-right-2.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </a>
-          </td>
-        </tr>
-      </table>
-      <div style="display: block;">
-        <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </div>
-    </div><table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+
+    <center>
+        <table border="0" cellpadding="0" cellspacing="0" width="800" style="background-color: #ffffff; width: 800px; margin: 0 auto; margin-top: 10px;">
+            <tr>
+                <td align="center">
+                    <div style="display: block;">
+                        <a href="https://www.familyorjp.com/">
+                            <img src="https://email-test-black.vercel.app/family-detail-2026.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                        </a>
+                    </div>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tr>
+                            <td style="width: 50%; text-align: center;">
+                                <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                            </td>
+                            <td style="width: 25%; text-align: center;">
+                                <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
+                                    <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                                </a>
+                            </td>
+                            <td style="width: 25%; text-align: center;">
+                                <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
+                                    <img src="https://email-test-black.vercel.app/ag-qr-right-2.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="display: block;">
+                        <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </center><table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0;">
       <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
