@@ -52,9 +52,10 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
                         </thead>
                         
+
                         <tbody>
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     技能実習計画認定<br>申請手数料
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -70,7 +71,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     在留資格認定証明書<br>交付申請手続代行費用
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -86,7 +87,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     入国渡航費
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -102,7 +103,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     入国前講習費
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -118,7 +119,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     入国後講習費
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -134,7 +135,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     実習生への<br>講習手当
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -150,7 +151,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     健康診断
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -166,7 +167,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             </tr>
 
                             <tr>
-                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 5px; border-bottom: 2px solid #ffffff; font-size: 15px;">
                                     国内人件費<br>経費等
                                 </td>
                                 <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
@@ -324,7 +325,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           ※このメールは返信可能です※
         </p>
         <p style="margin:0 0 10px 0;">
-          <span style="font-size:18px">Family協同組合</span><br>
+          <span style="font-size:17px">Family協同組合</span><br>
           担当: 菅原 　日本語・中国語対応<br>
           TEL：029-886-8181<br>
           Mobile：080-7141-7987<br>
