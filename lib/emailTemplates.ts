@@ -471,7 +471,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>
 <div style="display: block;">
         <a href="https://www.familyorjp.com/">
-        <img src="https://email-test-black.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-black.vercel.app/family-detail-2026.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </a>
       </div>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -486,7 +486,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           </td>
           <td style="width: 25%; text-align: center;">
             <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-              <img src="https://email-test-black.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+              <img src="https://email-test-black.vercel.app/ag-qr-right-2.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
             </a>
           </td>
         </tr>
