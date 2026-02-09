@@ -9,87 +9,9 @@ export interface EmailTemplate {
 
 // 预定义的邮件模板 - 使用默认邮件模板内容
 export const EMAIL_TEMPLATES: EmailTemplate[] = [
-
   {
-    id: 'db',
-    name: '募集中！',
-    subject: '【募集中！】ビジネスパートナー(代理)共同創業者募集※このメールは返信可能です',
-    content: ` <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
-    <div style="max-width: 750px; margin: 0 auto;">
-      <a href="https://www.familyorjp.com/"><img src="https://email-test-black.vercel.app/family-hero-3.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
-      <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-        <tr>
-        <td align="left" style="padding:0; ">
-          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; margin-bottom:1vh;">ビジネスパートナー(代理)と共同創業者募集中<br>
-            当社では、技能実習生の受け入れ企業をご紹介いただける<br>
-            ビジネスパートナー(代理)を募集しております。
-          </div>
-          </td>
-      </tr>
-      </table>
-      <a href="https://www.familyorjp.com/"><img src="https://email-test-black.vercel.app/family-content-1.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:1vh;"/></a>
-      <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-        <tr>
-        <td align="left" style="padding:0; ">
-          <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto; line-height: 2;">※1報酬体系について<br>
-            ご紹介いただいた企業が技能実習生を受け入れる人数に応じて、
-            報酬をお支払いします。<br>
-            例：１社が技能実習生３名を受け入れる場合、代理の方には（60万円）の
-            報酬をお支払いし<br>ます。（1名あたり、20万円）<br>
-            ※2継続的な報酬獲得が可能<br>
-            ご紹介いただいた企業と代理の方は「継続的な提携関係」となります。<br>
-            例：今年３名の受け入れがあった企業が、翌年も３名を受け入れる場合
-            翌年も同様に代理の方に報酬（60万円）をお支払いします。<br>
-            ※3代理紹介制度について 代理Aが、技能実習生を受け入れる企業Bを当<br>
-            社に紹介した場合： 企業Bが技能実習生1名あたり（20万円）の紹介報酬
-            を紹介元Aに<br>お支払いします。 紹介された企業Bが別の企業を当社へ
-紹介し、技能実習生の採用に至った場合、 Bにも技能実習生１名あたり
-（20万円）の紹介報酬をお支払いします。 この制度により、<br>ネット
-ワークを広げることで双方に利益が生まれます。<br>
-<div style="height: 20px;width: 20px;"></div>
-            求めるパートナー像<br>
-            ●技能実習制度に理解のある方<br>
-            ●企業とのネットワークをお持ちの方<br>
-            ●長期的な協力関係を築ける方<br>
-            ●紹介活動に意欲的な方
-          </div>
-          </td>
-      </tr>
-      </table>
-      <div style="display: block;">
-        <a href="https://www.familyorjp.com/">
-        <img src="https://email-test-black.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </a>
-      </div>
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-        <tr>
-          <td style="width: 50%; text-align: center;">
-            <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-          </td>
-          <td style="width: 25%; text-align: center;">
-            <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
-              <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </a>
-          </td>
-          <td style="width: 25%; text-align: center;">
-            <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-              <img src="https://email-test-black.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </a>
-          </td>
-        </tr>
-      </table>
-      <div style="display: block;">
-        <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </div>
-    </div>
-    </div>
-`,
-    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-    category: 'default'
-  },
-  {
-    id: 'ag',
-    name: 'AG',
+    id: 'family',
+    name: 'Family',
     subject: 'Family協同組合ーー外国人材採用初期費用減免',
     content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -547,53 +469,32 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>
-<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-<tr>
-  <td align="center" style="padding:0;">
-    <div style="text-align:left;width: 90vw; max-width: 750px; background-color:#0000; color:#000000; padding:clamp(15px, 2vw, 25px) clamp(20px, 3vw, 35px); font-size:clamp(12px, 1.4vw, 18px); border-radius:clamp(6px, 0.8vw, 10px);">
-      <p style="font-size:clamp(14px, 1.8vw, 22px)">お問い合わせもお気軽にどうぞ。<br>
-        ※このメールは返信可能です※<br>
-      </p>
-      <p>
-        <span style="font-size:clamp(14px, 1.8vw, 22px)">株式会社AGグループ</span>
-      </p>
-      <div style="font-size:clamp(14px, 1.8vw, 22px);margin:0 0 clamp(8px, 1vw, 12px) 0">担当:&nbsp;&nbsp;&nbsp;菅原（スガワラ）<br>日本語・中国語対応可能</div>
-      <p>
-        Mobile: 080-7140-0762<br>
-        E-mail: <a href="mailto:taku@aggroup.cc" style="color:#0056b3; text-decoration:none;">taku@aggroup.cc</a>
-      </p>
-      <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
-        〒110-0015<br>
-        東京都台東区東上野１丁目8-2<br>オーイズミ東上野東館9階
-      </p>
-      <div style="border: none;width: 90vw; max-width: 750px; height: clamp(1px, 0.1vw, 2px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
-      <p style="margin:0 0 clamp(8px, 1vw, 12px) 0;">
-        <span style="font-size:clamp(14px, 1.8vw, 22px)">福州亜麟科技创新有限责任公司</span>
-      </p>
-      <div style="font-size:clamp(14px, 1.8vw, 22px);margin-bottom:clamp(8px, 1vw, 12px)">担当:&nbsp;&nbsp;&nbsp;陳（チン）<br>日本語・中国語対応可能</div>
-      <p>
-        Mobile: 0452-6668555<br>
-        E-mail: <a href="mailto:yalin6668555@163.com" style="color:#0056b3; text-decoration:none;">yalin6668555@163.com</a>
-      </p>
-      <p style="margin:clamp(8px, 1vw, 12px) 0 clamp(8px, 1vw, 12px) 0;">
-        〒350004<br>
-        中国福建省福州市台江区工業路360号<br>
-        中央第五街2棟620号
-      </p>
-      <p style="margin:0;">© 2025 株式会社AGグループ All Rights Reserved.</p>
-    </div>
-  </td>
-</tr>
-</table>`,
-    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-    category: 'default'
-  },
-
-  {
-    id: 'db-footer-1',
-    name: '一部-页脚',
-    subject: '',
-    content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+<div style="display: block;">
+        <a href="https://www.familyorjp.com/">
+        <img src="https://email-test-black.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </a>
+      </div>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+        <tr>
+          <td style="width: 50%; text-align: center;">
+            <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+          </td>
+          <td style="width: 25%; text-align: center;">
+            <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
+              <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            </a>
+          </td>
+          <td style="width: 25%; text-align: center;">
+            <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
+              <img src="https://email-test-black.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            </a>
+          </td>
+        </tr>
+      </table>
+      <div style="display: block;">
+        <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+      </div>
+    </div><table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0;">
       <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
@@ -614,7 +515,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </td>
   </tr>
 </table>`,
-    description: '',
-    category: 'footer'
+    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
+    category: 'default'
   }
-]; 
+];
