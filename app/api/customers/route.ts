@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
       created_by: userId,
     });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('customers')
       .insert({
         company_name,
