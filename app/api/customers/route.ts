@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // 获取客户列表
 export async function GET(request: NextRequest) {
@@ -16,9 +16,9 @@ export async function GET(request: NextRequest) {
     const hasFaxOnly = searchParams.get('hasFaxOnly') === 'true'; // 新增参数：只返回有传真的客户
     const subscriptionStatus = searchParams.get('subscriptionStatus'); // 新增参数：订阅状态筛选
     const authHeader = request.headers.get('authorization');
-    
+
     console.log('客户列表请求参数:', { page, pageSize, startDate, endDate, sortByUnread, searchField, searchValue, hasEmailOnly, hasFaxOnly, subscriptionStatus });
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -28,9 +28,9 @@ export async function GET(request: NextRequest) {
 
     // 从 authorization header 中获取用户 ID
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const to = from + pageSize - 1;
 
     // 构建基础查询 - 包含未读邮件状态
-    let query = supabase
+    let query = supabaseAdmin
       .from('customers')
       .select(`
         *,
@@ -59,8 +59,12 @@ export async function GET(request: NextRequest) {
       `, { count: 'exact' });
 
     // 如果不是管理员，只能查看自己创建的客户
+    console.log('用户角色:', userData.role, '用户ID:', userId);
     if (userData.role !== 'admin') {
+      console.log('非管理员，添加 created_by 过滤条件');
       query = query.eq('created_by', userId);
+    } else {
+      console.log('管理员，查询所有数据');
     }
 
     // 如果只返回有邮箱的客户，添加邮箱过滤条件
@@ -72,7 +76,7 @@ export async function GET(request: NextRequest) {
     if (hasFaxOnly) {
       // 选项A：显示有传真的客户（不管是否有邮箱）
       query = query.not('fax', 'is', null).neq('fax', '');
-      
+
       // 选项B：显示只有传真但没有邮箱的客户
       // query = query.not('fax', 'is', null).neq('fax', '').or('email.is.null,email.eq.');
     }
@@ -100,7 +104,7 @@ export async function GET(request: NextRequest) {
     // 添加搜索筛选
     if (searchValue && searchValue.trim()) {
       const searchTerm = searchValue.trim();
-      
+
       switch (searchField) {
         case 'company_name':
           query = query.ilike('company_name', `%${searchTerm}%`);
@@ -122,7 +126,8 @@ export async function GET(request: NextRequest) {
 
     // 先获取总数
     const { count: totalCount, error: countError } = await query;
-    
+    console.log('数据库返回总数:', totalCount, '错误:', countError);
+
     if (countError) {
       console.error('获取总数失败:', countError);
       return NextResponse.json(
@@ -137,16 +142,18 @@ export async function GET(request: NextRequest) {
     if (sortByUnread) {
       // 邮件管理页面：直接按数据库中的has_unread_emails字段排序
       sortedQuery = sortedQuery.order('has_unread_emails', { ascending: false, nullsFirst: false })
-                              .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false });
     } else {
       // 其他页面：按创建时间倒序，添加ID作为第二排序字段确保稳定性
       sortedQuery = sortedQuery.order('created_at', { ascending: false })
-                              .order('id', { ascending: false });
+        .order('id', { ascending: false });
     }
 
     // 应用分页
     const { data: customersWithEmails, error } = await sortedQuery
       .range(from, from + pageSize - 1);
+
+    console.log('分页查询结果数量:', customersWithEmails?.length);
 
     if (error) {
       console.error('数据库查询错误:', error);
@@ -166,10 +173,10 @@ export async function GET(request: NextRequest) {
       };
     }) || [];
 
-    console.log('客户列表查询结果:', { 
-      customersCount: processedCustomers?.length, 
-      totalCount: totalCount, 
-      page, 
+    console.log('客户列表查询结果:', {
+      customersCount: processedCustomers?.length,
+      totalCount: totalCount,
+      page,
       pageSize,
       startDate,
       endDate,
@@ -199,7 +206,7 @@ export async function POST(request: NextRequest) {
     console.log('开始创建客户...');
     const body = await request.json();
     console.log('请求体:', body);
-    
+
     const { company_name, email, fax: rawFax, address } = body;
 
     // 处理fax列：保留数组和-符号，删除其他前缀
@@ -233,7 +240,7 @@ export async function POST(request: NextRequest) {
 
     const authHeader = request.headers.get('authorization');
     console.log('认证头:', authHeader);
-    
+
     if (!authHeader) {
       console.log('缺少认证头');
       return NextResponse.json(
@@ -245,10 +252,10 @@ export async function POST(request: NextRequest) {
     // 从 authorization header 中获取用户 ID
     const userId = authHeader.replace('Bearer ', '');
     console.log('用户ID:', userId);
-    
+
     // 获取用户信息
     console.log('查询用户信息...');
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -266,7 +273,7 @@ export async function POST(request: NextRequest) {
     // 检查邮箱是否已存在（只在有邮箱时检查）
     if (email) {
       console.log('检查邮箱是否已存在:', email);
-      const { data: existingCustomer, error: existingError } = await supabase
+      const { data: existingCustomer, error: existingError } = await supabaseAdmin
         .from('customers')
         .select('*')
         .eq('email', email);
@@ -290,7 +297,7 @@ export async function POST(request: NextRequest) {
       address,
       created_by: userId,
     });
-    
+
     const { data, error } = await supabase
       .from('customers')
       .insert({
