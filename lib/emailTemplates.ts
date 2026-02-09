@@ -94,41 +94,12 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
-  <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(20px, 3vw, 28px);font-weight:bold;color:#000000;">技能実習生送出の新しいご提案 ― 福州亜麟 × Open実習生アプリ</div>
-  </td>
-</tr>
-    <tr>
-  <td align="center" style="padding:0; ">
-    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5;margin-top:clamp(10px, 1.5vw, 20px);">
-    <span style="font-size:clamp(16px, 2vw, 24px);color:#000000;">監理団体ご担当者様</span><br>
-      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;私たちは実習生送出の経験を有し、中国政府認定の信頼ある送出機関「福州亜麟(アリン)有限会社」です。現在、 <span style="font-size:clamp(18px, 1.8vw, 24px);color:#000000;font-weight:bold;">日本国内の連携監理団体様</span>を募集しております。
-      </span><br>
-      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-当機構は、中国籍の技能実習生の送出を専門に行っており、現地公的機関との強固な繋がりを活かし、幅広い人材を安定的に紹介可能です。
-</span>
-    </div>
-  </td>
-</tr>
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="max-width: 750px; margin: 0 auto;">
-      <div style="display: block; margin-top:clamp(10px, 1.5vw, 20px);margin-bottom:clamp(10px, 1.5vw, 20px);">
-        <img src="https://email-test-black.vercel.app/qilin.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-      </div>
-    </div>
-  </td>
-</tr>
-    <tr>
-  <td align="center" style="padding:0;">
-    <div style="text-align:left;width: 90vw; max-width: 750px; line-height:1.5;margin-bottom:clamp(10px, 1.5vw, 20px);">
-      <span style="font-size:clamp(14px, 1.8vw, 20px);color:#000000;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;このたび、（株）AGグループと提携し、同社開発の「Open実習生」アプリを活用した、より効率的、かつ透明性の高い実習生送出サービスをご案内いたしております。
-      </span><br>
-    </div>
-  </td>
-</tr>
+      <td align="center" style="padding:0; ">
+        <div style="max-width: 750px; margin: 0 auto;">
+          <a href="https://www.familyorjp.com/"><img src="https://email-test-black.vercel.app/family-hero-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
+        </div>
+      </td>
+    </tr>
 </table>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
