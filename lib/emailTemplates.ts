@@ -29,24 +29,10 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
             <tr>
                 <td style="padding: 30px;">
                     
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom: 0px solid #cccccc; margin-bottom: 10px;">
-                        <tr>
-                            <td valign="bottom" align="left" width="50%">
-                                <div style="font-size: 24px; font-weight: bold; line-height: 1.2; color: #2c5a94;">
-                                    <span style="color: #00A0E9; font-size: 30px;">●</span><span style="color: #E60012; font-size: 30px; margin-left: -8px;">▮</span> 
-                                    Family協同組合
-                                </div>
-                                <div style="font-size: 12px; color: #d32f2f; font-weight: bold; margin-top: 5px;">
-                                    ◎受入れ後費用概算（１名あたり）
-                                </div>
-                            </td>
-                            <td valign="bottom" align="right" width="50%">
-                                <div style="font-size: 42px; color: #00569d; font-weight: 900; font-style: italic; letter-spacing: -2px; line-height: 1;">
-                                    採用初期費用減免
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+
+                    <div style="display: block; margin-bottom: 15px;">
+                        <img src="https://email-test-black.vercel.app/family-content-2026.png" style="width: 100%; display: block; border: 0; height: auto; outline: none; text-decoration: none;">
+                    </div>
 
                     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-bottom: 15px;">
                         <thead>
