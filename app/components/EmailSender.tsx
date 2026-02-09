@@ -5,13 +5,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { textToHtml, debounce } from '@/lib/utils';
 import { EMAIL_TEMPLATES, EmailTemplate } from '@/lib/emailTemplates';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Progress, 
-  message, 
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Progress,
+  message,
   Space,
   Divider,
   Modal,
@@ -24,9 +24,9 @@ import {
   Tooltip,
   Tabs
 } from 'antd';
-import { 
-  SendOutlined, 
-  UserOutlined, 
+import {
+  SendOutlined,
+  UserOutlined,
   FileTextOutlined,
   TeamOutlined,
   CloseOutlined,
@@ -64,43 +64,43 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   const { t } = useI18n();
   const [form] = Form.useForm();
   const [isSending, setIsSending] = useState(false);
-  
+
   // 客户选择相关状态
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
-  
+
   // 弹窗内的临时选择状态
   const [tempSelectedCustomers, setTempSelectedCustomers] = useState<Customer[]>([]);
-  
+
   // 时间筛选相关状态
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  
+
   // HTML内容相关状态
   const [isHtmlContent, setIsHtmlContent] = useState(false);
-  
+
   // 模板相关状态
-  
+
   // 模板预览相关状态
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
-  
+
   // 分页相关状态
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
   const [total, setTotal] = useState(0);
   const [tempPageInput, setTempPageInput] = useState('1'); // 临时页码输入状态
-  
+
   // 搜索相关状态
   const [searchField, setSearchField] = useState('company_name');
   const [searchValue, setSearchValue] = useState('');
   const [searchForm] = Form.useForm();
-  
+
   // 移除防抖搜索函数，改为手动搜索
-  
+
   // 创建防抖的页码跳转函数
   const debouncedPageChange = debounce((page: number) => {
     if (page && page > 0 && page <= Math.ceil(total / 100)) {
@@ -121,7 +121,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         searchField: searchFieldParam !== undefined ? searchFieldParam : searchField,
         searchValue: searchValueParam !== undefined ? searchValueParam : searchValue
       });
-      
+
       // 添加时间筛选参数
       if (startDate) {
         params.append('startDate', startDate.toISOString());
@@ -129,9 +129,9 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       if (endDate) {
         params.append('endDate', endDate.toISOString());
       }
-      
+
       console.log('Fetch customers URL:', `/api/customers?${params}`);
-      
+
       const response = await fetch(`/api/customers?${params}`, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
@@ -144,10 +144,10 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         setCurrentPage(page);
         setPageSize(size);
         setTempPageInput(page.toString());
-        console.log('Customers fetched successfully:', { 
-          customers: data.customers?.length, 
-          total: data.total, 
-          page, 
+        console.log('Customers fetched successfully:', {
+          customers: data.customers?.length,
+          total: data.total,
+          page,
           pageSize: size,
           startDate: startDate?.toISOString(),
           endDate: endDate?.toISOString()
@@ -166,11 +166,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   useEffect(() => {
     if (replyData) {
       console.log('收到回复数据:', replyData);
-      
+
       // 重置表单和选择
       form.resetFields();
       setSelectedCustomers([]);
-      
+
       // 设置回信内容 - 使用setTimeout确保表单字段已初始化
       setTimeout(() => {
         form.setFieldsValue({
@@ -190,7 +190,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
       // 检查回信人是否在客户列表中
       const existingCustomer = customers.find(customer => customer.email === replyData.to);
-      
+
       if (existingCustomer) {
         // 如果回信人已存在，添加到选择列表
         setSelectedCustomers([existingCustomer]);
@@ -203,7 +203,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           email: replyData.to,
           created_at: new Date().toISOString()
         };
-        
+
         setSelectedCustomers([tempCustomer]);
         message.success(`${t('email.replyTo')}: ${replyData.to} ${t('email.addedToRecipients')}`);
       }
@@ -286,7 +286,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
       const currentPageCustomers = customers.filter(
         customer => !tempSelectedCustomers.some(selected => selected.id === customer.id)
       );
-      
+
       // 检查是否超过100人的限制
       const remainingSlots = 100 - tempSelectedCustomers.length;
       if (currentPageCustomers.length > remainingSlots) {
@@ -300,7 +300,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     } else {
       // 移除当前页面的所有客户
       const currentPageCustomerIds = customers.map(customer => customer.id);
-      setTempSelectedCustomers(prev => 
+      setTempSelectedCustomers(prev =>
         prev.filter(customer => !currentPageCustomerIds.includes(customer.id))
       );
     }
@@ -309,14 +309,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 检查当前页面是否全部选中
   const isCurrentPageAllSelected = () => {
     if (customers.length === 0) return false;
-    return customers.every(customer => 
+    return customers.every(customer =>
       tempSelectedCustomers.some(selected => selected.id === customer.id)
     );
   };
 
   // 检查当前页面是否部分选中
   const isCurrentPageIndeterminate = () => {
-    const selectedCount = customers.filter(customer => 
+    const selectedCount = customers.filter(customer =>
       tempSelectedCustomers.some(selected => selected.id === customer.id)
     ).length;
     return selectedCount > 0 && selectedCount < customers.length;
@@ -334,11 +334,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // 处理时间筛选变化
   const handleDateRangeChange = (dates: any) => {
-          console.log('Date selection changed:', dates);
+    console.log('Date selection changed:', dates);
     if (dates && dates.length === 2) {
       const newStartDate = dates[0].toDate();
       const newEndDate = dates[1].toDate();
-              console.log('Setting new date range:', { newStartDate, newEndDate });
+      console.log('Setting new date range:', { newStartDate, newEndDate });
       setStartDate(newStartDate);
       setEndDate(newEndDate);
     } else {
@@ -392,24 +392,24 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     // 不再自动获取数据，等待用户点击搜索按钮
   };
 
-      // 清空搜索
-    const handleClearSearch = () => {
-      setSearchField('company_name');
-      setSearchValue('');
-      searchForm.resetFields();
-      setCurrentPage(1);
-      // 立即获取数据，确保状态同步
-      fetchCustomers(1, 100, 'company_name', '');
-    };
+  // 清空搜索
+  const handleClearSearch = () => {
+    setSearchField('company_name');
+    setSearchValue('');
+    searchForm.resetFields();
+    setCurrentPage(1);
+    // 立即获取数据，确保状态同步
+    fetchCustomers(1, 100, 'company_name', '');
+  };
 
   // 处理模板选择
   const handleTemplateSelect = (template: EmailTemplate) => {
     // 获取当前HTML编辑框的内容
     const currentContent = form.getFieldValue('content') || '';
-    
+
     // 提取模板中的body内容，移除完整的HTML文档结构
     let templateContent = template.content;
-    
+
     // 如果模板包含完整的HTML文档结构，只提取body内的内容
     if (templateContent.includes('<body') && templateContent.includes('</body>')) {
       const bodyMatch = templateContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
@@ -417,155 +417,49 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
         templateContent = bodyMatch[1].trim();
       }
     }
-    
+
     // 检查是否已经应用过这个模板
     const templateSignature = template.id + '_' + template.name;
     const appliedTemplates = currentContent.match(/<!-- Template: ([^>]+) -->/g) || [];
-    
+
     // 检查是否已经应用过这个模板
-    const isAlreadyApplied = appliedTemplates.some((signature: string) => 
+    const isAlreadyApplied = appliedTemplates.some((signature: string) =>
       signature.includes(templateSignature)
     );
-    
+
     if (isAlreadyApplied) {
       message.warning(`模板 "${template.name}" 已经应用过了，避免重复应用`);
       setShowTemplateModal(false);
       return;
     }
-    
+
     // 在光标位置插入模板内容，如果没有光标位置则插入到末尾
     const templateWithSignature = `<!-- Template: ${templateSignature} -->\n${templateContent}`;
     const newContent = currentContent + '\n\n' + templateWithSignature;
-    
+
     // 准备更新的表单字段
     const updateFields: any = {
       content: newContent
     };
-    
+
     // 只有当模板的subject不为空时才应用到主题字段
     if (template.subject && template.subject.trim()) {
       updateFields.subject = template.subject;
     }
-    
+
     // 更新表单内容
     form.setFieldsValue(updateFields);
-    
+
     // 设置HTML内容标识
     setIsHtmlContent(true);
-    
+
     // 关闭模板选择模态框
     setShowTemplateModal(false);
-    
+
     message.success(`模板 "${template.name}" 已插入到编辑框`);
   };
 
-  // 处理部门模板一键应用
-  const handleDepartmentTemplate = (department: '一部' | '二部' | '三部' | 'AG') => {
-    // 获取当前HTML编辑框的内容
-    const currentContent = form.getFieldValue('content') || '';
-    
-    // 检查是否已经应用过部门模板
-    const departmentSignature = `department_${department}`;
-    const appliedTemplates = currentContent.match(/<!-- Template: ([^>]+) -->/g) || [];
-    const isAlreadyApplied = appliedTemplates.some((signature: string) => 
-      signature.includes(departmentSignature)
-    );
-    
-    if (isAlreadyApplied) {
-      message.warning(`${department}模板已经应用过了，避免重复应用`);
-      return;
-    }
-    
-    if (department === 'AG') {
-      // AG模板是完整的模板，不需要组合
-      const agTemplate = EMAIL_TEMPLATES.find(t => t.id === 'ag');
-      
-      if (!agTemplate) {
-        message.error('AG模板配置错误，请联系管理员');
-        return;
-      }
-      
-      // 提取AG模板内容
-      let agContent = agTemplate.content;
-      if (agContent.includes('<body') && agContent.includes('</body>')) {
-        const bodyMatch = agContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-          agContent = bodyMatch[1].trim();
-        }
-      }
-      
-      // 更新表单内容
-      const newContent = currentContent + '\n\n' + `<!-- Template: ${departmentSignature} -->\n${agContent}`;
-      form.setFieldsValue({
-        content: newContent,
-        subject: agTemplate.subject || ''
-      });
-      
-      // 设置HTML内容标识
-      setIsHtmlContent(true);
-      
-      message.success('AG模板已一键应用（完整模板）');
-    } else {
-      // 其他部门模板需要组合header、main、footer
-      const headerTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db-header');
-      const mainTemplate = EMAIL_TEMPLATES.find(t => t.id === 'db');
-      const footerTemplate = EMAIL_TEMPLATES.find(t => 
-        (department === '一部' && t.id === 'db-footer-1') ||
-        (department === '二部' && t.id === 'db-footer-2') ||
-        (department === '三部' && t.id === 'db-footer-3')
-      );
-      
-      if (!headerTemplate || !mainTemplate || !footerTemplate) {
-        message.error('模板配置错误，请联系管理员');
-        return;
-      }
-      
-      // 组合模板内容
-      let combinedContent = '';
-      
-      // 添加页头模板
-      let headerContent = headerTemplate.content;
-      if (headerContent.includes('<body') && headerContent.includes('</body>')) {
-        const bodyMatch = headerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-          headerContent = bodyMatch[1].trim();
-        }
-      }
-      combinedContent += `<!-- Template: ${departmentSignature}_header -->\n${headerContent}\n\n`;
-      
-      // 添加主模板
-      let mainContent = mainTemplate.content;
-      if (mainContent.includes('<body') && mainContent.includes('</body>')) {
-        const bodyMatch = mainContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-          mainContent = bodyMatch[1].trim();
-        }
-      }
-      combinedContent += `<!-- Template: ${departmentSignature}_main -->\n${mainContent}\n\n`;
-      
-      // 添加页脚模板
-      let footerContent = footerTemplate.content;
-      if (footerContent.includes('<body') && footerContent.includes('</body>')) {
-        const bodyMatch = footerContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-          footerContent = bodyMatch[1].trim();
-        }
-      }
-      combinedContent += `<!-- Template: ${departmentSignature}_footer -->\n${footerContent}`;
-      
-      // 更新表单内容
-      const newContent = currentContent + '\n\n' + combinedContent;
-      form.setFieldsValue({
-        content: newContent,
-        subject: mainTemplate.subject || ''
-      });
-      
-      // 设置HTML内容标识
-      setIsHtmlContent(true);
-      
-      message.success(`${department}模板已一键应用（页头+主内容+${department}页脚）`);
-    }
-  };
+
 
   // 处理模板预览
   const handleTemplatePreview = (template: EmailTemplate, e: React.MouseEvent) => {
@@ -593,15 +487,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     message.success('已清除模板标记，可以重新应用模板');
   };
 
-  // 清除部门模板标记，允许重新应用部门模板
-  const clearDepartmentTemplateSignatures = () => {
-    const currentContent = form.getFieldValue('content') || '';
-    const cleanedContent = currentContent.replace(/<!-- Template: department_[^>]+ -->\n/g, '');
-    form.setFieldsValue({
-      content: cleanedContent
-    });
-    message.success('已清除部门模板标记，可以重新应用部门模板');
-  };
+
 
   const handleSubmit = async (values: {
     to: string;
@@ -643,28 +529,28 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     try {
       // 提交审核申请
       const response = await fetch('/api/email-approvals', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user?.id}`,
-          },
-          body: JSON.stringify({
-            subject: values.subject,
-            content: htmlContent,
-            recipients: recipients
-          }),
-        });
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({
+          subject: values.subject,
+          content: htmlContent,
+          recipients: recipients
+        }),
+      });
 
-        const result = await response.json();
-        
-        if (result.success) {
+      const result = await response.json();
+
+      if (result.success) {
         message.success(t('email.approvalSubmitted'));
-    // 清空表单
-    form.resetFields();
-    setSelectedCustomers([]);
+        // 清空表单
+        form.resetFields();
+        setSelectedCustomers([]);
 
-    // 通知父组件发送完成
-    onSendComplete?.();
+        // 通知父组件发送完成
+        onSendComplete?.();
       } else {
         message.error(result.error || t('email.approvalSubmitFailed'));
       }
@@ -679,14 +565,14 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
   // 渲染收件人标签
   const renderRecipientTags = () => {
     if (selectedCustomers.length === 0) return null;
-    
+
     return (
       <div className="mt-2">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600">{t('email.selectedCustomers')}:</span>
-          <Button 
-            type="text" 
-            size="small" 
+          <Button
+            type="text"
+            size="small"
             icon={<CloseOutlined />}
             onClick={handleClearAllRecipients}
           >
@@ -745,11 +631,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   <TemplateOutlined className="text-blue-500 text-lg" />
                 </div>
               </div>
-              
+
               <div className="mt-2 pt-2 border-t border-blue-200">
-                <Button 
-                  type="primary" 
-                  size="small" 
+                <Button
+                  type="primary"
+                  size="small"
                   icon={<EyeOutlined />}
                   onClick={(e) => handleTemplatePreview(template, e)}
                   className="text-xs"
@@ -834,38 +720,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   <span>HTML编辑</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    type="primary"
-                    size="small"
-                    onClick={() => handleDepartmentTemplate('一部')}
-                    style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
-                  >
-                    一部
-                  </Button>
-                  <Button
-                    type="primary"
-                    size="small"
-                    onClick={() => handleDepartmentTemplate('二部')}
-                    style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
-                  >
-                    二部
-                  </Button>
-                  <Button
-                    type="primary"
-                    size="small"
-                    onClick={() => handleDepartmentTemplate('三部')}
-                    style={{ backgroundColor: '#fa8c16', borderColor: '#fa8c16' }}
-                  >
-                    三部
-                  </Button>
-                  <Button
-                    type="primary"
-                    size="small"
-                    onClick={() => handleDepartmentTemplate('AG')}
-                    style={{ backgroundColor: '#00C3D0', borderColor: '#00C3D0' }}
-                  >
-                    AG
-                  </Button>
+
                   <Button
                     type="default"
                     icon={<TemplateOutlined />}
@@ -940,11 +795,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                 <p><strong>模板描述：</strong>{previewTemplate.description}</p>
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-3">邮件内容预览</h3>
               <div className="border rounded-lg p-4 bg-gray-50 max-h-96 overflow-y-auto">
-                <div 
+                <div
                   className="email-preview"
                   dangerouslySetInnerHTML={{ __html: previewTemplate.content }}
                 />
@@ -963,9 +818,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
           <Button key="clear" onClick={clearTemplateSignatures} type="default">
             清除模板标记
           </Button>,
-          <Button key="clearDept" onClick={clearDepartmentTemplateSignatures} type="default">
-            清除部门模板标记
-          </Button>,
+
           <Button key="cancel" onClick={() => setShowTemplateModal(false)}>
             关闭
           </Button>
@@ -982,11 +835,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               <strong>提示：</strong>每个模板只能应用一次，如需重新应用请点击"清除模板标记"
             </div>
           </div>
-          <div className="bg-green-50 p-3 rounded-lg">
-            <div className="text-sm text-green-800">
-              <strong>部门模板说明：</strong>点击页面上的"一部"、"二部"、"三部"按钮可一键应用完整的部门模板（页头+主内容+对应部门页脚），"AG"按钮可一键应用完整的AG模板
-            </div>
-          </div>
+
           {renderTemplateCards()}
         </div>
       </Modal>
@@ -1015,22 +864,22 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               </span>
             )}
           </div>
-          
+
           {/* 限制提示 */}
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="text-sm text-blue-800">
               <strong>{t('email.recipientsLimitNotice', { max: 100 })}</strong>
             </div>
           </div>
-          
+
           {/* 时间筛选 */}
           <div className="border rounded-lg p-4 bg-gray-50">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-gray-700">{t('customer.filterByCreationTime')}</span>
               {(startDate || endDate) && (
-                <Button 
-                  size="small" 
-                  type="text" 
+                <Button
+                  size="small"
+                  type="text"
                   onClick={handleClearDateFilter}
                 >
                   {t('common.clearFilter')}
@@ -1044,15 +893,15 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               format="YYYY-MM-DD"
             />
           </div>
-          
+
           {/* 搜索功能 */}
           <div className="border rounded-lg p-4 bg-gray-50">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-gray-700">{t('common.searchCustomer')}</span>
               {(searchValue) && (
-                <Button 
-                  size="small" 
-                  type="text" 
+                <Button
+                  size="small"
+                  type="text"
                   onClick={handleClearSearch}
                 >
                   {t('common.clearFilter')}
@@ -1091,11 +940,11 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     e.preventDefault();
                     const values = searchForm.getFieldsValue();
                     if (values.searchValue && values.searchValue.trim()) {
-                                          // 直接执行搜索，传递当前表单值
-                    setSearchField(values.searchField);
-                    setSearchValue(values.searchValue.trim());
-                    setCurrentPage(1);
-                    fetchCustomers(1, 100, values.searchField, values.searchValue.trim());
+                      // 直接执行搜索，传递当前表单值
+                      setSearchField(values.searchField);
+                      setSearchValue(values.searchValue.trim());
+                      setCurrentPage(1);
+                      fetchCustomers(1, 100, values.searchField, values.searchValue.trim());
                     }
                   }}
                 />
@@ -1107,7 +956,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
               </Form.Item>
             </Form>
           </div>
-          
+
           {loadingCustomers ? (
             <div className="text-center py-8">
               <Spin />
@@ -1130,7 +979,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   </span>
                 </Checkbox>
               </div>
-              
+
               {/* 客户列表 */}
               <div className="max-h-96 overflow-y-auto">
                 <div className="divide-y divide-gray-100">
@@ -1167,7 +1016,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                   ))}
                 </div>
               </div>
-              
+
               {/* 分页 */}
               <div className="px-6 py-3 border-t bg-gray-50">
                 <div className="flex justify-between items-center">
@@ -1182,7 +1031,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                     >
                       {t('common.previous')}
                     </Button>
-                    
+
                     {/* 页码输入 */}
                     <div className="flex items-center gap-1">
                       <span className="text-sm text-gray-600">{t('common.page')}:</span>
@@ -1223,7 +1072,7 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
                       </Button>
                       <span className="text-sm text-gray-600">/ {Math.ceil(total / pageSize)}</span>
                     </div>
-                    
+
                     <Button
                       size="small"
                       disabled={currentPage >= Math.ceil(total / 100)}
