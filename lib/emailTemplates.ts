@@ -9,29 +9,14 @@ export interface EmailTemplate {
 
 // 预定义的邮件模板 - 使用默认邮件模板内容
 export const EMAIL_TEMPLATES: EmailTemplate[] = [
+
   {
-    id: 'db-header',
-    name: '页头',
-    subject: '',
-    content: `<table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-         <tr>
-         <td align="left" style="padding:0; ">
-           <div style="width:750px;color: #000000;font-size: 18px;max-width:750px;margin:0 auto">私たちFamily協同組合は、企業様に安心してお任せいただける監理団体として、<br>
-     技能実習生の受け入れに関わるサポート業務を誠実かつ丁寧に行っております。
-           </div>
-           </td>
-       </tr>
-       </table>`,
-    description: '',
-    category: 'header'
-  },
-  {
-  id: 'db',
-  name: '募集中！',
-  subject: '【募集中！】ビジネスパートナー(代理)共同創業者募集※このメールは返信可能です',
-  content: ` <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    id: 'db',
+    name: '募集中！',
+    subject: '【募集中！】ビジネスパートナー(代理)共同創業者募集※このメールは返信可能です',
+    content: ` <div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
     <div style="max-width: 750px; margin: 0 auto;">
-      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-hero-3.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
+      <a href="https://www.familyorjp.com/"><img src="https://email-test-black.vercel.app/family-hero-3.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/></a>
       <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
         <td align="left" style="padding:0; ">
@@ -42,7 +27,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           </td>
       </tr>
       </table>
-      <a href="https://www.familyorjp.com/"><img src="https://email-test-gamma.vercel.app/family-content-1.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:1vh;"/></a>
+      <a href="https://www.familyorjp.com/"><img src="https://email-test-black.vercel.app/family-content-1.jpg" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top; margin-bottom:1vh;"/></a>
       <table role="presentation" align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
         <tr>
         <td align="left" style="padding:0; ">
@@ -73,40 +58,40 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </table>
       <div style="display: block;">
         <a href="https://www.familyorjp.com/">
-        <img src="https://email-test-gamma.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-black.vercel.app/family-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </a>
       </div>
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
           <td style="width: 50%; text-align: center;">
-            <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+            <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
           </td>
           <td style="width: 25%; text-align: center;">
             <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
-              <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+              <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
             </a>
           </td>
           <td style="width: 25%; text-align: center;">
             <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-              <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+              <img src="https://email-test-black.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
             </a>
           </td>
         </tr>
       </table>
       <div style="display: block;">
-        <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </div>
     </div>
     </div>
 `,
-  description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-  category: 'default'
-},
-{
-  id: 'ag',
-  name: 'AG',
-  subject: '【監理団体様へ】技能実習生送出の新たなご提案！ぜひお見逃しなく！※このメールは返信可能です※',
-  content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
+    category: 'default'
+  },
+  {
+    id: 'ag',
+    name: 'AG',
+    subject: 'Family協同組合ーー外国人材採用初期費用減免',
+    content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
   <td align="center" style="padding:0; ">
@@ -130,7 +115,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <td align="center" style="padding:0; ">
     <div style="max-width: 750px; margin: 0 auto;">
       <div style="display: block; margin-top:clamp(10px, 1.5vw, 20px);margin-bottom:clamp(10px, 1.5vw, 20px);">
-        <img src="https://email-test-gamma.vercel.app/qilin.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-black.vercel.app/qilin.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </div>
     </div>
   </td>
@@ -153,7 +138,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0; padding:0;">
       <tr>
         <td style="padding:clamp(12px, 1.5vw, 18px) clamp(15px, 2vw, 22px) clamp(8px, 1vw, 12px) clamp(15px, 2vw, 22px);">
-          <img src="https://email-test-gamma.vercel.app/ag-detail-header-1.png" alt="" style="width:100%;height:clamp(60px, 8vw, 94px);object-fit:contain; border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
+          <img src="https://email-test-black.vercel.app/ag-detail-header-1.png" alt="" style="width:100%;height:clamp(60px, 8vw, 94px);object-fit:contain; border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
         </td>
       </tr>
     </table>
@@ -172,7 +157,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           <td style="width:140px;padding:clamp(2px, 0.25vw, 6px) 0;background-color: #c9ecf5;border: 1px solid #164a7b;text-align:center;font-size:clamp(10px, 1.2vw, 22px);">初期費用項目</td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: gray;color:white;text-align:center;font-size:clamp(10px, 1.2vw, 22px)">企業負担</td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: white;text-align:center;">
-            <img src="https://email-test-gamma.vercel.app/ag-openwork-logo-1.png" alt="" style="height:clamp(14px, 1.8vw, 28px); border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
+            <img src="https://email-test-black.vercel.app/ag-openwork-logo-1.png" alt="" style="height:clamp(14px, 1.8vw, 28px); border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;" />
           </td>
           <td style="width:160px;padding:clamp(2px, 0.25vw, 6px) 0;border: 1px solid #164a7b;background-color: #c9ecf5;font-size:clamp(10px, 1.2vw, 22px); font-weight: 900; text-align:center;">無料の理由</td>
         </tr>
@@ -295,27 +280,27 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </tr>
     </table>
   <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+    <img src="https://email-test-black.vercel.app/ag-detail-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
   </div>
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td style="width: 50%; text-align: center;">
-        <img src="https://email-test-gamma.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+        <img src="https://email-test-black.vercel.app/ag-qr-left-1.png" style="width: 100%; max-width: 400px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
       </td>
       <td style="width: 25%; text-align: center;">
         <a href="https://apps.apple.com/jp/app/open%E5%AE%9F%E7%BF%92%E7%94%9F/id6746228965" target="_blank">
-          <img src="https://email-test-gamma.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+          <img src="https://email-test-black.vercel.app/ag-qr-middle-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
         </a>
       </td>
       <td style="width: 25%; text-align: center;">
         <a href="https://www.pgyer.com/Lxoo9K6Q" target="_blank">
-          <img src="https://email-test-gamma.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+          <img src="https://email-test-black.vercel.app/ag-qr-right-1.png" style="width: 100%; max-width: 200px; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
         </a>
       </td>
     </tr>
   </table>
   <div style="display: block;">
-    <img src="https://email-test-gamma.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+    <img src="https://email-test-black.vercel.app/ag-footer-1.png" style="width: 100%; display: block; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
   </div>
 </div>
 </div>
@@ -371,98 +356,36 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>`,
-  description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-  category: 'default'
-},
+    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
+    category: 'default'
+  },
 
-{id: 'db-footer-1',
-  name: '一部-页脚',
-  subject: '',
-  content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+  {
+    id: 'db-footer-1',
+    name: '一部-页脚',
+    subject: '',
+    content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0;">
       <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
-        <p style="margin:0 0 10px 0;">
-        <p>お問い合わせもお気軽にどうぞ。<br>
+        <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
           ※このメールは返信可能です※
         </p>
-          <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;柏原</span><br>
-          担当エリア: 北海道、東北、関東<br>
-          TEL: 080-7141-7786<br>
-          E-mail: <a href="mailto:kashiwabara@family-jp.info" style="color:#0056b3; text-decoration:none;">kashiwabara@family-jp.info</a>
+        <p style="margin:0 0 10px 0;">
+          <span style="font-size:18px">Family協同組合</span><br>
+          担当: 菅原 　日本語・中国語対応<br>
+          TEL：029-886-8181<br>
+          Mobile：080-7141-7987<br>
+          E-mail: <a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
         </p>
-        <p style="margin:0 0 10px 0;">本部<br>
-          〒110-0015<br>
-          東京都台東区東上野１丁目8-2 オーイズミ東上野東館9階</p>
-        <p style="margin:0 0 10px 0;">講習センター<br>
-          〒300-0043<br>
-          茨城県土浦市中央1丁目1-26 AGビル</p>
+        <p style="margin:0 0 10px 0;">〒300-0043<br>
+          茨城県土浦市中央1-1-26　AGビル</p>
         <p style="margin:0;">© 2025 Family協同組合 All Rights Reserved.</p>
       </div>
     </td>
   </tr>
 </table>`,
-  description: '',
-  category: 'footer'
-},
-{id: 'db-footer-2',
-  name: '二部-页脚',
-  subject: '',
-  content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-  <tr>
-    <td align="center" style="padding:0;">
-      <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
-        <p style="margin:0 0 10px 0;">
-        <p>お問い合わせもお気軽にどうぞ。<br>
-          ※このメールは返信可能です※
-        </p>
-          <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;堀江</span><br>
-          担当エリア: 近畿、中部<br>
-          TEL: 080-7141-7975<br>
-          E-mail: <a href="mailto:horie@family-jp.info" style="color:#0056b3; text-decoration:none;">horie@family-jp.info</a>
-        </p>
-        <p style="margin:0 0 10px 0;">本部<br>
-          〒110-0015<br>
-          東京都台東区東上野１丁目8-2 オーイズミ東上野東館9階</p>
-        <p style="margin:0 0 10px 0;">講習センター<br>
-          〒300-0043<br>
-          茨城県土浦市中央1丁目1-26 AGビル</p>
-        <p style="margin:0;">© 2025 Family協同組合 All Rights Reserved.</p>
-      </div>
-    </td>
-  </tr>
-</table>`,
-  description: '',
-  category: 'footer'
-},
-{id: 'db-footer-3',
-  name: '三部-页脚',
-  subject: '',
-  content: `<table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-  <tr>
-    <td align="center" style="padding:0;">
-      <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
-        <p style="margin:0 0 10px 0;">
-        <p>お問い合わせもお気軽にどうぞ。<br>
-          ※このメールは返信可能です※
-        </p>
-          <span style="font-size:18px">担当:&nbsp;&nbsp;&nbsp;ハシミ</span><br>
-          担当エリア: 中国、四国、九州<br>
-          TEL: 080-7141-7752<br>
-          E-mail: <a href="mailto:hashmi@family-jp.info" style="color:#0056b3; text-decoration:none;">hashmi@family-jp.info</a>
-        </p>
-        <p style="margin:0 0 10px 0;">本部<br>
-          〒110-0015<br>
-          東京都台東区東上野１丁目8-2 オーイズミ東上野東館9階</p>
-        <p style="margin:0 0 10px 0;">講習センター<br>
-          〒300-0043<br>
-          茨城県土浦市中央1丁目1-26 AGビル</p>
-        <p style="margin:0;">© 2025 Family協同組合 All Rights Reserved.</p>
-      </div>
-    </td>
-  </tr>
-</table>`,
-  description: '',
-  category: 'footer'
-}
+    description: '',
+    category: 'footer'
+  }
 ]; 
