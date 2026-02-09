@@ -23,438 +23,250 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       </td>
     </tr>
 </table>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
 
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
+    <center>
+        <table border="0" cellpadding="0" cellspacing="0" width="800" style="background-color: #ffffff; width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
+            <tr>
+                <td style="padding: 30px;">
+                    
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom: 0px solid #cccccc; margin-bottom: 10px;">
+                        <tr>
+                            <td valign="bottom" align="left" width="50%">
+                                <div style="font-size: 24px; font-weight: bold; line-height: 1.2; color: #2c5a94;">
+                                    <span style="color: #00A0E9; font-size: 30px;">●</span><span style="color: #E60012; font-size: 30px; margin-left: -8px;">▮</span> 
+                                    Family協同組合
+                                </div>
+                                <div style="font-size: 12px; color: #d32f2f; font-weight: bold; margin-top: 5px;">
+                                    ◎受入れ後費用概算（１名あたり）
+                                </div>
+                            </td>
+                            <td valign="bottom" align="right" width="50%">
+                                <div style="font-size: 42px; color: #00569d; font-weight: 900; font-style: italic; letter-spacing: -2px; line-height: 1;">
+                                    採用初期費用減免
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
 
-        .container {
-            width: 800px;
-            background-color: white;
-            padding: 30px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-        }
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-bottom: 15px;">
+                        <thead>
+                            <tr>
+                                <th width="20%" style="background-color: #dcecf6; color: #00569d; font-size: 16px; font-weight: bold; padding: 15px 10px; border-bottom: 2px solid #ffffff; text-align: center;">
+                                    初期費用項目
+                                </th>
+                                <th width="25%" style="background-color: #ffffff; color: #555555; font-size: 16px; font-weight: bold; padding: 15px 10px; border-bottom: 1px solid #cccccc; text-align: center;">
+                                    他社
+                                </th>
+                                <th width="20%" style="background-color: #00569d; color: #ffffff; font-size: 18px; font-weight: bold; padding: 15px 10px; border: 3px solid #00569d; text-align: center;">
+                                    Family協同組合
+                                </th>
+                                <th width="35%" style="background-color: #00569d; color: #ffffff; font-size: 18px; font-weight: bold; padding: 15px 10px; border-top: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 3px solid #00569d; text-align: center;">
+                                    減免の理由
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    技能実習計画認定<br>申請手数料
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    3,900円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(非<br>課<br>税)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    当組合が負担
+                                </td>
+                            </tr>
 
-        /* Header Section */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 10px;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    在留資格認定証明書<br>交付申請手続代行費用
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    55,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(税<br>別)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    経験豊富なスタッフが<br>ビザ申請をサポート
+                                </td>
+                            </tr>
 
-        .logo-area {
-            color: #00569d;
-            font-weight: bold;
-            font-size: 24px;
-            line-height: 1.2;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    入国渡航費
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    77,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(非<br>課<br>税)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    当組合が負担
+                                </td>
+                            </tr>
 
-        .logo-text {
-            font-size: 28px;
-            color: #2c5a94;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    入国前講習費
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    15,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(非<br>課<br>税)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    実績のある送出機関での<br>講習を実施
+                                </td>
+                            </tr>
 
-        .sub-note {
-            font-size: 12px;
-            color: #d32f2f;
-            font-weight: bold;
-            margin-top: 5px;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    入国後講習費
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    110,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(税<br>別)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    当組合の講習センターで<br>講習を実施
+                                </td>
+                            </tr>
 
-        .main-title {
-            font-size: 42px;
-            color: #00569d;
-            font-weight: 900;
-            font-style: italic;
-            text-align: right;
-            letter-spacing: -2px;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    実習生への<br>講習手当
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    60,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(非<br>課<br>税)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    当組合が負担
+                                </td>
+                            </tr>
 
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            /* Critical for controlling border overlap manually */
-            margin-bottom: 15px;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    健康診断
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    11,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(税<br>別)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    当組合が負担
+                                </td>
+                            </tr>
 
-        th,
-        td {
-            padding: 10px 5px;
-            text-align: center;
-            vertical-align: middle;
-            font-size: 15px;
-        }
+                            <tr>
+                                <td style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 15px; border-bottom: 2px solid #ffffff; font-size: 15px;">
+                                    国内人件費<br>経費等
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: bold; font-size: 20px;">
+                                    77,000円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(税<br>別)</span>
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: 900; font-size: 22px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 1px solid #cccccc;">
+                                    減免
+                                </td>
+                                <td align="center" style="color: #00569d; font-weight: bold; font-size: 14px; border: 2px solid #00569d; padding: 5px;">
+                                    アプリで一元管理
+                                </td>
+                            </tr>
 
-        /* Column 1: Items */
-        .col-item {
-            background-color: #dcecf6;
-            color: #00569d;
-            font-weight: bold;
-            width: 20%;
-            border-bottom: 2px solid #fff;
-            text-align: left;
-            padding-left: 15px;
-        }
+                            <tr>
+                                <td align="center" style="background-color: #dcecf6; color: #00569d; font-weight: bold; padding: 10px 0; font-size: 15px;">
+                                    合計
+                                </td>
+                                <td align="center" style="background-color: #fcfcfc; border-bottom: 1px solid #cccccc; color: #555555; font-weight: 900; font-size: 24px;">
+                                    408,900円
+                                    <span style="font-size: 10px; font-weight: normal; vertical-align: middle; display: inline-block; line-height: 1.1; margin-left: 3px;">(税<br>別)</span>
+                                </td>
+                                <td align="center" style="position: relative; color: #00569d; font-weight: 900; font-size: 24px; border-left: 3px solid #00569d; border-right: 3px solid #00569d; border-bottom: 3px solid #00569d;">
+                                    減免
+                                    <div style="font-size: 10px; color: #d32f2f; line-height: 1; font-weight: bold; position: absolute; right: 2px; bottom: 2px;">※2<br>※3</div>
+                                </td>
+                                <td align="center" style="color: #d32f2f; font-weight: 900; font-size: 20px; border: 2px solid #00569d; padding: 5px; background-color: #ffffff;">
+                                    期間限定 <span style="font-size: 12px; vertical-align: top;">※1</span>
+                                </td>
+                            </tr>
 
-        /* Column 2: Others */
-        .col-other {
-            background-color: #fcfcfc;
-            width: 25%;
-            border-bottom: 1px solid #ccc;
-            position: relative;
-        }
+                        </tbody>
+                    </table>
 
-        .price-wrap {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #555;
-        }
+                    <div style="color: #d32f2f; font-weight: bold; font-size: 12px; margin-bottom: 20px; line-height: 1.6;">
+                        ※1 期間限定（2025年9月1日～2026年12月31日） ※2 組合加入費別途 ※3 入国までの初期費用完全0円
+                    </div>
 
-        .tax-note {
-            font-size: 9px;
-            writing-mode: vertical-rl;
-            margin-left: 5px;
-            color: #555;
-            font-weight: normal;
-            height: 35px;
-        }
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 11px; line-height: 1.6; color: #000000;">
+                        <tr>
+                            <td style="padding-bottom: 15px;">
+                                <div style="color: #00569d; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
+                                    <span style="font-size: 14px;">●</span> 期間限定の段階的な措置
+                                </div>
+                                1. 初期費用の減免は、制度開始当初に限定した「段階的な措置」として導入したものです。<br>
+                                あくまで特別対応であり、継続的な恒久措置ではありません。<br>
+                                2. 減免の目的は中小企業の負担軽減と透明性の確保、中小企業の皆様が抱える人材確保におけるコスト負担を軽減することにあります。<br>
+                                さらに、当組合が提供する専用アプリの活用により、海外の実習生は企業が発信する求人情報を直接確認できるようになっています。<br>
+                                そのため、これまで一部の送出機関において発生していた、虚偽の情報や誤解を招く宣伝行為を防止し、実習生と企業の双方にとって透明で公平な採用プロセスを実現いたします。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-bottom: 15px;">
+                                <div style="color: #00569d; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
+                                    <span style="font-size: 14px;">●</span> 監理団体としての社会的責任
+                                </div>
+                                当組合は監理団体として、技能実習制度の適正運営を通じて公正で健全な雇用環境の確保に努めています。<br>
+                                企業と実習生の双方が安心して制度を活用できるよう常に社会的責任を自覚し、高い倫理観をもって行動してまいります。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-bottom: 15px;">
+                                <div style="color: #00569d; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
+                                    <span style="font-size: 14px;">●</span> コンプライアンスの遵守
+                                </div>
+                                当組合は、日本の関連法令および技能実習制度に関する各種ガイドラインを厳格に遵守いたします。<br>
+                                また、内部統制を強化し、定期的な監査や自己点検を通じて、不正防止・透明性の確保・説明責任の徹底を実現いたします。<br>
+                                これにより、受入企業・実習生・関係機関のすべてに対して、信頼できる監理団体であり続けることをお約束いたします。
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="color: #00569d; font-weight: bold; font-size: 12px; margin-bottom: 2px;">
+                                    <span style="font-size: 14px;">●</span> 今後の方針
+                                </div>
+                                当組合は、監理団体としての責務を果たしつつ、技能実習制度を健全かつ公正に運営してまいります。<br>
+                                中小企業支援と実習生の安心確保を両立させ、<br>
+                                「信頼」「透明性」「法令遵守」を基盤とした組織運営を今後も推進いたします。
+                            </td>
+                        </tr>
+                    </table>
 
-        /* Column 3: Family (Blue Column) */
-        .col-family {
-            border-left: 3px solid #00569d;
-            border-right: 3px solid #00569d;
-            border-bottom: 1px solid #ccc;
-            color: #00569d;
-            font-weight: 900;
-            font-size: 22px;
-            width: 18%;
-            background-color: #fff;
-        }
-
-        /* Header for Family */
-        th.col-family {
-            background-color: #00569d;
-            color: white;
-            border: 3px solid #00569d;
-            /* Full thick border */
-            font-size: 18px;
-        }
-
-        /* Column 4: Reason (UPDATED LOGIC) */
-        .col-reason {
-            width: 37%;
-            /* BORDER IS NOW DIRECTLY ON THE TD */
-            border-top: 2px solid #00569d;
-            border-right: 2px solid #00569d;
-            border-bottom: 2px solid #00569d;
-            /* No left border because Family col has a right border. 
-           But visually we might want a double line effect or just single? 
-           Image looks like single thick line. Let's stick to right/top/bottom here. */
-
-            background-color: #fff;
-            color: #00569d;
-            font-weight: bold;
-            font-size: 14px;
-            padding: 5px 10px;
-        }
-
-        /* Header for Reason (FIXED TOP ALIGNMENT) */
-        th.col-reason {
-            background-color: #00569d;
-            color: white;
-            font-size: 18px;
-            /* Match the Family header border thickness exactly */
-            border-top: 3px solid #00569d;
-            border-right: 3px solid #00569d;
-            border-bottom: 3px solid #00569d;
-            border-left: none;
-            /* Rely on Family's right border */
-        }
-
-        /* Content Alignment Helpers */
-        .reason-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: left;
-            min-height: 40px;
-            width: 100%;
-        }
-
-        .center-text {
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Header Row Specifics */
-        thead th:first-child {
-            background-color: #dcecf6;
-            color: #00569d;
-        }
-
-        thead th:nth-child(2) {
-            color: #555;
-            border-bottom: 1px solid #ccc;
-        }
-
-        /* Total Row Specifics */
-        tr.total-row .col-item {
-            background-color: #dcecf6;
-            /* Keep background */
-            border-bottom: none;
-        }
-
-        tr.total-row .col-other {
-            border-bottom: 1px solid #ccc;
-        }
-
-        tr.total-row .col-family {
-            border-bottom: 3px solid #00569d;
-            /* Close bottom of Family box */
-        }
-
-        /* FIX: The last cell now uses the standard class but with special content styling */
-        tr.total-row .col-reason {
-            border-bottom: 2px solid #00569d;
-            /* Ensure bottom closes */
-            padding: 0;
-            /* Remove padding to let inner box fill if needed, or use padding */
-            vertical-align: middle;
-        }
-
-        /* Limited Time Text Styling */
-        .limited-text {
-            color: #d32f2f;
-            font-weight: 900;
-            font-size: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .limited-ref {
-            font-size: 12px;
-            margin-left: 5px;
-            transform: translateY(-5px);
-            color: #d32f2f;
-        }
-
-        .small-ref {
-            font-size: 10px;
-            color: #d32f2f;
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            line-height: 1;
-            font-weight: bold;
-        }
-
-        /* Notes & Text */
-        .notes-red {
-            color: #d32f2f;
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .text-body {
-            font-size: 11px;
-            line-height: 1.6;
-            color: #000;
-        }
-
-        .text-section {
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            color: #00569d;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-            margin-bottom: 2px;
-        }
-
-        .section-title::before {
-            content: "●";
-            color: #00569d;
-            margin-right: 5px;
-            font-size: 14px;
-        }
-    </style>
-
-    <div class="container">
-        <div class="header">
-            <div class="logo-area">
-                <span style="font-size: 24px; color: #00A0E9;">●</span><span
-                    style="font-size: 24px; color: #E60012; margin-left: -8px;">▮</span>
-                <span class="logo-text">Family協同組合</span>
-                <div class="sub-note">◎受入れ後費用概算（１名あたり）</div>
-            </div>
-            <div class="main-title">採用初期費用減免</div>
-        </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th class="col-item">初期費用項目</th>
-                    <th class="col-other">他社</th>
-                    <th class="col-family">Family協同組合</th>
-                    <th class="col-reason">減免の理由</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="col-item">技能実習計画認定<br>申請手数料</td>
-                    <td class="col-other">
-                        <div class="price-wrap">3,900円<span class="tax-note">(非課税)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content center-text">当組合が負担</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">在留資格認定証明書<br>交付申請手続代行費用</td>
-                    <td class="col-other">
-                        <div class="price-wrap">55,000円<span class="tax-note">(税別)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content">経験豊富なスタッフが<br>ビザ申請をサポート</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">入国渡航費</td>
-                    <td class="col-other">
-                        <div class="price-wrap">77,000円<span class="tax-note">(非課税)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content center-text">当組合が負担</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">入国前講習費</td>
-                    <td class="col-other">
-                        <div class="price-wrap">15,000円<span class="tax-note">(非課税)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content">実績のある送出機関での<br>講習を実施</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">入国後講習費</td>
-                    <td class="col-other">
-                        <div class="price-wrap">110,000円<span class="tax-note">(税別)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content">当組合の講習センターで<br>講習を実施</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">実習生への<br>講習手当</td>
-                    <td class="col-other">
-                        <div class="price-wrap">60,000円<span class="tax-note">(非課税)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content center-text">当組合が負担</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">健康診断</td>
-                    <td class="col-other">
-                        <div class="price-wrap">11,000円<span class="tax-note">(税別)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content center-text">当組合が負担</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-item">国内人件費<br>経費等</td>
-                    <td class="col-other">
-                        <div class="price-wrap">77,000円<span class="tax-note">(税別)</span></div>
-                    </td>
-                    <td class="col-family">減免</td>
-                    <td class="col-reason">
-                        <div class="reason-content center-text">アプリで一元管理</div>
-                    </td>
-                </tr>
-                <tr class="total-row">
-                    <td class="col-item">合計</td>
-                    <td class="col-other">
-                        <div class="price-wrap">408,900円<span class="tax-note">(税別)</span></div>
-                    </td>
-                    <td class="col-family">
-                        減免
-                        <div class="small-ref">※2<br>※3</div>
-                    </td>
-                    <td class="col-reason">
-                        <div class="limited-text">期間限定 <span class="limited-ref">※1</span></div>
-                    </td>
-                </tr>
-            </tbody>
+                </td>
+            </tr>
         </table>
-
-        <div class="notes-red">
-            ※1 期間限定（2025年9月1日～2026年12月31日） ※2 組合加入費別途 ※3 入国までの初期費用完全0円
-        </div>
-
-        <div class="text-body">
-            <div class="text-section">
-                <div class="section-title">期間限定の段階的な措置</div>
-                1. 初期費用の減免は、制度開始当初に限定した「段階的な措置」として導入したものです。<br>
-                あくまで特別対応であり、継続的な恒久措置ではありません。<br>
-                2. 減免の目的は中小企業の負担軽減と透明性の確保、中小企業の皆様が抱える人材確保におけるコスト負担を軽減することにあります。<br>
-                さらに、当組合が提供する専用アプリの活用により、海外の実習生は企業が発信する求人情報を直接確認できるようになっています。<br>
-                そのため、これまで一部の送出機関において発生していた、虚偽の情報や誤解を招く宣伝行為を防止し、実習生と企業の双方にとって透明で公平な採用プロセスを実現いたします。
-            </div>
-
-            <div class="text-section">
-                <div class="section-title">監理団体としての社会的責任</div>
-                当組合は監理団体として、技能実習制度の適正運営を通じて公正で健全な雇用環境の確保に努めています。<br>
-                企業と実習生の双方が安心して制度を活用できるよう常に社会的責任を自覚し、高い倫理観をもって行動してまいります。
-            </div>
-
-            <div class="text-section">
-                <div class="section-title">コンプライアンスの遵守</div>
-                当組合は、日本の関連法令および技能実習制度に関する各種ガイドラインを厳格に遵守いたします。<br>
-                また、内部統制を強化し、定期的な監査や自己点検を通じて、不正防止・透明性の確保・説明責任の徹底を実現いたします。<br>
-                これにより、受入企業・実習生・関係機関のすべてに対して、信頼できる監理団体であり続けることをお約束いたします。
-            </div>
-
-            <div class="text-section">
-                <div class="section-title">今後の方針</div>
-                当組合は、監理団体としての責務を果たしつつ、技能実習制度を健全かつ公正に運営してまいります。<br>
-                中小企業支援と実習生の安心確保を両立させ、<br>
-                「信頼」「透明性」「法令遵守」を基盤とした組織運営を今後も推進いたします。
-            </div>
-        </div>
-    </div>
+    </center>
 <br>
 <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 <tr>
