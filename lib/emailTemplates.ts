@@ -205,10 +205,26 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         ※1 期間限定（2025年9月1日～2026年12月31日） ※2 組合加入費別途 ※3 入国までの初期費用完全0円
                     </div>
 
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px; line-height: 1.6; color: #000000;">
+
+                    <style>
+                        @media only screen and (max-width: 600px) {
+                            .mobile-text {
+                                font-size: 24px !important;
+                                line-height: 1.6 !important;
+                            }
+                            .mobile-title {
+                                font-size: 28px !important;
+                                margin-bottom: 5px !important;
+                            }
+                            .mobile-container {
+                                width: 100% !important;
+                            }
+                        }
+                    </style>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mobile-text" style="font-size: 14px; line-height: 1.6; color: #000000;">
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
                                     <span style="font-size: 14px;">●</span> 期間限定の段階的な措置
                                 </div>
                                 1. 初期費用の減免は、制度開始当初に限定した「段階的な措置」として導入したものです。<br>
@@ -220,7 +236,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
                                     <span style="font-size: 14px;">●</span> 監理団体としての社会的責任
                                 </div>
                                 当組合は監理団体として、技能実習制度の適正運営を通じて公正で健全な雇用環境の確保に努めています。<br>
@@ -229,7 +245,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
                                     <span style="font-size: 14px;">●</span> コンプライアンスの遵守
                                 </div>
                                 当組合は、日本の関連法令および技能実習制度に関する各種ガイドラインを厳格に遵守いたします。<br>
@@ -239,7 +255,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td>
-                                <div style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 16px; margin-bottom: 2px;">
                                     <span style="font-size: 14px;">●</span> 今後の方針
                                 </div>
                                 当組合は、監理団体としての責務を果たしつつ、技能実習制度を健全かつ公正に運営してまいります。<br>
