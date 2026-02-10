@@ -1,19 +1,19 @@
 export interface EmailTemplate {
-  id: string;
-  name: string;
-  subject: string;
-  content: string;
-  description: string;
-  category: string;
+    id: string;
+    name: string;
+    subject: string;
+    content: string;
+    description: string;
+    category: string;
 }
 
 // 预定义的邮件模板 - 使用默认邮件模板内容
 export const EMAIL_TEMPLATES: EmailTemplate[] = [
-  {
-    id: 'family',
-    name: 'Family',
-    subject: 'Family協同組合ーー外国人材採用初期費用減免',
-    content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    {
+        id: 'family',
+        name: 'Family',
+        subject: 'Family協同組合ーー外国人材採用初期費用減免',
+        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
@@ -336,7 +336,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
           担当: 菅原 　日本語・中国語対応<br>
           TEL：029-886-8181<br>
           Mobile：080-7141-7987<br>
-          E-mail: <a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
+          E-mail: <a href="mailto:family.organization.jp@gmail.com" style="color:#0056b3; text-decoration:none;">family.organization.jp@gmail.com</a>
         </p>
         <p style="margin:0 0 10px 0;">〒300-0043<br>
           茨城県土浦市中央1-1-26　AGビル</p>
@@ -345,7 +345,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </td>
   </tr>
 </table>`,
-    description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
-    category: 'default'
-  }
+        description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
+        category: 'default'
+    }
 ];
