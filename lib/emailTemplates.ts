@@ -25,7 +25,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>
 
     <center>
-        <table border="0" cellpadding="0" cellspacing="0" width="800" style="background-color: #ffffff; width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
+        <table border="0" cellpadding="0" cellspacing="0" width="800" class="mobile-container" style="background-color: #ffffff; width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
             <tr>
                 <td style="padding: 30px;">
                     
@@ -222,11 +222,11 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             }
                         }
                     </style>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mobile-text" style="font-size: clamp(18px, 3vw, 24px); line-height: 1.6; color: #000000;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mobile-text" style="font-size: 16px; line-height: 1.6; color: #000000;">
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: clamp(22px, 4vw, 30px); margin-bottom: 2px;">
-                                    <span style="font-size: clamp(18px, 3vw, 24px);">●</span> 期間限定の段階的な措置
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 20px; margin-bottom: 2px;">
+                                    <span style="font-size: 20px;">●</span> 期間限定の段階的な措置
                                 </div>
                                 1. 初期費用の減免は、制度開始当初に限定した「段階的な措置」として導入したものです。<br>
                                 あくまで特別対応であり、継続的な恒久措置ではありません。<br>
@@ -237,8 +237,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: clamp(22px, 4vw, 30px); margin-bottom: 2px;">
-                                    <span style="font-size: clamp(18px, 3vw, 24px);">●</span> 監理団体としての社会的責任
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 20px; margin-bottom: 2px;">
+                                    <span style="font-size: 20px;">●</span> 監理団体としての社会的責任
                                 </div>
                                 当組合は監理団体として、技能実習制度の適正運営を通じて公正で健全な雇用環境の確保に努めています。<br>
                                 企業と実習生の双方が安心して制度を活用できるよう常に社会的責任を自覚し、高い倫理観をもって行動してまいります。
@@ -246,8 +246,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td style="padding-bottom: 15px;">
-                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: clamp(22px, 4vw, 30px); margin-bottom: 2px;">
-                                    <span style="font-size: clamp(18px, 3vw, 24px);">●</span> コンプライアンスの遵守
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 20px; margin-bottom: 2px;">
+                                    <span style="font-size: 20px;">●</span> コンプライアンスの遵守
                                 </div>
                                 当組合は、日本の関連法令および技能実習制度に関する各種ガイドラインを厳格に遵守いたします。<br>
                                 また、内部統制を強化し、定期的な監査や自己点検を通じて、不正防止・透明性の確保・説明責任の徹底を実現いたします。<br>
@@ -256,8 +256,8 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                         </tr>
                         <tr>
                             <td>
-                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: clamp(22px, 4vw, 30px); margin-bottom: 2px;">
-                                    <span style="font-size: clamp(18px, 3vw, 24px);">●</span> 今後の方針
+                                <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 20px; margin-bottom: 2px;">
+                                    <span style="font-size: 20px;">●</span> 今後の方針
                                 </div>
                                 当組合は、監理団体としての責務を果たしつつ、技能実習制度を健全かつ公正に運営してまいります。<br>
                                 中小企業支援と実習生の安心確保を両立させ、<br>
@@ -274,19 +274,19 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:clamp(14px, 2.7vw, 30px);font-weight:bold;color:#000000;">もしご興味がございましたら、資料の送付も可能です。<br>
+    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、資料の送付も可能です。<br>
 何卒ご検討のほど、よろしくお願い申し上げます。</div>
   </td>
 </tr>
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="border: none;width: 90vw; max-width: 750px; height: clamp(2px, 0.3vw, 4px); background-color: #000000; margin: clamp(15px, 2vw, 25px) 0;"></div>
+    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px 0;"></div>
   </td>
 </tr>
 </table>
 
     <center>
-        <table border="0" cellpadding="0" cellspacing="0" width="800" style="background-color: #ffffff; width: 800px; margin: 0 auto; margin-top: 10px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="800" class="mobile-container" style="background-color: #ffffff; width: 800px; margin: 0 auto; margin-top: 10px;">
             <tr>
                 <td align="center">
                     <div style="display: block;">
@@ -320,7 +320,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </center><table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0;">
-      <div style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
+      <div class="mobile-container" style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
         <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
           ※このメールは返信可能です※
         </p>
