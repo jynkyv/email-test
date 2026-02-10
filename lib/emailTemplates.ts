@@ -27,7 +27,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <center>
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
             <tr>
-                <td style="padding: 30px;">
+                <td style="padding: 0;">
                     
 
                     <div style="display: block; margin-bottom: 15px;">
