@@ -347,5 +347,59 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>`,
         description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
         category: 'default'
+    },
+    {
+        id: 'yalin',
+        name: 'Yalin',
+        subject: '【送出機関】ご紹介1名につき20万円成功報酬キャンペーンのご案内',
+        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <tr>
+      <td align="center" style="padding:0; ">
+        
+        <!-- Header/Intro Text -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto; padding: 20px;">
+            <tr>
+                <td style="font-size: 16px; line-height: 1.8; color: #333333;">
+                    <p>ご担当者様</p>
+                    <p>突然のご連絡失礼いたします。<br>
+                    中国の送出機関【福州亜麟創新科技有限公司】でございます。</p>
+                    <p>このたび、日頃のご協力への感謝を込め、<br>
+                    監理団体様・受入企業様向けに、<br>
+                    「ご紹介1名につき20万円の紹介謝礼」制度を実施する運びとなりました。</p>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Main Image -->
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/yalin-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        
+        <!-- Yalin Footer -->
+        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+          <tr>
+            <td align="center" style="padding:0;">
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
+                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
+                </p>
+                <p style="margin:0 0 10px 0;">
+                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
+                  担当:菅原 　日本語・中国語対応<br>
+                  TEL：029-886-8181<br>
+                  Mobile：080-7141-7987<br>
+                  E-mail：<a href="mailto:family.organization.jp@gmail.com" style="color:#0056b3; text-decoration:none;">family.organization.jp@gmail.com</a>
+                </p>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</div>`,
+        description: 'Yalin Campaign Email Template',
+        category: 'promotion'
     }
 ];
