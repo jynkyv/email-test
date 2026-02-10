@@ -25,7 +25,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>
 
     <center>
-        <table border="0" cellpadding="0" cellspacing="0" width="800" class="mobile-container" style="background-color: #ffffff; width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 0 auto;">
             <tr>
                 <td style="padding: 30px;">
                     
@@ -286,7 +286,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>
 
     <center>
-        <table border="0" cellpadding="0" cellspacing="0" width="800" class="mobile-container" style="background-color: #ffffff; width: 800px; margin: 0 auto; margin-top: 10px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto; margin-top: 10px;">
             <tr>
                 <td align="center">
                     <div style="display: block;">
@@ -320,7 +320,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </center><table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
   <tr>
     <td align="center" style="padding:0;">
-      <div class="mobile-container" style="text-align:left;width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
+      <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
         <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
           ※このメールは返信可能です※
         </p>
