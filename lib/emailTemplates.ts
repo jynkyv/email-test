@@ -375,7 +375,19 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
           <img src="https://email-test-black.vercel.app/yalin-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
         </div>
-        
+        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+<tr>
+  <td align="center" style="padding:0; ">
+    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、資料の送付も可能です。<br>
+何卒ご検討のほど、よろしくお願い申し上げます。</div>
+  </td>
+</tr>
+<tr>
+  <td align="center" style="padding:0; ">
+    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px 0;"></div>
+  </td>
+</tr>
+</table>
         <!-- Yalin Footer -->
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
           <tr>
