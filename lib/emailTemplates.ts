@@ -222,7 +222,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                             }
                         }
                     </style>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mobile-text" style="font-size: 16px; line-height: 1.6; color: #000000;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mobile-text" style="font-size: 20px; line-height: 1.6; color: #000000;">
                         <tr>
                             <td style="padding-bottom: 15px;">
                                 <div class="mobile-title" style="color: #00569d; font-weight: bold; font-size: 20px; margin-bottom: 2px;">
