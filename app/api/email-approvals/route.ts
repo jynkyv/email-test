@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // 获取审核列表
 export async function GET(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const pageSize = parseInt(searchParams.get('pageSize') || '50');
     const applicantName = searchParams.get('applicantName') || '';
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -19,9 +19,9 @@ export async function GET(request: NextRequest) {
 
     // 从 authorization header 中获取用户 ID
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -41,11 +41,11 @@ export async function GET(request: NextRequest) {
     // 如果有申请人名称筛选，先查询匹配的用户ID
     let applicantIds: string[] = [];
     if (applicantName.trim()) {
-      const { data: users, error: usersError } = await supabase
+      const { data: users, error: usersError } = await supabaseAdmin
         .from('users')
         .select('id')
         .ilike('username', `%${applicantName.trim()}%`);
-      
+
       if (usersError) {
         console.error('用户查询错误:', usersError);
         return NextResponse.json(
@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
           { status: 500 }
         );
       }
-      
+
       applicantIds = users.map(user => user.id);
-      
+
       // 如果没有找到匹配的用户，直接返回空结果
       if (applicantIds.length === 0) {
         return NextResponse.json({
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    let query = supabase
+    let query = supabaseAdmin
       .from('email_approvals')
       .select(`
         *,
@@ -123,9 +123,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { subject, content, recipients } = body;
     const authHeader = request.headers.get('authorization');
-    
+
     console.log('审核申请请求数据:', { subject, content: content?.substring(0, 50), recipients_count: recipients?.length });
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -136,9 +136,9 @@ export async function POST(request: NextRequest) {
     // 从 authorization header 中获取用户 ID
     const userId = authHeader.replace('Bearer ', '');
     console.log('用户ID:', userId);
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -170,8 +170,8 @@ export async function POST(request: NextRequest) {
       status: 'pending'
     });
 
-    // 创建审核申请
-    const { data: approval, error } = await supabase
+    // 创建审核申请 - 使用 supabaseAdmin 绕过 RLS
+    const { data: approval, error } = await supabaseAdmin
       .from('email_approvals')
       .insert({
         applicant_id: userId,
