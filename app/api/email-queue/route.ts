@@ -73,7 +73,12 @@ export async function POST(request: NextRequest) {
     if (queueError) {
       console.error('添加邮件到队列失败:', queueError);
       return NextResponse.json(
-        { error: '添加邮件到队列失败' },
+        {
+          error: '添加邮件到队列失败',
+          details: queueError.message,
+          code: queueError.code,
+          hint: queueError.hint
+        },
         { status: 500 }
       );
     }
