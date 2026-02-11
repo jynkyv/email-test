@@ -358,9 +358,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
       <td align="center" style="padding:0; ">
         
         <!-- Header/Intro Text -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto; padding: 20px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
             <tr>
-                <td style="font-size: 16px; line-height: 1.8; color: #333333;">
+                <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
                     <p>ご担当者様</p>
                     <p>突然のご連絡失礼いたします。<br>
                     中国の送出機関【福州亜麟創新科技有限公司】でございます。</p>
@@ -384,7 +384,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </tr>
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px 0;"></div>
+    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
   </td>
 </tr>
 </table>
@@ -392,16 +392,17 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
           <tr>
             <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px;">
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
                 <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
                 </p>
                 <p style="margin:0 0 10px 0;">
                   <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
                   担当:菅原 　日本語・中国語対応<br>
-                  TEL：029-886-8181<br>
                   Mobile：080-7141-7987<br>
-                  E-mail：<a href="mailto:family.organization.jp@gmail.com" style="color:#0056b3; text-decoration:none;">family.organization.jp@gmail.com</a>
+                  E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
                 </p>
+                <p style="margin:0 0 10px 0;">〒300-0043<br>
+          茨城県土浦市中央1-1-26　AGビル</p>
               </div>
             </td>
           </tr>
