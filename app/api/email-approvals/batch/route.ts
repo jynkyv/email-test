@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendSingleEmail } from '@/lib/sendgrid';
 
 // 批量自动审核API - 专门用于后台自动处理
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取最早的待审核申请
-    const { data: pendingApprovals, error: fetchError } = await supabase
+    const { data: pendingApprovals, error: fetchError } = await supabaseAdmin
       .from('email_approvals')
       .select('*')
       .eq('status', 'pending')
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     console.log(`🚀 自动审核处理申请: ${approval.id}`);
 
     // 更新审核状态为已通过
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('email_approvals')
       .update({
         status: 'approved',
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       retry_count: 0
     }));
 
-    const { error: queueError } = await supabase
+    const { error: queueError } = await supabaseAdmin
       .from('email_queue')
       .insert(queueItems);
 
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     let failCount = 0;
 
     // 获取刚添加的队列项目
-    const { data: queueEmails, error: queueFetchError } = await supabase
+    const { data: queueEmails, error: queueFetchError } = await supabaseAdmin
       .from('email_queue')
       .select('*')
       .eq('approval_id', approval.id)
@@ -121,9 +121,9 @@ export async function POST(request: NextRequest) {
       for (const email of queueEmails) {
         try {
           // 更新状态为处理中
-          await supabase
+          await supabaseAdmin
             .from('email_queue')
-            .update({ 
+            .update({
               status: 'processing',
               processed_at: new Date().toISOString()
             })
@@ -132,14 +132,14 @@ export async function POST(request: NextRequest) {
           // 发送邮件
           try {
             const result = await sendSingleEmail(email.recipient, email.subject, email.content);
-            
+
             // 记录发送的邮件
             await recordSentEmail(email.recipient, email.subject, email.content, approval.id, result.id);
-            
+
             // 发送成功
-            await supabase
+            await supabaseAdmin
               .from('email_queue')
-              .update({ 
+              .update({
                 status: 'sent',
                 processed_at: new Date().toISOString()
               })
@@ -150,9 +150,9 @@ export async function POST(request: NextRequest) {
           } catch (sendError) {
             // 发送失败
             const errorMessage = sendError instanceof Error ? sendError.message : '未知错误';
-            await supabase
+            await supabaseAdmin
               .from('email_queue')
-              .update({ 
+              .update({
                 status: 'failed',
                 error_message: errorMessage,
                 retry_count: email.retry_count + 1,
@@ -165,12 +165,12 @@ export async function POST(request: NextRequest) {
           }
         } catch (error) {
           console.error(`处理邮件 ${email.id} 失败:`, error);
-          
+
           // 确保邮件状态被正确更新
           try {
-            await supabase
+            await supabaseAdmin
               .from('email_queue')
-              .update({ 
+              .update({
                 status: 'failed',
                 error_message: '处理过程中发生异常',
                 retry_count: email.retry_count + 1,
@@ -180,10 +180,10 @@ export async function POST(request: NextRequest) {
           } catch (updateError) {
             console.error(`更新邮件 ${email.id} 状态失败:`, updateError);
           }
-          
+
           failCount++;
         }
-        
+
         processedCount++;
       }
     }
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     // 注意：邮件统计数据通过实时查询 email_approvals 表计算，无需手动更新
     // email_send_count 和 email_recipient_count 字段会自动计算
 
-    console.log(`�� 自动审核完成: 申请 ${approval.id}, 处理 ${processedCount} 个邮件，成功 ${successCount}，失败 ${failCount}`);
+    console.log(`🎉 自动审核完成: 申请 ${approval.id}, 处理 ${processedCount} 个邮件，成功 ${successCount}，失败 ${failCount}`);
 
     return NextResponse.json({
       success: true,
@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
 async function recordSentEmail(toEmail: string, subject: string, content: string, approvalId: string, messageId: string): Promise<string | null> {
   try {
     // 查找对应的客户
-    const { data: customer, error: customerError } = await supabase
+    const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .select('id')
       .eq('email', toEmail)
@@ -230,7 +230,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     }
 
     // 获取审核申请信息以获取申请人ID
-    const { data: approval, error: approvalError } = await supabase
+    const { data: approval, error: approvalError } = await supabaseAdmin
       .from('email_approvals')
       .select('applicant_id')
       .eq('id', approvalId)
@@ -242,7 +242,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     }
 
     // 获取发送者的邮箱
-    const { data: senderUser } = await supabase
+    const { data: senderUser } = await supabaseAdmin
       .from('users')
       .select('email')
       .eq('id', approval.applicant_id)
@@ -251,7 +251,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     const fromEmail = senderUser?.email || process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com';
 
     // 插入发送的邮件记录
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseAdmin
       .from('customer_emails')
       .insert({
         customer_id: customer.id,

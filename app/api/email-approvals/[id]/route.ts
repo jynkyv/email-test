@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // 获取审核详情
 export async function GET(
@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -17,9 +17,9 @@ export async function GET(
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -33,7 +33,7 @@ export async function GET(
     }
 
     // 获取审核详情
-    const { data: approval, error } = await supabase
+    const { data: approval, error } = await supabaseAdmin
       .from('email_approvals')
       .select(`
         *,
@@ -44,8 +44,10 @@ export async function GET(
       .single();
 
     if (error) {
+      console.error('获取审核详情失败 (Supabase Admin):', error);
+      console.error('Requested ID:', params.id);
       return NextResponse.json(
-        { error: '审核申请不存在' },
+        { error: '审核申请不存在', details: error.message, code: error.code },
         { status: 404 }
       );
     }
@@ -81,7 +83,7 @@ export async function PUT(
     const body = await request.json();
     const { action, subject, content } = body;
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -90,9 +92,9 @@ export async function PUT(
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -114,7 +116,7 @@ export async function PUT(
     }
 
     // 获取当前审核申请
-    const { data: currentApproval, error: fetchError } = await supabase
+    const { data: currentApproval, error: fetchError } = await supabaseAdmin
       .from('email_approvals')
       .select('*')
       .eq('id', params.id)
@@ -160,7 +162,7 @@ export async function PUT(
     }
 
     // 更新审核申请
-    const { data: updatedApproval, error: updateError } = await supabase
+    const { data: updatedApproval, error: updateError } = await supabaseAdmin
       .from('email_approvals')
       .update(updateData)
       .eq('id', params.id)
@@ -178,8 +180,8 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       approval: updatedApproval,
-      message: action === 'approve' ? '审核已通过' : 
-               action === 'reject' ? '审核已拒绝' : '内容已更新'
+      message: action === 'approve' ? '审核已通过' :
+        action === 'reject' ? '审核已拒绝' : '内容已更新'
     });
 
   } catch (error) {
