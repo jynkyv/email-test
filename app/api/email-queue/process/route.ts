@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendSingleEmail } from '@/lib/sendgrid';
 
 // 处理邮件队列
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
 
     // 首先清理长时间处于处理中状态的邮件（超过5分钟）
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-    await supabase
+    await supabaseAdmin
       .from('email_queue')
-      .update({ 
+      .update({
         status: 'pending',
         processed_at: null
       })
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       .lt('processed_at', fiveMinutesAgo);
 
     // 获取待处理的邮件（处理所有待处理邮件，不限制数量）
-    const { data: pendingEmails, error: fetchError } = await supabase
+    const { data: pendingEmails, error: fetchError } = await supabaseAdmin
       .from('email_queue')
       .select('*')
       .eq('status', 'pending')
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     const results = [];
     let successCount = 0;
     let failCount = 0;
-    
+
     // 用于统计每个申请人的发送情况
     const applicantStats = new Map<string, { sendCount: number, recipientCount: number }>();
 
@@ -85,8 +85,8 @@ export async function POST(request: NextRequest) {
       try {
         // 检查是否已经发送过相同的邮件
         const contentHash = require('crypto').createHash('md5').update(email.content).digest('hex');
-        
-        const { data: existingEmail } = await supabase
+
+        const { data: existingEmail } = await supabaseAdmin
           .from('customer_emails')
           .select('id')
           .eq('to_email', email.recipient)
@@ -97,23 +97,23 @@ export async function POST(request: NextRequest) {
 
         if (existingEmail) {
           console.log('邮件已发送过，跳过重复发送:', { recipient: email.recipient, subject: email.subject });
-          
+
           // 更新队列状态为已发送
-          await supabase
+          await supabaseAdmin
             .from('email_queue')
-            .update({ 
+            .update({
               status: 'sent',
               processed_at: new Date().toISOString()
             })
             .eq('id', email.id);
-          
+
           continue; // 跳过这个邮件
         }
 
         // 更新状态为处理中
-        await supabase
+        await supabaseAdmin
           .from('email_queue')
-          .update({ 
+          .update({
             status: 'processing',
             processed_at: new Date().toISOString()
           })
@@ -122,10 +122,10 @@ export async function POST(request: NextRequest) {
         // 直接发送邮件
         try {
           const result = await sendSingleEmail(email.recipient, email.subject, email.content);
-          
+
           // 记录发送的邮件到customer_emails表
           const applicantId = await recordSentEmail(email.recipient, email.subject, email.content, email.approval_id, result.id);
-          
+
           // 统计申请人的发送情况
           if (applicantId) {
             if (!applicantStats.has(applicantId)) {
@@ -134,11 +134,11 @@ export async function POST(request: NextRequest) {
             const stats = applicantStats.get(applicantId)!;
             stats.recipientCount += 1; // 每个成功发送的邮件，收件人数+1
           }
-          
+
           // 发送成功
-          await supabase
+          await supabaseAdmin
             .from('email_queue')
-            .update({ 
+            .update({
               status: 'sent',
               processed_at: new Date().toISOString()
             })
@@ -154,9 +154,9 @@ export async function POST(request: NextRequest) {
         } catch (sendError) {
           // 发送失败
           const errorMessage = sendError instanceof Error ? sendError.message : '未知错误';
-          await supabase
+          await supabaseAdmin
             .from('email_queue')
-            .update({ 
+            .update({
               status: 'failed',
               error_message: errorMessage,
               retry_count: email.retry_count + 1,
@@ -174,12 +174,12 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error(`处理邮件 ${email.id} 失败:`, error);
-        
+
         // 确保邮件状态被正确更新，避免卡在处理中状态
         try {
-          await supabase
+          await supabaseAdmin
             .from('email_queue')
-            .update({ 
+            .update({
               status: 'failed',
               error_message: '处理过程中发生异常',
               retry_count: email.retry_count + 1,
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
         } catch (updateError) {
           console.error(`更新邮件 ${email.id} 状态失败:`, updateError);
         }
-        
+
         failCount++;
         results.push({
           id: email.id,
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
     // email_send_count 和 email_recipient_count 字段会自动计算
 
     // 检查是否还有待处理的邮件，如果有则继续处理
-    const { data: remainingEmails } = await supabase
+    const { data: remainingEmails } = await supabaseAdmin
       .from('email_queue')
       .select('id')
       .eq('status', 'pending')
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
 async function recordSentEmail(toEmail: string, subject: string, content: string, approvalId: string, messageId: string): Promise<string | null> {
   try {
     // 查找对应的客户
-    const { data: customer, error: customerError } = await supabase
+    const { data: customer, error: customerError } = await supabaseAdmin
       .from('customers')
       .select('id')
       .eq('email', toEmail)
@@ -247,8 +247,8 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
 
     // 修改重复检查逻辑：基于客户ID、收件人、主题和内容哈希
     const contentHash = require('crypto').createHash('md5').update(content).digest('hex');
-    
-    const { data: existingRecord } = await supabase
+
+    const { data: existingRecord } = await supabaseAdmin
       .from('customer_emails')
       .select('id')
       .eq('customer_id', customer.id)
@@ -264,7 +264,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     }
 
     // 获取审核申请信息以获取申请人ID
-    const { data: approval, error: approvalError } = await supabase
+    const { data: approval, error: approvalError } = await supabaseAdmin
       .from('email_approvals')
       .select('applicant_id')
       .eq('id', approvalId)
@@ -276,7 +276,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     }
 
     // 获取发送者的邮箱
-    const { data: senderUser } = await supabase
+    const { data: senderUser } = await supabaseAdmin
       .from('users')
       .select('email')
       .eq('id', approval.applicant_id)
@@ -285,7 +285,7 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
     const fromEmail = senderUser?.email || process.env.SENDGRID_FROM_EMAIL || 'noreply@example.com';
 
     // 插入发送的邮件记录
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseAdmin
       .from('customer_emails')
       .insert({
         customer_id: customer.id,
@@ -312,4 +312,3 @@ async function recordSentEmail(toEmail: string, subject: string, content: string
   }
 }
 
- 
