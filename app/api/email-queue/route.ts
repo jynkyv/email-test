@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // 添加邮件到队列
 export async function POST(request: NextRequest) {
@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { approvalId } = body;
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取审核申请详情
-    const { data: approval, error: approvalError } = await supabase
+    const { data: approval, error: approvalError } = await supabaseAdmin
       .from('email_approvals')
       .select('*')
       .eq('id', approvalId)
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 使用事务确保队列添加和状态更新的原子性
-    const { data: queueData, error: queueError } = await supabase.rpc('add_emails_to_queue_and_update_approval', {
+    const { data: queueData, error: queueError } = await supabaseAdmin.rpc('add_emails_to_queue_and_update_approval', {
       p_approval_id: approvalId,
       p_approver_id: userId,
       p_recipients: approval.recipients,
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const approvalId = searchParams.get('approvalId');
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { error: '未授权访问' },
@@ -108,9 +108,9 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = authHeader.replace('Bearer ', '');
-    
+
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 获取队列状态
-    const { data: queueItems, error: queueError } = await supabase
+    const { data: queueItems, error: queueError } = await supabaseAdmin
       .from('email_queue')
       .select('*')
       .eq('approval_id', approvalId)
