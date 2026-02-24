@@ -39,7 +39,7 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
             .from('users')
             .select('*')
             .or(`username.eq.${accountParam},email.eq.${accountParam}`)
-            .single();
+            .maybeSingle();
 
           if (!error && userData) {
             setUser(userData);
