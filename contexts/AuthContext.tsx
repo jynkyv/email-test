@@ -1,23 +1,25 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useSearchParams } from 'next/navigation';
 
 interface AuthContextType {
   user: any | null;
   userRole: string | null;
   loading: boolean;
-  signIn: (username: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// 提取实际的 Provider 逻辑到内部组件
+function AuthProviderInner({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setMounted(true);
@@ -26,57 +28,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
 
-    // 检查本地存储的会话 - 优化为同步执行
-    try {
-      const session = localStorage.getItem('user_session');
-      if (session) {
-        const userData = JSON.parse(session);
-        setUser(userData);
-        setUserRole(userData.role);
+    const setupAuth = async () => {
+      setLoading(true);
+      try {
+        const accountParam = searchParams.get('account');
+
+        if (accountParam) {
+          console.log(`Authenticating via query param: ${accountParam}`);
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', accountParam)
+            .single();
+
+          if (!error && userData) {
+            setUser(userData);
+            setUserRole(userData.role);
+            localStorage.setItem('user_session', JSON.stringify(userData));
+          } else {
+            console.error('User not found for account param:', accountParam);
+            setUser(null);
+            setUserRole(null);
+            localStorage.removeItem('user_session');
+          }
+        } else {
+          const session = localStorage.getItem('user_session');
+          if (session) {
+            const userData = JSON.parse(session);
+            setUser(userData);
+            setUserRole(userData.role);
+          } else {
+            setUser(null);
+            setUserRole(null);
+          }
+        }
+      } catch (error) {
+        console.error('Error during authentication setup:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error checking session:', error);
-      localStorage.removeItem('user_session');
-    } finally {
-      setLoading(false);
-    }
-  }, [mounted]);
+    };
 
-  const signIn = async (username: string, password: string) => {
-    try {
-      console.log('尝试登录:', username);
-      
-      // 从数据库验证用户
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('username', username)
-        .single();
-
-      console.log('查询结果:', userData, userError);
-
-      if (userError || !userData) {
-        console.log('用户不存在');
-        return { error: { message: 'User not found' } };
-      }
-
-      // 这里应该验证密码，但为了简化，我们暂时跳过密码验证
-      // 在实际应用中，你应该使用 bcrypt 或其他加密方式
-      console.log('用户验证成功:', userData);
-
-      // 保存用户信息到本地存储
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user_session', JSON.stringify(userData));
-      }
-      setUser(userData);
-      setUserRole(userData.role);
-
-      return { data: userData };
-    } catch (error) {
-      console.error('登录错误:', error);
-      return { error: { message: 'Login failed' } };
-    }
-  };
+    setupAuth();
+  }, [mounted, searchParams]);
 
   const signOut = async () => {
     if (typeof window !== 'undefined') {
@@ -87,9 +81,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, userRole, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, userRole, loading, signOut }}>
       {children}
     </AuthContext.Provider>
+  );
+}
+
+// 导出的外层包装器，使用 Suspense 捕获 searchParams
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div>Loading authentication...</div>}>
+      <AuthProviderInner>
+        {children}
+      </AuthProviderInner>
+    </Suspense>
   );
 }
 

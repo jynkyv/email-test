@@ -5,26 +5,26 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { useRouter } from 'next/navigation';
 import { htmlToText, textToHtml } from '@/lib/utils';
-import { 
-  Card, 
-  Table, 
-  Button, 
-  Space, 
-  Tag, 
-  message, 
-  Modal, 
-  Form, 
-  Input, 
+import {
+  Card,
+  Table,
+  Button,
+  Space,
+  Tag,
+  message,
+  Modal,
+  Form,
+  Input,
   Progress,
   Spin,
   Tooltip,
   Popconfirm,
   Switch
 } from 'antd';
-import { 
-  CheckOutlined, 
-  CloseOutlined, 
-  EditOutlined, 
+import {
+  CheckOutlined,
+  CloseOutlined,
+  EditOutlined,
   EyeOutlined,
   ClockCircleOutlined,
   CodeOutlined,
@@ -63,38 +63,38 @@ export default function ApprovalsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
-  
+
   // 自动审核相关状态
   const [autoApproveEnabled, setAutoApproveEnabled] = useState(false);
   const [autoApproveInterval, setAutoApproveInterval] = useState<NodeJS.Timeout | null>(null);
   const [nextAutoApproveTime, setNextAutoApproveTime] = useState<Date | null>(null);
   const [autoApproveCount, setAutoApproveCount] = useState(0);
   const [isAutoProcessing, setIsAutoProcessing] = useState(false);
-  
+
   // 新增：倒计时更新触发器
   const [countdownTrigger, setCountdownTrigger] = useState(0);
-  
+
   // 详情弹窗相关状态
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm] = Form.useForm();
   const [updating, setUpdating] = useState(false);
-  
+
   // 发送进度相关状态
   const [sendingProgress, setSendingProgress] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
   const [sentCount, setSentCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [sendingResults, setSendingResults] = useState<any[]>([]);
-  
+
   // 筛选相关状态
   const [applicantName, setApplicantName] = useState('');
 
   // 自动审核处理函数
   const processNextPendingApproval = async () => {
     if (!user || user.role !== 'admin') return;
-    
+
     setIsAutoProcessing(true);
     try {
       // 调用专门的自动审核API
@@ -104,17 +104,17 @@ export default function ApprovalsPage() {
           'Authorization': `Bearer ${user?.id}`,
         },
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         console.log('自动审核完成:', data.message);
-        
+
         // 检查是否有处理的项目
         if (data.processed > 0) {
           // 更新计数
           setAutoApproveCount(prev => prev + data.processed);
-          
+
           // 刷新当前页面的列表
           await fetchApprovals(currentPage, pageSize);
         } else {
@@ -128,7 +128,7 @@ export default function ApprovalsPage() {
         console.error('自动审核失败:', data.error);
         message.error(data.error || t('approval.autoApproveFailed'));
       }
-      
+
     } catch (error) {
       console.error('Auto approval failed:', error);
       message.error(t('approval.autoApproveFailed'));
@@ -143,29 +143,29 @@ export default function ApprovalsPage() {
       message.error(t('approval.adminOnly'));
       return;
     }
-    
+
     setAutoApproveEnabled(true);
     setAutoApproveCount(0);
-    
+
     // 立即执行一次
     processNextPendingApproval();
-    
+
     // 设置下次执行时间（立即设置）
     const nextTime = new Date(Date.now() + 10 * 60 * 1000);
     setNextAutoApproveTime(nextTime);
-    
+
     // 设置10分钟间隔
     const interval = setInterval(() => {
       // 执行处理
       processNextPendingApproval();
-      
+
       // 执行完成后更新下次执行时间
       const newNextTime = new Date(Date.now() + 10 * 60 * 1000);
       setNextAutoApproveTime(newNextTime);
     }, 10 * 60 * 1000); // 10分钟
-    
+
     setAutoApproveInterval(interval);
-    
+
     message.success(t('approval.autoApproveStart'));
   };
 
@@ -183,26 +183,26 @@ export default function ApprovalsPage() {
   // 格式化剩余时间
   const formatTimeRemaining = () => {
     if (!nextAutoApproveTime) return '';
-    
+
     const now = new Date();
     const diff = nextAutoApproveTime.getTime() - now.getTime();
-    
+
     if (diff <= 0) return '即将执行';
-    
+
     const minutes = Math.floor(diff / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
+
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   // 更新剩余时间显示 - 简化版本
   useEffect(() => {
     if (!autoApproveEnabled || !nextAutoApproveTime) return;
-    
+
     const timer = setInterval(() => {
       setCountdownTrigger(prev => prev + 1);
     }, 1000);
-    
+
     return () => clearInterval(timer);
   }, [autoApproveEnabled, nextAutoApproveTime]);
 
@@ -211,12 +211,12 @@ export default function ApprovalsPage() {
     setLoading(true);
     try {
       let url = `/api/email-approvals?page=${page}&pageSize=${size}`;
-      
+
       // 添加申请人名称筛选参数
       if (applicantName.trim()) {
         url += `&applicantName=${encodeURIComponent(applicantName.trim())}`;
       }
-      
+
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${user?.id}`,
@@ -305,13 +305,13 @@ export default function ApprovalsPage() {
         },
       });
       const detailData = await detailResponse.json();
-      
+
       if (detailData.success) {
         const recipients = detailData.approval.recipients;
         setTotalCount(recipients.length);
         setSentCount(0);
         setProgressPercent(0);
-        
+
         // 设置初始状态为待发送
         const initialResults = recipients.map((recipient: string) => ({
           email: recipient,
@@ -321,7 +321,7 @@ export default function ApprovalsPage() {
         }));
         setSendingResults(initialResults);
         setSendingProgress(true);
-        
+
         // 添加邮件到队列
         const queueResponse = await fetch('/api/email-queue', {
           method: 'POST',
@@ -347,18 +347,18 @@ export default function ApprovalsPage() {
                 'Authorization': `Bearer ${user?.id}`,
               },
             });
-            
+
             const statusData = await statusResponse.json();
             if (statusData.success) {
               const { stats, queue } = statusData;
               setProgressPercent(stats.progress);
               setSentCount(stats.sent);
-              
+
               // 更新发送结果
               const results = queue.map((item: any) => {
                 let status = 'pending';
                 let error = null;
-                
+
                 if (item.status === 'sent') {
                   status = 'success';
                 } else if (item.status === 'failed') {
@@ -367,7 +367,7 @@ export default function ApprovalsPage() {
                 } else if (item.status === 'processing') {
                   status = 'processing';
                 }
-                
+
                 return {
                   email: item.recipient,
                   success: item.status === 'sent',
@@ -408,7 +408,7 @@ export default function ApprovalsPage() {
                 'Authorization': `Bearer ${user?.id}`,
               },
             });
-            
+
             const processData = await processResponse.json();
             if (processData.success && processData.hasRemaining) {
               // 如果还有待处理的邮件，继续处理
@@ -421,7 +421,7 @@ export default function ApprovalsPage() {
             console.error('Queue processing failed:', error);
           }
         };
-        
+
         // 启动队列处理
         processQueue();
 
@@ -488,7 +488,7 @@ export default function ApprovalsPage() {
     setSelectedApproval(approval);
     setIsEditing(false);
     setDetailModalVisible(true);
-    
+
     // 直接使用原始内容，保持HTML标签
     editForm.setFieldsValue({
       subject: approval.subject,
@@ -530,23 +530,6 @@ export default function ApprovalsPage() {
     setCurrentPage(1);
     fetchApprovals(1, pageSize);
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && !authLoading && !user) {
-      console.log('User not logged in, redirecting to login page');
-      router.push('/login');
-    }
-  }, [mounted, authLoading, user, router]);
-
-  useEffect(() => {
-    if (user) {
-      fetchApprovals();
-    }
-  }, [user]);
 
   // 表格列定义
   const columns = [
@@ -607,7 +590,7 @@ export default function ApprovalsPage() {
               onClick={() => handleShowDetail(record)}
             />
           </Tooltip>
-          
+
           {user?.role === 'admin' && record.status === 'pending' && (
             <>
               <Tooltip title={t('approval.edit')}>
@@ -663,13 +646,18 @@ export default function ApprovalsPage() {
     );
   }
 
-  // 如果用户未登录，显示重定向信息
+  // 如果用户未登录，提示使用 URL 参数登录
   if (!user) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <Spin />
-          <p className="text-gray-600 mt-4">{t('auth.redirectingToLogin')}</p>
+        <div className="text-center p-8 bg-gray-50 rounded-lg shadow-sm border border-gray-100 max-w-md">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">未检测到登录身份</h2>
+          <p className="text-gray-600 mb-6">
+            系统已切换为 URL 参数登录模式。请在请求地址后添加 <code>?account=你的用户名</code> 以访问系统。
+          </p>
+          <div className="bg-gray-200 p-3 rounded text-sm text-left text-gray-700 font-mono overflow-x-auto">
+            示例: https://.../approvals?account=admin
+          </div>
         </div>
       </div>
     );
@@ -719,7 +707,7 @@ export default function ApprovalsPage() {
                     size="small"
                   />
                 </div>
-                
+
                 {autoApproveEnabled && (
                   <div className="flex items-center space-x-3 text-xs">
                     <div className="flex items-center space-x-1">
@@ -732,7 +720,7 @@ export default function ApprovalsPage() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="text-xs text-gray-500">
                   {t('approval.autoApproveInterval')}
                 </div>
@@ -754,8 +742,8 @@ export default function ApprovalsPage() {
               showQuickJumper: {
                 goButton: true
               },
-              showTotal: (total, range) => 
-                t('common.totalRecords', { total }) + 
+              showTotal: (total, range) =>
+                t('common.totalRecords', { total }) +
                 ` (${range[0]}-${range[1]})`,
               onChange: (page, size) => fetchApprovals(page, size || 50),
               itemRender: (page, type, originalElement) => {
@@ -858,8 +846,8 @@ export default function ApprovalsPage() {
                     }
                     rules={[{ required: true, message: t('email.contentRequired') }]}
                   >
-                    <TextArea 
-                      rows={8} 
+                    <TextArea
+                      rows={8}
                       placeholder="支持HTML标签，可以直接编辑HTML内容..."
                       maxLength={10000}
                     />
@@ -879,7 +867,7 @@ export default function ApprovalsPage() {
                         if (selectedApproval?.content.includes('<') && selectedApproval?.content.includes('>')) {
                           // 复杂HTML内容使用dangerouslySetInnerHTML
                           return (
-                            <div 
+                            <div
                               className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-strong:text-gray-900 prose-code:text-gray-800 prose-img:my-0 prose-img:mx-0"
                               dangerouslySetInnerHTML={{ __html: selectedApproval.content }}
                             />
@@ -939,15 +927,15 @@ export default function ApprovalsPage() {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-medium">{t('email.sending')}</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>{t('email.progress')}</span>
                     <span>{sentCount} / {totalCount}</span>
                   </div>
-                  <Progress 
-                    percent={progressPercent} 
+                  <Progress
+                    percent={progressPercent}
                     status={progressPercent === 100 ? 'success' : 'active'}
                     strokeColor={{
                       '0%': '#108ee9',
@@ -955,7 +943,7 @@ export default function ApprovalsPage() {
                     }}
                   />
                 </div>
-                
+
                 {sendingResults.length > 0 && (
                   <div className="max-h-32 overflow-y-auto">
                     <div className="text-sm font-medium mb-2">{t('email.sentResults')}:</div>

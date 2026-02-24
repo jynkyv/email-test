@@ -4,10 +4,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { Layout, Menu, Button, message } from 'antd';
-import { 
-  MailOutlined, 
-  UserOutlined, 
-  TeamOutlined, 
+import {
+  MailOutlined,
+  UserOutlined,
+  TeamOutlined,
   LogoutOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
@@ -24,12 +24,6 @@ export default function AppHeader({ children }: HeaderProps) {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-
-  const handleSignOut = () => {
-    signOut();
-    message.success(t('auth.logoutSuccess'));
-    router.push('/login');
-  };
 
   const getActiveKey = () => {
     if (pathname === '/') return 'email';
@@ -96,16 +90,7 @@ export default function AppHeader({ children }: HeaderProps) {
           {user?.username} ({userRole === 'admin' ? t('auth.admin') : t('auth.employee')})
         </span>
         <LanguageSwitcher />
-        <Button
-          type="text"
-          icon={<LogoutOutlined />}
-          onClick={handleSignOut}
-          className="text-red-600 hover:text-red-800"
-        >
-          {t('auth.logout')}
-        </Button>
       </div>
-    </Header>
+    </Header >
   );
 }
-

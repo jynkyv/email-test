@@ -18,18 +18,11 @@ export default function UsersPage() {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (mounted && !loading && !user) {
-      console.log('User not logged in, redirecting to login page');
-      router.push('/login');
-    }
-  }, [mounted, loading, user, router]);
-
   // 检查管理员权限
   useEffect(() => {
     if (mounted && !loading && user && userRole !== 'admin') {
       // message.error(t('auth.accessDenied')); // Original code had this line commented out
-      router.push('/');
+      router.push('/?account=' + user.username);
     }
   }, [mounted, loading, user, userRole, router, t]);
 
@@ -45,13 +38,18 @@ export default function UsersPage() {
     );
   }
 
-  // 如果用户未登录，显示重定向信息
+  // 如果用户未登录，提示使用 URL 参数登录
   if (!user) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <Spin />
-          <p className="text-gray-600 mt-4">{t('auth.redirectingToLogin')}</p>
+        <div className="text-center p-8 bg-gray-50 rounded-lg shadow-sm border border-gray-100 max-w-md">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">未检测到登录身份</h2>
+          <p className="text-gray-600 mb-6">
+            系统已切换为 URL 参数登录模式。请在请求地址后添加 <code>?account=你的用户名</code> 以访问系统。
+          </p>
+          <div className="bg-gray-200 p-3 rounded text-sm text-left text-gray-700 font-mono overflow-x-auto">
+            示例: https://.../users?account=admin
+          </div>
         </div>
       </div>
     );
