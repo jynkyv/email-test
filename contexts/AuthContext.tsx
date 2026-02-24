@@ -38,7 +38,7 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
           const { data: userData, error } = await supabase
             .from('users')
             .select('*')
-            .eq('username', accountParam)
+            .or(`username.eq.${accountParam},email.eq.${accountParam}`)
             .single();
 
           if (!error && userData) {
