@@ -91,6 +91,18 @@ export default function ApprovalsPage() {
   // 筛选相关状态
   const [applicantName, setApplicantName] = useState('');
 
+  // 挂载处理
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 初始数据获取
+  useEffect(() => {
+    if (mounted && !authLoading && user) {
+      fetchApprovals(1, pageSize);
+    }
+  }, [mounted, authLoading, user, pageSize]);
+
   // 自动审核处理函数
   const processNextPendingApproval = async () => {
     if (!user || user.role !== 'admin') return;
