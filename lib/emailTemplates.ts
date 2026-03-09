@@ -356,7 +356,19 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
-
+ <!-- Header/Intro Text -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
+            <tr>
+                <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
+                    <p>ご担当者様</p>
+                    <p>突然のご連絡失礼いたします。<br>
+                    中国の送出機関【福州亜麟創新科技有限公司】でございます。</p>
+                    <p>このたび、日頃のご協力への感謝を込め、<br>
+                    監理団体様·受入企業様向けに、<br>
+                    「ご紹介1名につき20万円の紹介謝礼」制度を実施する運びとなりました。</p>
+                </td>
+            </tr>
+        </table>
         <!-- Main Image -->
         <a href="https://yalin.asia" target="_blank">
         <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
