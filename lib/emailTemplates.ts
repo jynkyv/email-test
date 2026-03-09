@@ -351,7 +351,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     {
         id: 'yalin',
         name: 'Yalin',
-        subject: '【送出機関】ご紹介1名につき20万円成功報酬キャンペーンのご案内',
+        subject: '【送出機関】中国技能実習生受入れ先紹介のご依頼（謝礼20万円）',
         content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
