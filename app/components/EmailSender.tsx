@@ -22,7 +22,8 @@ import {
   DatePicker,
   Select,
   Tooltip,
-  Tabs
+  Tabs,
+  Badge
 } from 'antd';
 import {
   SendOutlined,
@@ -80,6 +81,13 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   // HTML内容相关状态
   const [isHtmlContent, setIsHtmlContent] = useState(false);
+
+  // 分组发送相关状态
+  const [activeTab, setActiveTab] = useState('normal');
+  const [groups, setGroups] = useState<any[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [loadingGroups, setLoadingGroups] = useState(false);
+  const [isGeneratingGroups, setIsGeneratingGroups] = useState(false);
 
   // 模板相关状态
 
@@ -402,6 +410,59 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     fetchCustomers(1, 100, 'company_name', '');
   };
 
+  // 获取分组
+  const fetchGroups = async () => {
+    setLoadingGroups(true);
+    try {
+      const response = await fetch('/api/customer-groups', {
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setGroups(data.groups || []);
+      }
+    } catch (error) {
+      console.error('获取分组失败', error);
+      message.error('获取客户分组失败');
+    } finally {
+      setLoadingGroups(false);
+    }
+  };
+
+  // 生成分组
+  const handleGenerateGroups = async () => {
+    setIsGeneratingGroups(true);
+    try {
+      const response = await fetch('/api/customer-groups/generate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user?.id}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        message.success(data.message);
+        fetchGroups();
+      } else {
+        message.error(data.error || '生成分组失败');
+      }
+    } catch (error) {
+      console.error('生成分组异常', error);
+      message.error('生成分组失败');
+    } finally {
+      setIsGeneratingGroups(false);
+    }
+  };
+
+  // 监听 Tab 切换获取分组数据
+  useEffect(() => {
+    if (activeTab === 'group' && groups.length === 0) {
+      fetchGroups();
+    }
+  }, [activeTab]);
+
   // 处理模板选择
   const handleTemplateSelect = (template: EmailTemplate) => {
     // 获取当前HTML编辑框的内容
@@ -562,6 +623,60 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
     }
   };
 
+  // 提交群组批量发送
+  const handleGroupSubmit = async () => {
+    const values = form.getFieldsValue();
+    if (!values.subject?.trim() || !values.content?.trim()) {
+      message.error(t('email.subjectRequired') + ' ' + t('email.contentRequired'));
+      return;
+    }
+
+    if (!selectedGroupId) {
+      message.error('请选择收件人分组');
+      return;
+    }
+
+    setIsSending(true);
+
+    let htmlContent;
+    if (isHtmlContent || (values.content?.includes('<') && values.content?.includes('>'))) {
+      htmlContent = values.content;
+    } else {
+      htmlContent = textToHtml(values.content || '');
+    }
+
+    try {
+      const response = await fetch('/api/email-approvals/batch-create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.id}`,
+        },
+        body: JSON.stringify({
+          groupId: selectedGroupId,
+          subject: values.subject,
+          content: htmlContent,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        message.success(result.message || '群组批量审核申请提交成功');
+        form.resetFields();
+        setSelectedGroupId(null);
+        onSendComplete?.();
+      } else {
+        message.error(result.error || '群组批量审核申请提交失败');
+      }
+    } catch (error) {
+      console.error('Failed to submit group batch:', error);
+      message.error('群组批量审核申请提交失败');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // 渲染收件人标签
   const renderRecipientTags = () => {
     if (selectedCustomers.length === 0) return null;
@@ -652,121 +767,242 @@ export default function EmailSender({ replyData, onSendComplete }: EmailSenderPr
 
   return (
     <Card title={t('email.bulkEmail')} className="h-full">
-      <Form
-        form={form}
-        onFinish={handleSubmit}
-        layout="vertical"
-        className="h-full flex flex-col"
-      >
-        <div className="flex-1 space-y-4">
-          <Form.Item
-            name="to"
-            label={t('email.recipientList')}
-          >
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <Button
-                  type="primary"
-                  icon={<TeamOutlined />}
-                  onClick={handleOpenCustomerModal}
-                  className="flex-shrink-0"
-                >
-                  {t('email.selectCustomers')}
-                </Button>
-                {selectedCustomers.length > 0 && (
-                  <span className="text-sm text-gray-600 self-center">
-                    {t('customer.customersSelected', { count: selectedCustomers.length })} / 100
-                  </span>
-                )}
-              </div>
-              {renderRecipientTags()}
-            </div>
-          </Form.Item>
+      <Tabs activeKey={activeTab} onChange={setActiveTab} className="mb-4">
+        <TabPane tab="常规群发 (上限100人)" key="normal" />
+        <TabPane tab="分组群发 (自动分批)" key="group" />
+      </Tabs>
 
-          <Form.Item
-            name="subject"
-            label={t('email.emailSubject')}
-            rules={[{ required: true, message: t('email.subjectRequired') }]}
-          >
-            <Input placeholder={t('email.subjectPlaceholder')} />
-          </Form.Item>
-
-          <Form.Item
-            name="content"
-            label={
-              <div className="flex items-center justify-between">
-                <span>{t('email.emailContent')}</span>
-                <div className="flex items-center gap-2 ml-2">
-                  {isHtmlContent && (
-                    <Tooltip title={t('email.htmlContentDetected')}>
-                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                        HTML
-                      </span>
-                    </Tooltip>
-                  )}
-                  <Tooltip title={t('email.htmlSupported')}>
-                    <CodeOutlined className="text-blue-500" />
-                  </Tooltip>
-                </div>
-              </div>
-            }
-            rules={[{ required: true, message: t('email.contentRequired') }]}
-            className="flex-1"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <EditOutlined />
-                  <span>HTML编辑</span>
-                </div>
-                <div className="flex items-center gap-2">
-
+      {activeTab === 'normal' && (
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+          className="h-full flex flex-col"
+        >
+          <div className="flex-1 space-y-4">
+            <Form.Item
+              name="to"
+              label={t('email.recipientList')}
+            >
+              <div className="space-y-2">
+                <div className="flex gap-2">
                   <Button
-                    type="default"
-                    icon={<TemplateOutlined />}
-                    onClick={() => setShowTemplateModal(true)}
-                    size="small"
+                    type="primary"
+                    icon={<TeamOutlined />}
+                    onClick={handleOpenCustomerModal}
+                    className="flex-shrink-0"
                   >
-                    {t('email.insertTemplate')}
+                    {t('email.selectCustomers')}
                   </Button>
+                  {selectedCustomers.length > 0 && (
+                    <span className="text-sm text-gray-600 self-center">
+                      {t('customer.customersSelected', { count: selectedCustomers.length })} / 100
+                    </span>
+                  )}
                 </div>
+                {renderRecipientTags()}
               </div>
-              <Form.Item name="content" noStyle>
-                <TextArea
-                  rows={12}
-                  placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
-                  showCount
-                  maxLength={100000}
-                  onChange={(e) => {
-                    // 检测用户输入的内容是否包含HTML标签
-                    const content = e.target.value;
-                    const hasHtmlTags = content.includes('<') && content.includes('>');
-                    if (hasHtmlTags && !isHtmlContent) {
-                      setIsHtmlContent(true);
-                    }
-                  }}
-                />
-              </Form.Item>
-            </div>
+            </Form.Item>
+
+            <Form.Item
+              name="subject"
+              label={t('email.emailSubject')}
+              rules={[{ required: true, message: t('email.subjectRequired') }]}
+            >
+              <Input placeholder={t('email.subjectPlaceholder')} />
+            </Form.Item>
+
+            <Form.Item
+              name="content"
+              label={
+                <div className="flex items-center justify-between">
+                  <span>{t('email.emailContent')}</span>
+                  <div className="flex items-center gap-2 ml-2">
+                    {isHtmlContent && (
+                      <Tooltip title={t('email.htmlContentDetected')}>
+                        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                          HTML
+                        </span>
+                      </Tooltip>
+                    )}
+                    <Tooltip title={t('email.htmlSupported')}>
+                      <CodeOutlined className="text-blue-500" />
+                    </Tooltip>
+                  </div>
+                </div>
+              }
+              rules={[{ required: true, message: t('email.contentRequired') }]}
+              className="flex-1"
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <EditOutlined />
+                    <span>HTML编辑</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+
+                    <Button
+                      type="default"
+                      icon={<TemplateOutlined />}
+                      onClick={() => setShowTemplateModal(true)}
+                      size="small"
+                    >
+                      {t('email.insertTemplate')}
+                    </Button>
+                  </div>
+                </div>
+                <Form.Item name="content" noStyle>
+                  <TextArea
+                    rows={12}
+                    placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
+                    showCount
+                    maxLength={100000}
+                    onChange={(e) => {
+                      // 检测用户输入的内容是否包含HTML标签
+                      const content = e.target.value;
+                      const hasHtmlTags = content.includes('<') && content.includes('>');
+                      if (hasHtmlTags && !isHtmlContent) {
+                        setIsHtmlContent(true);
+                      }
+                    }}
+                  />
+                </Form.Item>
+              </div>
+            </Form.Item>
+          </div>
+
+          <Divider />
+
+          <Form.Item className="mb-0">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSending}
+              icon={<SendOutlined />}
+              size="large"
+              block
+              disabled={false}
+            >
+              {isSending ? t('email.submitting') : t('email.submitForApproval')}
+            </Button>
           </Form.Item>
-        </div>
+        </Form>
+      )}
 
-        <Divider />
+      {activeTab === 'group' && (
+        <Form
+          form={form}
+          onFinish={handleGroupSubmit}
+          layout="vertical"
+          className="h-full flex flex-col"
+        >
+          <div className="flex-1 space-y-4">
+            <Form.Item label="选择客户分组" required>
+              <div className="flex gap-4 items-center">
+                <Select
+                  placeholder="选择要发送的分组"
+                  value={selectedGroupId}
+                  onChange={setSelectedGroupId}
+                  style={{ width: 300 }}
+                  loading={loadingGroups}
+                  options={groups.map(g => ({
+                    label: `${g.name} (共 ${g.count} 人)`,
+                    value: g.id
+                  }))}
+                />
+                <Button
+                  onClick={handleGenerateGroups}
+                  loading={isGeneratingGroups}
+                >
+                  重新生成分组
+                </Button>
+              </div>
+              <div className="mt-2 text-sm text-gray-500">
+                会自动将选中分组内的客户按照 100 人一批，生成批量审核任务。
+              </div>
+            </Form.Item>
 
-        <Form.Item className="mb-0">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={isSending}
-            icon={<SendOutlined />}
-            size="large"
-            block
-            disabled={false}
-          >
-            {isSending ? t('email.submitting') : t('email.submitForApproval')}
-          </Button>
-        </Form.Item>
-      </Form>
+            <Form.Item
+              name="subject"
+              label={t('email.emailSubject')}
+              rules={[{ required: true, message: t('email.subjectRequired') }]}
+            >
+              <Input placeholder={t('email.subjectPlaceholder')} />
+            </Form.Item>
+
+            <Form.Item
+              name="content"
+              label={
+                <div className="flex items-center justify-between">
+                  <span>{t('email.emailContent')}</span>
+                  <div className="flex items-center gap-2 ml-2">
+                    {isHtmlContent && (
+                      <Tooltip title={t('email.htmlContentDetected')}>
+                        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                          HTML
+                        </span>
+                      </Tooltip>
+                    )}
+                    <Tooltip title={t('email.htmlSupported')}>
+                      <CodeOutlined className="text-blue-500" />
+                    </Tooltip>
+                  </div>
+                </div>
+              }
+              rules={[{ required: true, message: t('email.contentRequired') }]}
+              className="flex-1"
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <EditOutlined />
+                    <span>HTML编辑</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="default"
+                      icon={<TemplateOutlined />}
+                      onClick={() => setShowTemplateModal(true)}
+                      size="small"
+                    >
+                      {t('email.insertTemplate')}
+                    </Button>
+                  </div>
+                </div>
+                <Form.Item name="content" noStyle>
+                  <TextArea
+                    rows={12}
+                    placeholder={isHtmlContent ? t('email.htmlContentPlaceholder') : t('email.contentPlaceholderWithHtml')}
+                    showCount
+                    maxLength={100000}
+                    onChange={(e) => {
+                      const content = e.target.value;
+                      const hasHtmlTags = content.includes('<') && content.includes('>');
+                      if (hasHtmlTags && !isHtmlContent) {
+                        setIsHtmlContent(true);
+                      }
+                    }}
+                  />
+                </Form.Item>
+              </div>
+            </Form.Item>
+          </div>
+          <Divider />
+          <Form.Item className="mb-0">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSending}
+              icon={<SendOutlined />}
+              size="large"
+              block
+            >
+              {isSending ? '提交中...' : '提交群发审核'}
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
 
       {/* 模板预览模态框 */}
       <Modal
