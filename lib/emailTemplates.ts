@@ -347,6 +347,79 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
 </table>`,
         description: '完全な HTML 構造と画像が含まれるデフォルトの電子メール テンプレートを使用します。',
         category: 'default'
+    }
+    , {
+        id: 'family-2026',
+        name: 'family-2026',
+        subject: 'Family協同組合——外国人材採用初期費用減免',
+        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <tr>
+      <td align="center" style="padding:0; ">
+ <!-- Header/Intro Text -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
+            <tr>
+                <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
+                    <p>いつもお世話になっております。<br>
+                    Family協同組合でございます。</p>
+                    <p>現在、多くの企業様が人手不足に直面している中、外国人材の採用をご検討されている企業様も増えております。一方で、「初期コスト」や「煩雑な行政手続き」に不安を感じていらっしゃる企業様も多いのではないでしょうか。</p>
+                    <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を減免する特別な取り組みを実施しております。</p>
+                    <p>本取り組みでは、<br>
+                    ・採用までの初期費用を大幅に軽減<br>
+                    ・煩雑な行政手続きを当組合が一括サポート<br>
+                    ・入国前に約4カ月間の質の高い教育を実施</p>
+                    <p>など、企業様が安心して外国人材を受け入れていただける体制を整えております。</p>
+                    <p>もしご興味がございましたら、詳細資料の送付やオンラインでのご説明も可能でございます。<br>
+                    何卒ご検討のほど、よろしくお願い申し上げます。</p>
+                </td>
+            </tr>
+        </table>
+        <!-- Main Image -->
+        <a href="https://yalin.asia" target="_blank">
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/yalin-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        </a>
+        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+<tr>
+  <td align="center" style="padding:0; ">
+    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、資料の送付も可能です。<br>
+何卒ご検討のほど、よろしくお願い申し上げます。</div>
+  </td>
+</tr>
+<tr>
+  <td align="center" style="padding:0; ">
+    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
+  </td>
+</tr>
+</table>
+        <!-- Family Footer -->
+        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
+          <tr>
+            <td align="center" style="padding:0;">
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
+                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
+                </p>
+                <p style="margin:0 0 10px 0;">
+                  <span style="font-size:17px">Family協同組合</span><br>
+                  担当:菅原 　日本語・中国語・英語・ネーパル語対応<br>
+                  TEL：029-886-8181<br>
+                  Mobile：080-7141-7987<br>
+                  E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
+                </p>
+                <p style="margin:0 0 10px 0;">〒300-0043<br>
+          茨城県土浦市中央1-1-26　AGビル</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</div>`
+        , description: '',
+        category: 'default'
     },
     {
         id: 'yalin',
