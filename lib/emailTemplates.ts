@@ -362,15 +362,6 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                 <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
                     <p>いつもお世話になっております。<br>
                     Family協同組合でございます。</p>
-                    <p>現在、多くの企業様が人手不足に直面している中、外国人材の採用をご検討されている企業様も増えております。一方で、「初期コスト」や「煩雑な行政手続き」に不安を感じていらっしゃる企業様も多いのではないでしょうか。</p>
-                    <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を減免する特別な取り組みを実施しております。</p>
-                    <p>本取り組みでは、<br>
-                    ・採用までの初期費用を大幅に軽減<br>
-                    ・煩雑な行政手続きを当組合が一括サポート<br>
-                    ・入国前に約4カ月間の質の高い教育を実施</p>
-                    <p>など、企業様が安心して外国人材を受け入れていただける体制を整えております。</p>
-                    <p>もしご興味がございましたら、詳細資料の送付やオンラインでのご説明も可能でございます。<br>
-                    何卒ご検討のほど、よろしくお願い申し上げます。</p>
                 </td>
             </tr>
         </table>
@@ -383,14 +374,21 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
-    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、資料の送付も可能です。<br>
-何卒ご検討のほど、よろしくお願い申し上げます。</div>
+    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
   </td>
 </tr>
 <tr>
-  <td align="center" style="padding:0; ">
-    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
-  </td>
+    <td align="center" style="padding:0;">
+        <div style="text-align:left;width:100%;max-width:750px; color:#333333; padding:20px 30px; font-size:16px; line-height: 1.8; margin: 0 auto; box-sizing: border-box;">
+            <p>現在、多くの企業様が人手不足に直面している中、外国人材の採用をご検討されている企業様も増えております。一方で、「初期コスト」や「煩雑な行政手続き」に不安を感じていらっしゃる企業様も多いのではないでしょうか。</p>
+            <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を減免する特別な取り組みを実施しております。</p>
+            <p>本取り組みでは、<br>
+            ・採用までの初期費用を大幅に軽減<br>
+            ・煩雑な行政手続きを当組合が一括サポート<br>
+            ・入国前に約4カ月間の質の高い教育を実施</p>
+            <p>など、企業様が安心して外国人材を受け入れていただける体制を整えております。</p>
+        </div>
+    </td>
 </tr>
 </table>
         <!-- Family Footer -->
