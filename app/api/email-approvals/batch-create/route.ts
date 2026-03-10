@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
             const { data, error } = await supabaseAdmin
                 .from('customers')
                 .select('email')
-                .eq('group_id', groupId)
+                .eq('send_group_id', groupId)
                 .not('email', 'is', null)
                 .neq('email', '')
                 .eq('unsubscribe', false)

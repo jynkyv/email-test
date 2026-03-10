@@ -14,15 +14,15 @@ export async function GET(request: NextRequest) {
         // 方案B：查询所有有 group_id 的部分数据并在内存聚合
         // 因为数据量也就几万，方案B可行
 
-        let allGroupDatas: { group_id: number }[] = [];
+        let allGroupDatas: { send_group_id: number }[] = [];
         let page = 0;
         const pageSize = 5000;
 
         while (true) {
             const { data, error } = await supabaseAdmin
                 .from('customers')
-                .select('group_id')
-                .not('group_id', 'is', null)
+                .select('send_group_id')
+                .not('send_group_id', 'is', null)
                 .range(page * pageSize, (page + 1) * pageSize - 1);
 
             if (error) {
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         // 统计每组人数
         const groupCounts: Record<number, number> = {};
         allGroupDatas.forEach((item) => {
-            const gId = item.group_id;
+            const gId = item.send_group_id;
             if (groupCounts[gId]) {
                 groupCounts[gId]++;
             } else {
