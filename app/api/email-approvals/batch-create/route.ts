@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         // 1. 获取该分组内的所有客户邮箱
         let allEmails: string[] = [];
         let page = 0;
-        const pageSize = 5000;
+        const pageSize = 1000;
 
         while (true) {
             const { data, error } = await supabaseAdmin
