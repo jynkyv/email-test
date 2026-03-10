@@ -375,9 +375,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
             </tr>
         </table>
         <!-- Main Image -->
-        <a href="https://yalin.asia" target="_blank">
+        <a href="https://www.familyorjp.com/zero-fee" target="_blank">
         <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/yalin-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+          <img src="https://email-test-black.vercel.app/family-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
         </div>
         </a>
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
