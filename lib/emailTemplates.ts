@@ -472,8 +472,9 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                 <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
                 </p>
                 <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語対応<br>
+                  <span style="font-size:17px">Family協同組合</span><br>
+                  担当:菅原 　日本語・中国語・英語・ネーパル語対応<br>
+                  TEL：029-886-8181<br>
                   Mobile：080-7141-7987<br>
                   E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
                 </p>
