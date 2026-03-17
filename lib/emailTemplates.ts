@@ -113,7 +113,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     <td align="center" style="padding:0;">
         <div style="text-align:left;width:100%;max-width:750px; color:#333333; padding:20px 30px; font-size:16px; line-height: 1.8; margin: 0 auto; box-sizing: border-box;">
             <p>現在、多くの企業様が人手不足に直面している中、外国人材の採用をご検討されている企業様も増えております。一方で、「初期コスト」や「煩雑な行政手続き」に不安を感じていらっしゃる企業様も多いのではないでしょうか。</p>
-            <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を減免する特別な取り組みを実施しております。</p>
+            <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を减免する特別な取り組みを実施しております。</p>
             <p>本取り組みでは、<br>
             ・採用までの初期費用を大幅に軽減<br>
             ・煩雑な行政手続きを当組合が一括サポート<br>
@@ -164,7 +164,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                     <p>ご担当者様<br>
                     平素より大変お世話になっております。<br>
                     中国送出機関【福州亜麟創新科技有限公司】でございます。<br>
-                    このたび、提携先ネットワークを広げたく、監理団体様および受入企業様を対象に、「ご紹介1名につき20万円の謝礼制度」 を開始いたしました。</p>
+                    このたび、提携先ネットワークを広げたく、監理団体様および受入企業様を対象に、「ご紹介1名につき20万円の謝礼制度」 を开始いたしました。</p>
                 </td>
             </tr>
         </table>
@@ -187,16 +187,16 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>
-        <!-- Footer -->
+        <!-- Yalin Footer -->
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
           <tr>
             <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#f9f9f9; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 20px auto;">
-                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。</p>
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
+                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
+                </p>
                 <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px; font-weight: bold;">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語・英語・ネーパル語対応<br>
-                  TEL：029-886-8181<br>
+                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
+                  担当:菅原 　日本語・中国語対応<br>
                   Mobile：080-7141-7987<br>
                   E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
                 </p>
@@ -252,16 +252,16 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>
-        <!-- Footer -->
+        <!-- Yalin Footer -->
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
           <tr>
             <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#f9f9f9; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 20px auto;">
-                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。</p>
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
+                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
+                </p>
                 <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px; font-weight: bold;">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語・英語・ネーパル語対応<br>
-                  TEL：029-886-8181<br>
+                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
+                  担当:菅原 　日本語・中国語対応<br>
                   Mobile：080-7141-7987<br>
                   E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
                 </p>
@@ -317,16 +317,16 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   </td>
 </tr>
 </table>
-        <!-- Footer -->
+        <!-- Yalin Footer -->
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
           <tr>
             <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#f9f9f9; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 20px auto;">
-                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。</p>
+              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
+                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
+                </p>
                 <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px; font-weight: bold;">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語・英语・ネーパル语対応<br>
-                  TEL：029-886-8181<br>
+                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
+                  担当:菅原 　日本語・中国語対応<br>
                   Mobile：080-7141-7987<br>
                   E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
                 </p>
