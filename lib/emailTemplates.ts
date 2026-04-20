@@ -193,7 +193,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                 </td>
             </tr>
         </table>
-        <!-- Main Image -->
+        <!-- Main Image -->˜
         <a href="https://yalin.asia" target="_blank">
         <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
           <img src="https://email-test-black.vercel.app/yalin-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
