@@ -82,13 +82,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
-        <!-- Main Image (top) -->
-        <a href="https://www.familyorjp.com/zero-fee" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/family-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
-        <!-- Body Text (below image) -->
+ <!-- Header/Intro Text -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
             <tr>
                 <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
@@ -121,6 +115,12 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                 </td>
             </tr>
         </table>
+        <!-- Main Image -->
+        <a href="https://www.familyorjp.com/zero-fee" target="_blank">
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/family-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        </a>
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
@@ -168,13 +168,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
-        <!-- Main Image (top) -->
-        <a href="https://yalin.asia" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/yalin-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
-        <!-- Body Text (below image) -->
+ <!-- Header/Intro Text -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
             <tr>
                 <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
@@ -184,7 +178,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                     <p>当機関では、これまで多数の企業様に対し、優秀で意欲の高い中国人技能実習生の送り出し実績があり、安定した人材供給と丁寧なサポート体制にご評価をいただいております。<br>
                     現在、受入れ枠の拡大に伴い、新たな受入れ企業様とのご縁を広げております。</p>
                     <p>つきましては、受入れをご検討いただける企業様をご紹介いただいた場合、<br>
-                    <strong>1社につき20万円の謝礼（実習生の日本入国後にお支払い）</strong>をお支払いさせていただきます。</p>
+                    <strong>1名受け入れて20万円の謝礼（実習生の日本入国後にお支払い）</strong>をお支払いさせていただきます。</p>
                     <p>■ご紹介対象<br>
                     ・技能実習生の受入れにご関心のある企業様<br>
                     ・人手不足の解消や海外人材の活用をご検討中の企業様</p>
@@ -199,6 +193,12 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
                 </td>
             </tr>
         </table>
+        <!-- Main Image -->
+        <a href="https://yalin.asia" target="_blank">
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/yalin-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        </a>
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
