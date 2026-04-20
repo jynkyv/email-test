@@ -1,19 +1,19 @@
 export interface EmailTemplate {
-    id: string;
-    name: string;
-    subject: string;
-    content: string;
-    description: string;
-    category: string;
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  description: string;
+  category: string;
 }
 
 // 预定义的邮件模板
 export const EMAIL_TEMPLATES: EmailTemplate[] = [
-    {
-        id: 'default',
-        name: 'Default Template',
-        subject: '初期費用0円で、性能、費用対効果に優れた人材を提案。',
-        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+  {
+    id: 'default',
+    name: 'Default Template',
+    subject: '初期費用0円で、性能、費用対効果に優れた人材を提案。',
+    content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
@@ -71,32 +71,56 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </tr>
   </table>
 </div>`,
-        description: '完全な HTML 构造と画像が含まれるデフォルトの电子メール テンプレート。',
-        category: 'default'
-    },
-    {
-        id: 'family-2026',
-        name: 'Family 2026',
-        subject: 'Family協同組合——外国人材採用初期費用減免',
-        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    description: '完全な HTML 构造と画像が含まれるデフォルトの电子メール テンプレート。',
+    category: 'default'
+  },
+  {
+    id: 'family-2026',
+    name: 'Family 2026',
+    subject: 'Family協同組合——外国人材採用初期費用減免',
+    content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
- <!-- Header/Intro Text -->
+        <!-- Main Image (top) -->
+        <a href="https://www.familyorjp.com/zero-fee" target="_blank">
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/family-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        </a>
+        <!-- Body Text (below image) -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
             <tr>
                 <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
-                    <p>いつもお世話になっております。<br>
-                    Family協同組合でございます。</p>
+                    <p>お世話になっております。<br>
+                    Family協同組合（監理団体）の菅原と申します。</p>
+                    <p>人手不足が深刻化する中、外国人材の採用をご検討の企業様も多いかと存じますが、<br>
+                    <strong>「初期コスト」や「煩雑な行政手続き」</strong>に不安を感じていませんか？</p>
+                    <p>当組合では、そのようなお悩みを解消するため、<br>
+                    期間限定の特別プランをご用意いたしました。</p>
+                    <p style="text-align:center;">――――――――――――――――――<br>
+                    <strong>入国までの初期費用、完全0円</strong><br>
+                    （対象期間：2026年3月1日〜2026年12月31日）<br>
+                    ――――――――――――――――――</p>
+                    <p>本プランでは、技能実習生の受入れにかかる<br>
+                    入国までの初期費用をすべて0円でご利用いただけます。</p>
+                    <p>■プランの特徴<br>
+                    ・入国までの初期費用：完全0円<br>
+                    ・監理団体として受入れ手続きを一括サポート<br>
+                    ・煩雑な申請業務・書類作成を全面代行<br>
+                    ・優良な送出機関と連携し、安定した人材確保<br>
+                    ・入国後の生活・就業サポートも充実</p>
+                    <p>初めて外国人材を受け入れる企業様でも、<br>
+                    安心してスムーズに導入いただける体制を整えております。</p>
+                    <p>「コストを抑えて導入したい」<br>
+                    「手続きの負担を減らしたい」<br>
+                    そのような企業様に最適なプランです。</p>
+                    <p>ぜひこの機会にご検討ください。<br>
+                    詳細のご説明や導入の流れにつきましては、<br>
+                    オンラインでも柔軟に対応可能でございます。</p>
                 </td>
             </tr>
         </table>
-        <!-- Main Image -->
-        <a href="https://www.familyorjp.com/zero-fee" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/family-content-2026.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
@@ -108,19 +132,6 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   <td align="center" style="padding:0; ">
     <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
   </td>
-</tr>
-<tr>
-    <td align="center" style="padding:0;">
-        <div style="text-align:left;width:100%;max-width:750px; color:#333333; padding:20px 30px; font-size:16px; line-height: 1.8; margin: 0 auto; box-sizing: border-box;">
-            <p>現在、多くの企業様が人手不足に直面している中、外国人材の採用をご検討されている企業様も増えております。一方で、「初期コスト」や「煩雑な行政手続き」に不安を感じていらっしゃる企業様も多いのではないでしょうか。</p>
-            <p>そこで当組合では、外国人技能実習生の受け入れをご検討の企業様に向けて、採用初期費用を减免する特別な取り組みを実施しております。</p>
-            <p>本取り組みでは、<br>
-            ・採用までの初期費用を大幅に軽減<br>
-            ・煩雑な行政手続きを当組合が一括サポート<br>
-            ・入国前に約4カ月間の質の高い教育を実施</p>
-            <p>など、企业様が安心して外国人材を受け入れていただける体制を整えております。</p>
-        </div>
-    </td>
 </tr>
 </table>
         <!-- Footer -->
@@ -146,34 +157,48 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </tr>
   </table>
 </div>`,
-        description: 'Family協同組合の2026年採用プロモーションテンプレート。',
-        category: 'promotion'
-    },
-    {
-        id: 'yalin-v1',
-        name: 'Yalin (Option 1)',
-        subject: '【送出機関】中国技能実習生受入れ先紹介のご依頼（謝礼20万円）',
-        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
+    description: 'Family協同組合の2026年採用プロモーションテンプレート。',
+    category: 'promotion'
+  },
+  {
+    id: 'yalin-2026',
+    name: 'Yalin 2026',
+    subject: '【送出機関】中国技能実習生受入れ先紹介のご依頼（謝礼20万円）',
+    content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
   <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
       <td align="center" style="padding:0; ">
- <!-- Header/Intro Text -->
+        <!-- Main Image (top) -->
+        <a href="https://yalin.asia" target="_blank">
+        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
+          <img src="https://email-test-black.vercel.app/yalin-hero-4-20.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
+        </div>
+        </a>
+        <!-- Body Text (below image) -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
             <tr>
                 <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
-                    <p>ご担当者様<br>
-                    平素より大変お世話になっております。<br>
-                    中国送出機関【福州亜麟創新科技有限公司】でございます。<br>
-                    このたび、提携先ネットワークを広げたく、監理団体様および受入企業様を対象に、「ご紹介1名につき20万円の謝礼制度」 を开始いたしました。</p>
+                    <p>お世話になっております。<br>
+                    アリン送出機関の菅原と申します。</p>
+                    <p>このたびは、中国人技能実習生の受入れ先企業様をご紹介いただきたく、ご連絡申し上げました。</p>
+                    <p>当機関では、これまで多数の企業様に対し、優秀で意欲の高い中国人技能実習生の送り出し実績があり、安定した人材供給と丁寧なサポート体制にご評価をいただいております。<br>
+                    現在、受入れ枠の拡大に伴い、新たな受入れ企業様とのご縁を広げております。</p>
+                    <p>つきましては、受入れをご検討いただける企業様をご紹介いただいた場合、<br>
+                    <strong>1社につき20万円の謝礼（実習生の日本入国後にお支払い）</strong>をお支払いさせていただきます。</p>
+                    <p>■ご紹介対象<br>
+                    ・技能実習生の受入れにご関心のある企業様<br>
+                    ・人手不足の解消や海外人材の活用をご検討中の企業様</p>
+                    <p>■当機関の特徴<br>
+                    ・厳選された人材のご提案<br>
+                    ・来日前教育の徹底（日本語・マナー・技能）<br>
+                    ・受入れ後のフォロー体制も充実</p>
+                    <p>ご紹介方法や詳細につきましては、お気軽にお問い合わせください。<br>
+                    オンラインでのご説明も可能でございます。</p>
+                    <p>ぜひこの機会に、貴社およびご関係企業様との新たなご縁をいただけますと幸いです。<br>
+                    何卒よろしくお願い申し上げます。</p>
                 </td>
             </tr>
         </table>
-        <!-- Main Image -->
-        <a href="https://yalin.asia" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/yalin-content-2026-3-16.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
         <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
 <tr>
   <td align="center" style="padding:0; ">
@@ -210,137 +235,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
     </tr>
   </table>
 </div>`,
-        description: 'Yalin 2026 テンプレート (オプション ①)',
-        category: 'promotion'
-    },
-    {
-        id: 'yalin-v2',
-        name: 'Yalin (Option 2)',
-        subject: '【送出機関】中国技能実習生受入れ先紹介のご依頼（謝礼20万円）',
-        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
-  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-    <tr>
-      <td align="center" style="padding:0; ">
- <!-- Header/Intro Text -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
-            <tr>
-                <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
-                    <p>ご担当者様<br>
-                    平素より格別のご高配を賜り、誠にありがとうございます。<br>
-                    中国の送出機関【福州亜麟創新科技有限公司】でございます。<br><br>
-                    このたび、提携先ネットワークを広げたく、監理団体様・受入企业様を対象に、「ご紹介1名につき20万円の謝礼制度」 をご用意いたしました。<br>
-                    今後もより良いパートナーとしてお役に立てれば幸いです。</p>
-                </td>
-            </tr>
-        </table>
-        <!-- Main Image -->
-        <a href="https://yalin.asia" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/yalin-content-2026-3-16.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
-        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、资料の送付も可能です。<br>
-何卒ご検討のほど、よろしくお願い申し上げます。</div>
-  </td>
-</tr>
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
-  </td>
-</tr>
-</table>
-        <!-- Yalin Footer -->
-        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-          <tr>
-            <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
-                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
-                </p>
-                <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語対応<br>
-                  Mobile：080-7141-7987<br>
-                  E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
-                </p>
-                <p style="margin:0 0 10px 0;">〒300-0043<br>
-          茨城県土浦市中央1-1-26　AGビル</p>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</div>`,
-        description: 'Yalin 2026 テンプレート (オプション ②)',
-        category: 'promotion'
-    },
-    {
-        id: 'yalin-v3',
-        name: 'Yalin (Option 3)',
-        subject: '【送出機関】中国技能実習生受入れ先紹介のご依頼（謝礼20万円）',
-        content: `<div style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Noto Sans JP',Meiryo,Segoe UI,Arial,sans-serif;color:#1a1a1a;padding:0;width:100%;background-color:#ffffff;min-height:100vh;font-size:16px;">
-  <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-    <tr>
-      <td align="center" style="padding:0; ">
- <!-- Header/Intro Text -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; max-width: 800px; margin: 0 auto;">
-            <tr>
-                <td style="font-size: 16px; line-height: 1.8; color: #333333; padding: 20px;">
-                    <p>ご担当者様<br>
-                    いつもお世話になっております。<br>
-                    中国送出機関【福州亜麟創新科技有限公司】です。<br><br>
-                    このたび、提携先ネットワークを広げたく、监理団体様・受入企业様向けに「1名ご紹介につき20万円の謝礼制度」 をスタートいたしました。<br>
-                    ぜひこの機会にご活用いただければ幸いです。</p>
-                </td>
-            </tr>
-        </table>
-        <!-- Main Image -->
-        <a href="https://yalin.asia" target="_blank">
-        <div style="max-width: 750px; margin: 0 auto; margin-bottom: 20px;">
-          <img src="https://email-test-black.vercel.app/yalin-content-2026-3-16.png" alt="" style="width:100%; display: block; margin: 0; padding: 0; border: 0; vertical-align: top;"/>
-        </div>
-        </a>
-        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="font-size:20px;font-weight:bold;color:#000000;text-align:center;">もしご興味がございましたら、资料の送付も可能です。<br>
-何卒ご検討のほど、よろしくお願い申し上げます。</div>
-  </td>
-</tr>
-<tr>
-  <td align="center" style="padding:0; ">
-    <div style="border: none;width: 90%; max-width: 750px; height: 3px; background-color: #000000; margin: 20px auto;"></div>
-  </td>
-</tr>
-</table>
-        <!-- Yalin Footer -->
-        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:0; padding:0; -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; width:100%;">
-          <tr>
-            <td align="center" style="padding:0;">
-              <div style="text-align:left;width:100%;max-width:750px;background-color:#0000; color:#000000; padding:20px 30px; font-size:14px; border-radius:8px; margin: 0 auto;">
-                <p style="margin:0 0 10px 0;">お問い合わせもお気軽にどうぞ。<br>
-                </p>
-                <p style="margin:0 0 10px 0;">
-                  <span style="font-size:17px">福州亜麟創新科技有限公司（日本事務所）</span><br>
-                  担当:菅原 　日本語・中国語対応<br>
-                  Mobile：080-7141-7987<br>
-                  E-mail：<a href="mailto:sugawararina@hotmail.com" style="color:#0056b3; text-decoration:none;">sugawararina@hotmail.com</a>
-                </p>
-                <p style="margin:0 0 10px 0;">〒300-0043<br>
-          茨城県土浦市中央1-1-26　AGビル</p>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</div>`,
-        description: 'Yalin 2026 テンプレート (オプション ③)',
-        category: 'promotion'
-    }
+    description: 'Yalin 2026 テンプレート',
+    category: 'promotion'
+  }
 ];
