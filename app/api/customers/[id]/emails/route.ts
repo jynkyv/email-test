@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // 获取邮件列表 - 从数据库中查询邮件记录
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
     const userId = authHeader.replace('Bearer ', '');
     
     // 获取用户信息
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -40,7 +40,7 @@ export async function GET(
 
     // 检查权限
     if (userData.role !== 'admin') {
-      const { data: customer, error: customerError } = await supabase
+      const { data: customer, error: customerError } = await supabaseAdmin
         .from('customers')
         .select('created_by')
         .eq('id', customerId)
@@ -52,7 +52,7 @@ export async function GET(
     }
 
     // 构建查询 - 查询指定客户的所有邮件（收发的都包括）
-    let query = supabase
+    let query = supabaseAdmin
       .from('customer_emails')
       .select('*')
       .eq('customer_id', customerId)
@@ -173,7 +173,7 @@ export async function PUT(
     const { emailIds } = body; // 要标记为已读的邮件ID数组
 
     // 获取用户信息
-    const { data: user, error: userError } = await supabase
+    const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('role')
       .eq('id', userId)
@@ -185,7 +185,7 @@ export async function PUT(
 
     // 检查权限
     if (user.role !== 'admin') {
-      const { data: customer, error: customerError } = await supabase
+      const { data: customer, error: customerError } = await supabaseAdmin
         .from('customers')
         .select('created_by')
         .eq('id', customerId)
@@ -197,7 +197,7 @@ export async function PUT(
     }
 
     // 标记邮件为已读
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('customer_emails')
       .update({ is_read: true })
       .in('id', emailIds)
@@ -209,7 +209,7 @@ export async function PUT(
     }
 
     // 检查是否还有未读邮件
-    const { data: unreadCount, error: countError } = await supabase
+    const { data: unreadCount, error: countError } = await supabaseAdmin
       .from('customer_emails')
       .select('id', { count: 'exact' })
       .eq('customer_id', customerId)
@@ -219,7 +219,7 @@ export async function PUT(
       console.error('检查未读邮件数量失败:', countError);
     } else {
       // 更新客户的未读状态
-      const { error: customerUpdateError } = await supabase
+      const { error: customerUpdateError } = await supabaseAdmin
         .from('customers')
         .update({ has_unread_emails: unreadCount && unreadCount.length > 0 })
         .eq('id', customerId);
